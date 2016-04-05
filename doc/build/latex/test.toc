@@ -1,0 +1,10 @@
+\select@language {english}
+\contentsline {chapter}{\numberline {1}Contents:}{1}{chapter.1}
+\contentsline {section}{\numberline {1.1}Documentation of the API}{1}{section.1.1}
+\contentsline {subsection}{\numberline {1.1.1}Data analysis}{1}{subsection.1.1.1}
+\contentsline {subsubsection}{UnivariateLinearModelAnalysis}{1}{subsubsection*.3}
+\contentsline {subsection}{\numberline {1.1.2}POD model}{1}{subsection.1.1.2}
+\contentsline {subsubsection}{UnivariateLinearRegressionPOD}{2}{subsubsection*.6}
+\contentsline {section}{\numberline {1.2}Examples}{2}{section.1.2}
+\contentsline {chapter}{\numberline {2}Indices and tables}{3}{chapter.2}
+\contentsline {chapter}{Index}{5}{section*.9}

@@ -1,0 +1,13 @@
+\begin{theindex}
+\def\bigletter#1{{\Large\sffamily#1}\nopagebreak\vspace{1mm}}
+
+  \bigletter R
+  \item run() (UnivariateLinearModelAnalysis method), \hyperpage{1}
+  \item run() (UnivariateLinearRegressionPOD method), \hyperpage{2}
+
+  \indexspace
+  \bigletter U
+  \item UnivariateLinearModelAnalysis (class in otpod), \hyperpage{1}
+  \item UnivariateLinearRegressionPOD (class in otpod), \hyperpage{2}
+
+\end{theindex}

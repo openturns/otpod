@@ -235,8 +235,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'test.tex', u'test Documentation',
-     u'moi', 'manual'),
+    (master_doc, 'otpoddoc.tex', u'otpod Documentation',
+     u'Antoine Dumas', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -265,7 +265,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'test', u'test Documentation',
+    (master_doc, 'otpoddoc', u'otpod Documentation',
      [author], 1)
 ]
 
@@ -279,8 +279,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'test', u'test Documentation',
-     author, 'test', 'One line description of project.',
+    (master_doc, 'otpoddoc', u'otpod Documentation',
+     author, 'otpod', 'One line description of project.',
      'Miscellaneous'),
 ]
 

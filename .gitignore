@@ -1,3 +1,6 @@
 build/*
 dist/*
 otpod.egg-info/*
+doc/build/latex/*
+doc/build/doctrees/*
+!doc/build/latex/*.pdf

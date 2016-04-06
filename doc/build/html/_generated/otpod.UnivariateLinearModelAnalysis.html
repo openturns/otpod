@@ -108,7 +108,7 @@
 <dl class="class">
 <dt id="otpod.UnivariateLinearModelAnalysis">
 <em class="property">class </em><code class="descname">UnivariateLinearModelAnalysis</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Build a linear regression model and perform hypothesis test on the residuals.</p>
+<dd><p>Linear regression analysis with residuals hypothesis tests.</p>
 <p><strong>Available constructors</strong></p>
 <p>UnivariateLinearModelAnalysis(<em>inputSample, outputSample</em>)</p>
 <p>UnivariateLinearModelAnalysis(<em>inputSample, outputSample, noiseThres,
@@ -119,15 +119,29 @@ saturationThres, resDistFact, boxCox</em>)</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>inputSample</strong> : 2-d sequence of float</p>
 <blockquote>
-<div><p>Vector of the defects size, of dimension 1.</p>
+<div><p>Vector of the defect sizes, of dimension 1.</p>
 </div></blockquote>
 <p><strong>outputSample</strong> : 2-d sequence of float</p>
 <blockquote>
 <div><p>Vector of the signals, of dimension 1.</p>
 </div></blockquote>
 <p><strong>noiseThres</strong> : float</p>
+<blockquote>
+<div><p>Value for low censored data. Default is None.</p>
+</div></blockquote>
+<p><strong>saturationThres</strong> : float</p>
+<blockquote>
+<div><p>Value for high censored data. Default is None</p>
+</div></blockquote>
+<p><strong>resDistFact</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.DistributionFactory.html#openturns.DistributionFactory" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.DistributionFactory</span></code></a></p>
+<blockquote>
+<div><p>Distribution hypothesis followed by the residuals. Default is 
+<a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NormalFactory.html#openturns.NormalFactory" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NormalFactory</span></code></a>.</p>
+</div></blockquote>
+<p><strong>boxCox</strong> : bool or float</p>
 <blockquote class="last">
-<div><p>Low censored value</p>
+<div><p>Enable or not the Box Cox transformation. If boxCox is a float, the Box
+Cox transformation is enabled with the given value. Default is False.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -136,23 +150,14 @@ saturationThres, resDistFact, boxCox</em>)</p>
 <dl class="method">
 <dt id="otpod.UnivariateLinearModelAnalysis.run">
 <code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bla bla bla</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>sdfs</strong> : float</p>
-<blockquote>
-<div><p>dfsdf</p>
-</div></blockquote>
-<p><strong>oko</strong> : bool</p>
-<blockquote class="last">
-<div><p>ture</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dd><p>Run the analysis :</p>
+<ul class="simple">
+<li>Compute the Box Cox parameter if boxCox is True,</li>
+<li>Compute the transformed signals if boxCox is enabled,</li>
+<li>Build the univariate linear regression model on the data,</li>
+<li>Compute the residuals,</li>
+<li>Run all hypothesis tests.</li>
+</ul>
 </dd></dl>
 
 </dd></dl>
@@ -183,7 +188,7 @@ saturationThres, resDistFact, boxCox</em>)</p>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, moi.
-      Last updated on Apr 05, 2016.
+      Last updated on Apr 06, 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
     </div>
   </body>

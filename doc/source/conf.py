@@ -36,11 +36,13 @@ extensions = [
     'numpydoc',
 ]
 
+autodoc_default_flags = ['members', 'inherited-members']
+
 intersphinx_mapping = {'openturns': ('http://doc.openturns.org/openturns-latest/sphinx/', None)}
 
 autosummary_generate = True
 
-numpydoc_show_class_members = False
+numpydoc_show_class_members = True
 numpydoc_class_members_toctree = False
 
 

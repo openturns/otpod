@@ -448,7 +448,7 @@ class UnivariateLinearModelAnalysis():
         -------
         fig : `matplotlib.figure <http://matplotlib.org/api/figure_api.html>`_
             Matplotlib figure object.
-        ax : `matplotlib.figure <http://matplotlib.org/api/axes_api.html>`_
+        ax : `matplotlib.axes <http://matplotlib.org/api/axes_api.html>`_
             Matplotlib axes object.
         """
 
@@ -501,7 +501,7 @@ class UnivariateLinearModelAnalysis():
         -------
         fig : `matplotlib.figure <http://matplotlib.org/api/figure_api.html>`_
             Matplotlib figure object.
-        ax : `matplotlib.figure <http://matplotlib.org/api/axes_api.html>`_
+        ax : `matplotlib.axes <http://matplotlib.org/api/axes_api.html>`_
             Matplotlib axes object.
         """
 
@@ -533,7 +533,7 @@ class UnivariateLinearModelAnalysis():
 
     def drawResidualsQQplot(self, model="uncensored", name=None):
         """
-        Draw the residuals quantile quantile plot with the fitted distribution.
+        Draw the residuals QQ plot with the fitted distribution.
 
         Parameters
         ----------
@@ -549,7 +549,7 @@ class UnivariateLinearModelAnalysis():
         -------
         fig : `matplotlib.figure <http://matplotlib.org/api/figure_api.html>`_
             Matplotlib figure object.
-        ax : `matplotlib.figure <http://matplotlib.org/api/axes_api.html>`_
+        ax : `matplotlib.axes <http://matplotlib.org/api/axes_api.html>`_
             Matplotlib axes object.
         """
 
@@ -605,7 +605,7 @@ class UnivariateLinearModelAnalysis():
         -------
         fig : `matplotlib.figure <http://matplotlib.org/api/figure_api.html>`_
             Matplotlib figure object.
-        ax : `matplotlib.figure <http://matplotlib.org/api/axes_api.html>`_
+        ax : `matplotlib.axes <http://matplotlib.org/api/axes_api.html>`_
             Matplotlib axes object.
         """
 
@@ -653,7 +653,7 @@ class UnivariateLinearModelAnalysis():
         -------
         fig : `matplotlib.figure <http://matplotlib.org/api/figure_api.html>`_
             Matplotlib figure object.
-        ax : `matplotlib.figure <http://matplotlib.org/api/axes_api.html>`_
+        ax : `matplotlib.axes <http://matplotlib.org/api/axes_api.html>`_
             Matplotlib axes object.
 
         Notes
@@ -722,7 +722,7 @@ class UnivariateLinearModelAnalysis():
 
     def getIntercept(self):
         """
-        Accessor to the intercept parameter of the linear regression model. 
+        Accessor to the intercept of the linear regression model. 
 
         Returns
         -------
@@ -745,7 +745,7 @@ class UnivariateLinearModelAnalysis():
 
     def getSlope(self):
         """
-        Accessor to the slope parameter of the linear regression model. 
+        Accessor to the slope of the linear regression model. 
 
         Returns
         -------

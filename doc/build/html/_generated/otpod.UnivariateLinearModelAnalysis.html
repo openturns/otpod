@@ -157,6 +157,78 @@ Cox transformation is enabled with the given value. Default is False.</p>
 <li>computes the residuals,</li>
 <li>runs all hypothesis tests.</li>
 </ul>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.drawBoxCoxLikelihood" title="otpod.UnivariateLinearModelAnalysis.drawBoxCoxLikelihood"><code class="xref py py-obj docutils literal"><span class="pre">drawBoxCoxLikelihood</span></code></a>([name])</td>
+<td>Draw the loglikelihood versus the Box Cox parameter.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.drawLinearModel" title="otpod.UnivariateLinearModelAnalysis.drawLinearModel"><code class="xref py py-obj docutils literal"><span class="pre">drawLinearModel</span></code></a>([model,&nbsp;name])</td>
+<td>Draw the linear regression prediction versus the true data.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.drawResiduals" title="otpod.UnivariateLinearModelAnalysis.drawResiduals"><code class="xref py py-obj docutils literal"><span class="pre">drawResiduals</span></code></a>([model,&nbsp;name])</td>
+<td>Draw the residuals versus the defect values.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.drawResidualsDistribution" title="otpod.UnivariateLinearModelAnalysis.drawResidualsDistribution"><code class="xref py py-obj docutils literal"><span class="pre">drawResidualsDistribution</span></code></a>([model,&nbsp;name])</td>
+<td>Draw the residuals histogram with the fitted distribution.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.drawResidualsQQplot" title="otpod.UnivariateLinearModelAnalysis.drawResidualsQQplot"><code class="xref py py-obj docutils literal"><span class="pre">drawResidualsQQplot</span></code></a>([model,&nbsp;name])</td>
+<td>Draw the residuals QQ plot with the fitted distribution.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getAndersonDarlingPValue" title="otpod.UnivariateLinearModelAnalysis.getAndersonDarlingPValue"><code class="xref py py-obj docutils literal"><span class="pre">getAndersonDarlingPValue</span></code></a>()</td>
+<td>Accessor to the Anderson Darling test p-value.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getBoxCoxParameter" title="otpod.UnivariateLinearModelAnalysis.getBoxCoxParameter"><code class="xref py py-obj docutils literal"><span class="pre">getBoxCoxParameter</span></code></a>()</td>
+<td>Accessor to the Box Cox parameter.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getBreuschPaganPValue" title="otpod.UnivariateLinearModelAnalysis.getBreuschPaganPValue"><code class="xref py py-obj docutils literal"><span class="pre">getBreuschPaganPValue</span></code></a>()</td>
+<td>Accessor to the Breusch Pagan test p-value.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getCramerVonMisesPValue" title="otpod.UnivariateLinearModelAnalysis.getCramerVonMisesPValue"><code class="xref py py-obj docutils literal"><span class="pre">getCramerVonMisesPValue</span></code></a>()</td>
+<td>Accessor to the Cramer Von Mises test p-value.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getDurbinWatsonPValue" title="otpod.UnivariateLinearModelAnalysis.getDurbinWatsonPValue"><code class="xref py py-obj docutils literal"><span class="pre">getDurbinWatsonPValue</span></code></a>()</td>
+<td>Accessor to the Durbin Watson test p-value.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getHarrisonMcCabePValue" title="otpod.UnivariateLinearModelAnalysis.getHarrisonMcCabePValue"><code class="xref py py-obj docutils literal"><span class="pre">getHarrisonMcCabePValue</span></code></a>()</td>
+<td>Accessor to the Harrison McCabe test p-value.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getIntercept" title="otpod.UnivariateLinearModelAnalysis.getIntercept"><code class="xref py py-obj docutils literal"><span class="pre">getIntercept</span></code></a>()</td>
+<td>Accessor to the intercept of the linear regression model.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getKolmogorovPValue" title="otpod.UnivariateLinearModelAnalysis.getKolmogorovPValue"><code class="xref py py-obj docutils literal"><span class="pre">getKolmogorovPValue</span></code></a>()</td>
+<td>Accessor to the Kolmogorov test p-value.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getR2" title="otpod.UnivariateLinearModelAnalysis.getR2"><code class="xref py py-obj docutils literal"><span class="pre">getR2</span></code></a>()</td>
+<td>Accessor to the R2 value.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getResiduals" title="otpod.UnivariateLinearModelAnalysis.getResiduals"><code class="xref py py-obj docutils literal"><span class="pre">getResiduals</span></code></a>()</td>
+<td>Accessor to the residuals.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getResidualsDistribution" title="otpod.UnivariateLinearModelAnalysis.getResidualsDistribution"><code class="xref py py-obj docutils literal"><span class="pre">getResidualsDistribution</span></code></a>()</td>
+<td>Accessor to the residuals distribution.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getSlope" title="otpod.UnivariateLinearModelAnalysis.getSlope"><code class="xref py py-obj docutils literal"><span class="pre">getSlope</span></code></a>()</td>
+<td>Accessor to the slope of the linear regression model.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getStandardError" title="otpod.UnivariateLinearModelAnalysis.getStandardError"><code class="xref py py-obj docutils literal"><span class="pre">getStandardError</span></code></a>()</td>
+<td>Accessor to the standard error of the estimate.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getZeroMeanPValue" title="otpod.UnivariateLinearModelAnalysis.getZeroMeanPValue"><code class="xref py py-obj docutils literal"><span class="pre">getZeroMeanPValue</span></code></a>()</td>
+<td>Accessor to the Zero Mean test p-value.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.printResults" title="otpod.UnivariateLinearModelAnalysis.printResults"><code class="xref py py-obj docutils literal"><span class="pre">printResults</span></code></a>()</td>
+<td>Print results of the linear analysis.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.saveResults" title="otpod.UnivariateLinearModelAnalysis.saveResults"><code class="xref py py-obj docutils literal"><span class="pre">saveResults</span></code></a>(name)</td>
+<td>Save all analysis test results in a file.</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="otpod.UnivariateLinearModelAnalysis.drawBoxCoxLikelihood">
 <code class="descname">drawBoxCoxLikelihood</code><span class="sig-paren">(</span><em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.drawBoxCoxLikelihood" title="Permalink to this definition">¶</a></dt>
@@ -177,7 +249,7 @@ full path name. Default is None.</p>
 <blockquote>
 <div><p>Matplotlib figure object.</p>
 </div></blockquote>
-<p><strong>ax</strong> : <a class="reference external" href="http://matplotlib.org/api/axes_api.html">matplotlib.figure</a></p>
+<p><strong>ax</strong> : <a class="reference external" href="http://matplotlib.org/api/axes_api.html">matplotlib.axes</a></p>
 <blockquote class="last">
 <div><p>Matplotlib axes object.</p>
 </div></blockquote>
@@ -214,7 +286,7 @@ full path name. Default is None.</p>
 <blockquote>
 <div><p>Matplotlib figure object.</p>
 </div></blockquote>
-<p><strong>ax</strong> : <a class="reference external" href="http://matplotlib.org/api/axes_api.html">matplotlib.figure</a></p>
+<p><strong>ax</strong> : <a class="reference external" href="http://matplotlib.org/api/axes_api.html">matplotlib.axes</a></p>
 <blockquote class="last">
 <div><p>Matplotlib axes object.</p>
 </div></blockquote>
@@ -249,7 +321,7 @@ full path name. Default is None.</p>
 <blockquote>
 <div><p>Matplotlib figure object.</p>
 </div></blockquote>
-<p><strong>ax</strong> : <a class="reference external" href="http://matplotlib.org/api/axes_api.html">matplotlib.figure</a></p>
+<p><strong>ax</strong> : <a class="reference external" href="http://matplotlib.org/api/axes_api.html">matplotlib.axes</a></p>
 <blockquote class="last">
 <div><p>Matplotlib axes object.</p>
 </div></blockquote>
@@ -284,7 +356,7 @@ full path name. Default is None.</p>
 <blockquote>
 <div><p>Matplotlib figure object.</p>
 </div></blockquote>
-<p><strong>ax</strong> : <a class="reference external" href="http://matplotlib.org/api/axes_api.html">matplotlib.figure</a></p>
+<p><strong>ax</strong> : <a class="reference external" href="http://matplotlib.org/api/axes_api.html">matplotlib.axes</a></p>
 <blockquote class="last">
 <div><p>Matplotlib axes object.</p>
 </div></blockquote>
@@ -297,7 +369,7 @@ full path name. Default is None.</p>
 <dl class="method">
 <dt id="otpod.UnivariateLinearModelAnalysis.drawResidualsQQplot">
 <code class="descname">drawResidualsQQplot</code><span class="sig-paren">(</span><em>model='uncensored'</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.drawResidualsQQplot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Draw the residuals quantile quantile plot with the fitted distribution.</p>
+<dd><p>Draw the residuals QQ plot with the fitted distribution.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -319,7 +391,7 @@ full path name. Default is None.</p>
 <blockquote>
 <div><p>Matplotlib figure object.</p>
 </div></blockquote>
-<p><strong>ax</strong> : <a class="reference external" href="http://matplotlib.org/api/axes_api.html">matplotlib.figure</a></p>
+<p><strong>ax</strong> : <a class="reference external" href="http://matplotlib.org/api/axes_api.html">matplotlib.axes</a></p>
 <blockquote class="last">
 <div><p>Matplotlib axes object.</p>
 </div></blockquote>
@@ -441,7 +513,7 @@ is not enabled None is returned.</p>
 <dl class="method">
 <dt id="otpod.UnivariateLinearModelAnalysis.getIntercept">
 <code class="descname">getIntercept</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getIntercept" title="Permalink to this definition">¶</a></dt>
-<dd><p>Accessor to the intercept parameter of the linear regression model.</p>
+<dd><p>Accessor to the intercept of the linear regression model.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -534,7 +606,7 @@ and censored (if so) case.</p>
 <dl class="method">
 <dt id="otpod.UnivariateLinearModelAnalysis.getSlope">
 <code class="descname">getSlope</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getSlope" title="Permalink to this definition">¶</a></dt>
-<dd><p>Accessor to the slope parameter of the linear regression model.</p>
+<dd><p>Accessor to the slope of the linear regression model.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

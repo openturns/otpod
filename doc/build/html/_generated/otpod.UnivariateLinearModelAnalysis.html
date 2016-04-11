@@ -147,17 +147,300 @@ Cox transformation is enabled with the given value. Default is False.</p>
 </tr>
 </tbody>
 </table>
-<dl class="method">
-<dt id="otpod.UnivariateLinearModelAnalysis.run">
-<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run the analysis :</p>
+<p class="rubric">Notes</p>
+<p>This method automatically :</p>
 <ul class="simple">
-<li>Compute the Box Cox parameter if boxCox is True,</li>
-<li>Compute the transformed signals if boxCox is enabled,</li>
-<li>Build the univariate linear regression model on the data,</li>
-<li>Compute the residuals,</li>
-<li>Run all hypothesis tests.</li>
+<li>Computes the Box Cox parameter if <em>boxCox</em> is True,</li>
+<li>Computes the transformed signals if <em>boxCox</em> is True or a float,</li>
+<li>Builds the univariate linear regression model on the data,</li>
+<li>Computes the linear regression parameters for censored data if needed,</li>
+<li>Computes the residuals,</li>
+<li>Runs all hypothesis tests.</li>
 </ul>
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getAndersonDarlingPValue">
+<code class="descname">getAndersonDarlingPValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getAndersonDarlingPValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the Anderson Darling test p-value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pValue</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalPoint.html#openturns.NumericalPoint" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalPoint</span></code></a></p>
+<blockquote class="last">
+<div><p>Either the p-value for the uncensored case or for both cases.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getBoxCoxParameter">
+<code class="descname">getBoxCoxParameter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getBoxCoxParameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the Box Cox parameter.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>lambdaBoxCox</strong> : float</p>
+<blockquote class="last">
+<div><p>The Box Cox parameter used to transform the data. If the transformation
+is not enabled None is returned.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getBreuschPaganPValue">
+<code class="descname">getBreuschPaganPValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getBreuschPaganPValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the Breusch Pagan test p-value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pValue</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalPoint.html#openturns.NumericalPoint" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalPoint</span></code></a></p>
+<blockquote class="last">
+<div><p>Either the p-value for the uncensored case or for both cases.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getCramerVonMisesPValue">
+<code class="descname">getCramerVonMisesPValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getCramerVonMisesPValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the Cramer Von Mises test p-value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pValue</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalPoint.html#openturns.NumericalPoint" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalPoint</span></code></a></p>
+<blockquote class="last">
+<div><p>Either the p-value for the uncensored case or for both cases.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getDurbinWatsonPValue">
+<code class="descname">getDurbinWatsonPValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getDurbinWatsonPValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the Durbin Watson test p-value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pValue</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalPoint.html#openturns.NumericalPoint" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalPoint</span></code></a></p>
+<blockquote class="last">
+<div><p>Either the p-value for the uncensored case or for both cases.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getHarrisonMcCabePValue">
+<code class="descname">getHarrisonMcCabePValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getHarrisonMcCabePValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the Harrison McCabe test p-value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pValue</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalPoint.html#openturns.NumericalPoint" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalPoint</span></code></a></p>
+<blockquote class="last">
+<div><p>Either the p-value for the uncensored case or for both cases.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getIntercept">
+<code class="descname">getIntercept</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getIntercept" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the intercept parameter of the linear regression model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>intercept</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalPoint.html#openturns.NumericalPoint" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalPoint</span></code></a></p>
+<blockquote class="last">
+<div><p>The intercept parameter for the uncensored and censored (if so) linear
+regression model.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getKolmogorovPValue">
+<code class="descname">getKolmogorovPValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getKolmogorovPValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the Kolmogorov test p-value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pValue</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalPoint.html#openturns.NumericalPoint" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalPoint</span></code></a></p>
+<blockquote class="last">
+<div><p>Either the p-value for the uncensored case or for both cases.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getR2">
+<code class="descname">getR2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getR2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the R2 value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>R2</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalPoint.html#openturns.NumericalPoint" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalPoint</span></code></a></p>
+<blockquote class="last">
+<div><p>Either the R2 for the uncensored case or for both cases.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getResiduals">
+<code class="descname">getResiduals</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getResiduals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the residuals.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>residuals</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalSample.html#openturns.NumericalSample" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalSample</span></code></a></p>
+<blockquote class="last">
+<div><p>The residuals computed from the uncensored and censored linear
+regression model. The first column corresponds with the uncensored case.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getResidualsDistribution">
+<code class="descname">getResidualsDistribution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getResidualsDistribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the residuals distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>distribution</strong> : list of <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.Distribution.html#openturns.Distribution" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.Distribution</span></code></a></p>
+<blockquote class="last">
+<div><p>The fitted distribution on the residuals, computed in the uncensored
+and censored (if so) case.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getSlope">
+<code class="descname">getSlope</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getSlope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the slope parameter of the linear regression model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>slope</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalPoint.html#openturns.NumericalPoint" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalPoint</span></code></a></p>
+<blockquote class="last">
+<div><p>The slope parameter for the uncensored and censored (if so) linear
+regression model.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getStandardError">
+<code class="descname">getStandardError</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getStandardError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the standard error of the estimate.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>stderr</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalPoint.html#openturns.NumericalPoint" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalPoint</span></code></a></p>
+<blockquote class="last">
+<div><p>The standard error of the estimate for the uncensored and censored
+(if so) linear regression model.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getZeroMeanPValue">
+<code class="descname">getZeroMeanPValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getZeroMeanPValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the Zero Mean test p-value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pValue</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalPoint.html#openturns.NumericalPoint" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalPoint</span></code></a></p>
+<blockquote class="last">
+<div><p>Either the p-value for the uncensored case or for both cases.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.printResults">
+<code class="descname">printResults</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.printResults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print results of the linear analysis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.saveResults">
+<code class="descname">saveResults</code><span class="sig-paren">(</span><em>pathname</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.saveResults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save all analysis test results in a file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>pathname</strong> : string</p>
+<blockquote class="last">
+<div><p>Name of the file or full path name.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The file can be saved as a csv file. Separations are made with tabulations.</p>
+<p>If <em>pathname</em> is the file name, then it is saved in the current working
+directory.</p>
 </dd></dl>
 
 </dd></dl>
@@ -188,7 +471,7 @@ Cox transformation is enabled with the given value. Default is False.</p>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, moi.
-      Last updated on Apr 06, 2016.
+      Last updated on Apr 08, 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
     </div>
   </body>

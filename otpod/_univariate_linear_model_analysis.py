@@ -4,18 +4,20 @@
 __all__ = ['UnivariateLinearModelAnalysis']
 
 import openturns as ot
+from openturns.viewer import View
 from ._math_tools import computeBoxCox, computeZeroMeanTest, computeBreuschPaganTest, \
                          computeHarrisonMcCabeTest, computeDurbinWatsonTest, \
                          computeR2, censureFilter, computeLinearParametersCensored
 from statsmodels.regression.linear_model import OLS
 import numpy as np
+import matplotlib.pyplot as plt
 
 class UnivariateLinearModelAnalysis():
 
     """
     Linear regression analysis with residuals hypothesis tests.
     
-    **Available constructors**
+    **Available constructors:**
 
     UnivariateLinearModelAnalysis(*inputSample, outputSample*)
 
@@ -43,12 +45,12 @@ class UnivariateLinearModelAnalysis():
     -----
     This method automatically :
 
-    - Computes the Box Cox parameter if *boxCox* is True,
-    - Computes the transformed signals if *boxCox* is True or a float,
-    - Builds the univariate linear regression model on the data,
-    - Computes the linear regression parameters for censored data if needed,
-    - Computes the residuals,
-    - Runs all hypothesis tests.
+    - computes the Box Cox parameter if *boxCox* is True,
+    - computes the transformed signals if *boxCox* is True or a float,
+    - builds the univariate linear regression model on the data,
+    - computes the linear regression parameters for censored data if needed,
+    - computes the residuals,
+    - runs all hypothesis tests.
     """
 
     class _Results():
@@ -147,8 +149,8 @@ class UnivariateLinearModelAnalysis():
         # Compute Box Cox if enabled
         if self._boxCox:
             if self._lambdaBoxCox is None:
-                # optimization required
-                self._lambdaBoxCox = computeBoxCox(defects, signals)
+                # optimization required, get optimal lambda and graph
+                self._lambdaBoxCox, self._graphBoxCox = computeBoxCox(defects, signals)
 
             # Transformation of data
             boxCoxTransform = ot.BoxCoxTransform([self._lambdaBoxCox])
@@ -166,13 +168,14 @@ class UnivariateLinearModelAnalysis():
         # Create the X matrix : [1, inputSample]
         X = ot.NumericalSample(defectsSize, [1, 0])
         X[:, 1] = defects
-        algoLinear = OLS(np.array(signals), np.array(X)).fit()
-        self._resultsUnc.intercept = algoLinear.params[0]
-        self._resultsUnc.slope = algoLinear.params[1]
+        self._algoLinear = OLS(np.array(signals), np.array(X)).fit()
+
+        self._resultsUnc.intercept = self._algoLinear.params[0]
+        self._resultsUnc.slope = self._algoLinear.params[1]
         # get standard error estimates (residuals standard deviation)
-        self._resultsUnc.stderr = np.sqrt(algoLinear.scale)
+        self._resultsUnc.stderr = np.sqrt(self._algoLinear.scale)
         # get confidence interval at level 95%
-        self._resultsUnc.confInt = algoLinear.conf_int(0.05)
+        self._resultsUnc.confInt = self._algoLinear.conf_int(0.05)
 
         if self._censored:
             # define initial starting point for MLE optimization
@@ -187,17 +190,18 @@ class UnivariateLinearModelAnalysis():
 
         ############################ Residuals #################################
         # get residuals from algoLinear
-        self._resultsUnc.residuals = ot.NumericalSample(np.vstack(algoLinear.resid))
+        self._resultsUnc.residuals = ot.NumericalSample(np.vstack(self._algoLinear.resid))
         # compute residuals distribution
         self._resultsUnc.resDist = self._resDistFact.build(self._resultsUnc.residuals)
 
         if self._censored:
-            # create linear model function
+            # create linear model function for censored case
             def CensLinModel(x):
                 return self._resultsCens.intercept + self._resultsCens.slope * x
 
             # compute the residuals for the censored case.
-            self._resultsCens.residuals = signals - CensLinModel(defects)
+            self._resultsCens.fittedSignals = CensLinModel(defects)
+            self._resultsCens.residuals = signals - self._resultsCens.fittedSignals
             # compute residuals distribution.
             self._resultsCens.resDist = self._resDistFact.build(self._resultsCens.residuals)
 
@@ -253,7 +257,7 @@ class UnivariateLinearModelAnalysis():
         return testResults
 
 ################################################################################
-########################## Print and saving results ############################
+########################## Print and save results ##############################
 ################################################################################
 
     def printResults(self):
@@ -313,23 +317,23 @@ class UnivariateLinearModelAnalysis():
                         'follow a Normal distribution.'
             ot.Log.Warn(msg[2])
             ot.Log.Flush()
-        # return msg the test with pytest
+        # return msg for the test with pytest
         return msg
 
-    def saveResults(self, pathname):
+    def saveResults(self, name):
         """
         Save all analysis test results in a file.
 
         Parameters
         ----------
-        pathname : string
+        name : string
             Name of the file or full path name.
 
         Notes
         -----
         The file can be saved as a csv file. Separations are made with tabulations.
 
-        If *pathname* is the file name, then it is saved in the current working
+        If *name* is the file name, then it is saved in the current working
         directory.
         """
         regressionResult = '\n'.join(['{}\t{}\t{}'.format(*line) for
@@ -338,7 +342,7 @@ class UnivariateLinearModelAnalysis():
         residualsResult = '\n'.join(['{}\t{}\t{}'.format(*line) for
                                 line in self._dataResiduals])
 
-        with open(pathname, 'w') as fd:
+        with open(name, 'w') as fd:
             fd.write('Linear model analysis results\n\n')
             fd.write(regressionResult)
             fd.write('\n\nResiduals analysis results\n\n')
@@ -420,6 +424,258 @@ class UnivariateLinearModelAnalysis():
             self._dataResiduals[15][2] = round(testResults['BreuschPagan'], n_digits)
             self._dataResiduals[16][2] = round(testResults['HarrisonMcCabe'], n_digits)
             self._dataResiduals[19][2] = round(testResults['DurbinWatson'], n_digits)
+
+
+################################################################################
+############################### graphs #########################################
+################################################################################
+
+    def drawLinearModel(self, model="uncensored", name=None):
+        """
+        Draw the linear regression prediction versus the true data.
+
+        Parameters
+        ----------
+        model : string
+            The linear regression model to be used, either *uncensored* or
+            *censored* if censored threshold were given. Default is *uncensored*.
+        name : string
+            name of the figure to be saved with *transparent* option sets to True
+            and *bbox_inches='tight'*. It can be only the file name or the 
+            full path name. Default is None.
+
+        Returns
+        -------
+        fig : `matplotlib.figure <http://matplotlib.org/api/figure_api.html>`_
+            Matplotlib figure object.
+        ax : `matplotlib.figure <http://matplotlib.org/api/axes_api.html>`_
+            Matplotlib axes object.
+        """
+
+        # Check is the censored model exists when asking for it 
+        if model == "censored" and not self._censored:
+            raise NameError('Linear model for censored data is not available.')
+
+        defects = self._algoLinear.model.exog[:, 1]
+        signals = self._algoLinear.model.endog
+        if model =="censored":
+            fittedSignals = self._resultsCens.fittedSignals
+        else:
+            # get the fitted values from the linear model of statsmodels
+            fittedSignals = self._algoLinear.fittedvalues
+
+        fig, ax = plt.subplots()
+        ax.plot(defects, signals, 'b.', label='Data', ms=9)
+        ax.plot(defects, fittedSignals, 'r-', label='Linear model')
+        ax.set_xlabel('Defects')
+        if model == "censored":
+            ax.set_ylabel('Box Cox (signals)')
+            ax.set_title('Linear regression model for censored data')
+        else:
+            ax.set_ylabel('Signals')
+            ax.set_title('Linear regression model')
+        ax.grid()
+        ax.legend(loc='upper left')
+
+        if name is not None:
+            fig.savefig(name, bbox_inches='tight', transparent=True)
+
+        return fig, ax
+
+
+    def drawResiduals(self, model="uncensored", name=None):
+        """
+        Draw the residuals versus the defect values.
+
+        Parameters
+        ----------
+        model : string
+            The residuals to be used, either *uncensored* or
+            *censored* if censored threshold were given. Default is *uncensored*.
+        name : string
+            name of the figure to be saved with *transparent* option sets to True
+            and *bbox_inches='tight'*. It can be only the file name or the 
+            full path name. Default is None.
+
+        Returns
+        -------
+        fig : `matplotlib.figure <http://matplotlib.org/api/figure_api.html>`_
+            Matplotlib figure object.
+        ax : `matplotlib.figure <http://matplotlib.org/api/axes_api.html>`_
+            Matplotlib axes object.
+        """
+
+        # Check is the censored model exists when asking for it 
+        if model == "censored" and not self._censored:
+            raise NameError('Residuals for censored data is not available.')
+
+        defects = self._algoLinear.model.exog[:, 1]
+        if model =="censored":
+            residuals = self._resultsCens.residuals
+        else:
+            residuals = self._resultsUnc.residuals
+
+        fig, ax = plt.subplots()
+        ax.grid()
+        ax.plot(defects, residuals, 'b.', ms=9)
+        ax.hlines(0, defects.min(), defects.max(), 'r', 'dashed')
+        ax.set_xlabel('Defects')
+        ax.set_ylabel('Residuals dispersion')
+        if model == "censored":
+            ax.set_title('Residuals for censored data')
+        else:
+            ax.set_title('Residuals')
+
+        if name is not None:
+            fig.savefig(name, bbox_inches='tight', transparent=True)
+
+        return fig, ax
+
+    def drawResidualsQQplot(self, model="uncensored", name=None):
+        """
+        Draw the residuals quantile quantile plot with the fitted distribution.
+
+        Parameters
+        ----------
+        model : string
+            The residuals to be used, either *uncensored* or
+            *censored* if censored threshold were given. Default is *uncensored*.
+        name : string
+            name of the figure to be saved with *transparent* option sets to True
+            and *bbox_inches='tight'*. It can be only the file name or the 
+            full path name. Default is None.
+
+        Returns
+        -------
+        fig : `matplotlib.figure <http://matplotlib.org/api/figure_api.html>`_
+            Matplotlib figure object.
+        ax : `matplotlib.figure <http://matplotlib.org/api/axes_api.html>`_
+            Matplotlib axes object.
+        """
+
+        # Check is the censored model exists when asking for it 
+        if model == "censored" and not self._censored:
+            raise NameError('Residuals for censored data is not available.')
+
+        if model =="censored":
+            residuals = self._resultsCens.residuals
+            distribution = self._resultsCens.resDist
+        else:
+            residuals = self._resultsUnc.residuals
+            distribution = self._resultsUnc.resDist
+
+        fig, ax = plt.subplots()
+        graph = ot.VisualTest.DrawQQplot(residuals, distribution)
+        drawables = graph.getDrawables()
+        drawables[1].setPointStyle('dot')
+        drawables[1].setLineWidth(3)
+        drawables[1].setColor('blue')
+        graph = ot.Graph()
+        graph.add(drawables)
+
+        graph.setXTitle('Defects empirical quantiles')
+        graph.setGrid(True)
+        View(graph, axes=[ax])
+        if model == "censored":
+            ax.set_title('QQ-plot of the residuals for censored data')
+        else:
+            ax.set_title('QQ-plot of the residuals ')
+
+        if name is not None:
+            fig.savefig(name, bbox_inches='tight', transparent=True)
+
+        return fig, ax
+
+
+    def drawResidualsDistribution(self, model="uncensored", name=None):
+        """
+        Draw the residuals histogram with the fitted distribution.
+
+        Parameters
+        ----------
+        model : string
+            The residuals to be used, either *uncensored* or
+            *censored* if censored threshold were given. Default is *uncensored*.
+        name : string
+            name of the figure to be saved with *transparent* option sets to True
+            and *bbox_inches='tight'*. It can be only the file name or the 
+            full path name. Default is None.
+
+        Returns
+        -------
+        fig : `matplotlib.figure <http://matplotlib.org/api/figure_api.html>`_
+            Matplotlib figure object.
+        ax : `matplotlib.figure <http://matplotlib.org/api/axes_api.html>`_
+            Matplotlib axes object.
+        """
+
+        # Check is the censored model exists when asking for it 
+        if model == "censored" and not self._censored:
+            raise NameError('Residuals for censored data is not available.')
+
+        if model =="censored":
+            residuals = self._resultsCens.residuals
+            distribution = self._resultsCens.resDist
+        else:
+            residuals = self._resultsUnc.residuals
+            distribution = self._resultsUnc.resDist
+
+        fig, ax = plt.subplots()
+        graphHist = ot.VisualTest.DrawHistogram(residuals)
+        graphPDF = distribution.drawPDF()
+        graphHist.setGrid(True)
+        View(graphHist, axes=[ax], bar_kwargs={'color':'blue','alpha': 0.5, 'label':'Residuals histogram'})
+        View(graphPDF, axes=[ax], plot_kwargs={'label':distribution.__str__()})
+        ax.set_xlabel('Defect realizations')
+        if model == "censored":
+            ax.set_title('Residuals distribution for censored data')
+        else:
+            ax.set_title('Residuals distribution')
+
+        if name is not None:
+            fig.savefig(name, bbox_inches='tight', transparent=True)
+
+        return fig, ax
+
+
+    def drawBoxCoxLikelihood(self, name=None):
+        """
+        Draw the loglikelihood versus the Box Cox parameter.
+
+        Parameters
+        ----------
+        name : string
+            name of the figure to be saved with *transparent* option sets to True
+            and *bbox_inches='tight'*. It can be only the file name or the 
+            full path name. Default is None.
+
+        Returns
+        -------
+        fig : `matplotlib.figure <http://matplotlib.org/api/figure_api.html>`_
+            Matplotlib figure object.
+        ax : `matplotlib.figure <http://matplotlib.org/api/axes_api.html>`_
+            Matplotlib axes object.
+
+        Notes
+        -----
+        This method is available only when the parameter *boxCox* is set to True.
+        """
+
+        # Check is the censored model exists when asking for it 
+        if not self._boxCox:
+            raise Exception('Box Cox transformation of the analysis not enabled.')
+
+        fig, ax = plt.subplots()
+        # get the graph from the method 'computeBoxCox'
+        View(self._graphBoxCox, axes=[ax])
+        ax.set_xlabel('Box Cox parameter')
+        ax.set_ylabel('LogLikelihood')
+        ax.set_title('Loglikelihood versus Box Cox parameter')
+
+        if name is not None:
+            fig.savefig(name, bbox_inches='tight', transparent=True)
+
+        return fig, ax
 
 
 ################################################################################

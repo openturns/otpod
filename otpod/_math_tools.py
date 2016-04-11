@@ -66,7 +66,16 @@ class LinearBoxCoxFactory:
         algo.setOptimizationProblem(ot.BoundConstrainedAlgorithmImplementationResult.MAXIMIZATION)
         algo.run()
         optimalLambda = algo.getResult().getOptimizer()[0]
-        return ot.BoxCoxTransform([optimalLambda])
+
+        # graph
+        optimalLogLikelihood = algo.getResult().getOptimalValue()
+        graph = logLikelihood.draw(0.01 * optimalLambda, 10.0 * optimalLambda)
+        c = ot.Cloud([[optimalLambda, optimalLogLikelihood]])
+        c.setColor("red")
+        c.setPointStyle("circle")
+        graph.add(c)
+
+        return ot.BoxCoxTransform([optimalLambda]), graph
 
 
 ######### computeBoxCox #########
@@ -81,10 +90,10 @@ def computeBoxCox(factors, valuesInit):
 
     # if an affine trend is considered
     myBoxCoxFactory = LinearBoxCoxFactory()
-    myModelTransform = myBoxCoxFactory.build(factors, valuesInit)
+    myModelTransform, graph = myBoxCoxFactory.build(factors, valuesInit)
     lambdaBoxCox = myModelTransform.getLambda()[0]
 
-    return lambdaBoxCox
+    return lambdaBoxCox, graph
 
 
 ######### computeR2 #########

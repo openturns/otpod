@@ -109,7 +109,7 @@
 <dt id="otpod.UnivariateLinearModelAnalysis">
 <em class="property">class </em><code class="descname">UnivariateLinearModelAnalysis</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Linear regression analysis with residuals hypothesis tests.</p>
-<p><strong>Available constructors</strong></p>
+<p><strong>Available constructors:</strong></p>
 <p>UnivariateLinearModelAnalysis(<em>inputSample, outputSample</em>)</p>
 <p>UnivariateLinearModelAnalysis(<em>inputSample, outputSample, noiseThres,
 saturationThres, resDistFact, boxCox</em>)</p>
@@ -150,13 +150,185 @@ Cox transformation is enabled with the given value. Default is False.</p>
 <p class="rubric">Notes</p>
 <p>This method automatically :</p>
 <ul class="simple">
-<li>Computes the Box Cox parameter if <em>boxCox</em> is True,</li>
-<li>Computes the transformed signals if <em>boxCox</em> is True or a float,</li>
-<li>Builds the univariate linear regression model on the data,</li>
-<li>Computes the linear regression parameters for censored data if needed,</li>
-<li>Computes the residuals,</li>
-<li>Runs all hypothesis tests.</li>
+<li>computes the Box Cox parameter if <em>boxCox</em> is True,</li>
+<li>computes the transformed signals if <em>boxCox</em> is True or a float,</li>
+<li>builds the univariate linear regression model on the data,</li>
+<li>computes the linear regression parameters for censored data if needed,</li>
+<li>computes the residuals,</li>
+<li>runs all hypothesis tests.</li>
 </ul>
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.drawBoxCoxLikelihood">
+<code class="descname">drawBoxCoxLikelihood</code><span class="sig-paren">(</span><em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.drawBoxCoxLikelihood" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw the loglikelihood versus the Box Cox parameter.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : string</p>
+<blockquote>
+<div><p>name of the figure to be saved with <em>transparent</em> option sets to True
+and <em>bbox_inches=&#8217;tight&#8217;</em>. It can be only the file name or the 
+full path name. Default is None.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fig</strong> : <a class="reference external" href="http://matplotlib.org/api/figure_api.html">matplotlib.figure</a></p>
+<blockquote>
+<div><p>Matplotlib figure object.</p>
+</div></blockquote>
+<p><strong>ax</strong> : <a class="reference external" href="http://matplotlib.org/api/axes_api.html">matplotlib.figure</a></p>
+<blockquote class="last">
+<div><p>Matplotlib axes object.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>This method is available only when the parameter <em>boxCox</em> is set to True.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.drawLinearModel">
+<code class="descname">drawLinearModel</code><span class="sig-paren">(</span><em>model='uncensored'</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.drawLinearModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw the linear regression prediction versus the true data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>model</strong> : string</p>
+<blockquote>
+<div><p>The linear regression model to be used, either <em>uncensored</em> or
+<em>censored</em> if censored threshold were given. Default is <em>uncensored</em>.</p>
+</div></blockquote>
+<p><strong>name</strong> : string</p>
+<blockquote>
+<div><p>name of the figure to be saved with <em>transparent</em> option sets to True
+and <em>bbox_inches=&#8217;tight&#8217;</em>. It can be only the file name or the 
+full path name. Default is None.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fig</strong> : <a class="reference external" href="http://matplotlib.org/api/figure_api.html">matplotlib.figure</a></p>
+<blockquote>
+<div><p>Matplotlib figure object.</p>
+</div></blockquote>
+<p><strong>ax</strong> : <a class="reference external" href="http://matplotlib.org/api/axes_api.html">matplotlib.figure</a></p>
+<blockquote class="last">
+<div><p>Matplotlib axes object.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.drawResiduals">
+<code class="descname">drawResiduals</code><span class="sig-paren">(</span><em>model='uncensored'</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.drawResiduals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw the residuals versus the defect values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>model</strong> : string</p>
+<blockquote>
+<div><p>The residuals to be used, either <em>uncensored</em> or
+<em>censored</em> if censored threshold were given. Default is <em>uncensored</em>.</p>
+</div></blockquote>
+<p><strong>name</strong> : string</p>
+<blockquote>
+<div><p>name of the figure to be saved with <em>transparent</em> option sets to True
+and <em>bbox_inches=&#8217;tight&#8217;</em>. It can be only the file name or the 
+full path name. Default is None.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fig</strong> : <a class="reference external" href="http://matplotlib.org/api/figure_api.html">matplotlib.figure</a></p>
+<blockquote>
+<div><p>Matplotlib figure object.</p>
+</div></blockquote>
+<p><strong>ax</strong> : <a class="reference external" href="http://matplotlib.org/api/axes_api.html">matplotlib.figure</a></p>
+<blockquote class="last">
+<div><p>Matplotlib axes object.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.drawResidualsDistribution">
+<code class="descname">drawResidualsDistribution</code><span class="sig-paren">(</span><em>model='uncensored'</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.drawResidualsDistribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw the residuals histogram with the fitted distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>model</strong> : string</p>
+<blockquote>
+<div><p>The residuals to be used, either <em>uncensored</em> or
+<em>censored</em> if censored threshold were given. Default is <em>uncensored</em>.</p>
+</div></blockquote>
+<p><strong>name</strong> : string</p>
+<blockquote>
+<div><p>name of the figure to be saved with <em>transparent</em> option sets to True
+and <em>bbox_inches=&#8217;tight&#8217;</em>. It can be only the file name or the 
+full path name. Default is None.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fig</strong> : <a class="reference external" href="http://matplotlib.org/api/figure_api.html">matplotlib.figure</a></p>
+<blockquote>
+<div><p>Matplotlib figure object.</p>
+</div></blockquote>
+<p><strong>ax</strong> : <a class="reference external" href="http://matplotlib.org/api/axes_api.html">matplotlib.figure</a></p>
+<blockquote class="last">
+<div><p>Matplotlib axes object.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.drawResidualsQQplot">
+<code class="descname">drawResidualsQQplot</code><span class="sig-paren">(</span><em>model='uncensored'</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.drawResidualsQQplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw the residuals quantile quantile plot with the fitted distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>model</strong> : string</p>
+<blockquote>
+<div><p>The residuals to be used, either <em>uncensored</em> or
+<em>censored</em> if censored threshold were given. Default is <em>uncensored</em>.</p>
+</div></blockquote>
+<p><strong>name</strong> : string</p>
+<blockquote>
+<div><p>name of the figure to be saved with <em>transparent</em> option sets to True
+and <em>bbox_inches=&#8217;tight&#8217;</em>. It can be only the file name or the 
+full path name. Default is None.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fig</strong> : <a class="reference external" href="http://matplotlib.org/api/figure_api.html">matplotlib.figure</a></p>
+<blockquote>
+<div><p>Matplotlib figure object.</p>
+</div></blockquote>
+<p><strong>ax</strong> : <a class="reference external" href="http://matplotlib.org/api/axes_api.html">matplotlib.figure</a></p>
+<blockquote class="last">
+<div><p>Matplotlib axes object.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="otpod.UnivariateLinearModelAnalysis.getAndersonDarlingPValue">
 <code class="descname">getAndersonDarlingPValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getAndersonDarlingPValue" title="Permalink to this definition">¶</a></dt>
@@ -423,13 +595,13 @@ regression model.</p>
 
 <dl class="method">
 <dt id="otpod.UnivariateLinearModelAnalysis.saveResults">
-<code class="descname">saveResults</code><span class="sig-paren">(</span><em>pathname</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.saveResults" title="Permalink to this definition">¶</a></dt>
+<code class="descname">saveResults</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.saveResults" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save all analysis test results in a file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>pathname</strong> : string</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : string</p>
 <blockquote class="last">
 <div><p>Name of the file or full path name.</p>
 </div></blockquote>
@@ -439,7 +611,7 @@ regression model.</p>
 </table>
 <p class="rubric">Notes</p>
 <p>The file can be saved as a csv file. Separations are made with tabulations.</p>
-<p>If <em>pathname</em> is the file name, then it is saved in the current working
+<p>If <em>name</em> is the file name, then it is saved in the current working
 directory.</p>
 </dd></dl>
 
@@ -471,7 +643,7 @@ directory.</p>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, moi.
-      Last updated on Apr 08, 2016.
+      Last updated on Apr 11, 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
     </div>
   </body>

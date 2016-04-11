@@ -3,4 +3,7 @@ dist/*
 otpod.egg-info/*
 doc/build/latex/*
 doc/build/doctrees/*
+doc/build/html/.doctrees/*
 !doc/build/latex/*.pdf
+
+*.directory

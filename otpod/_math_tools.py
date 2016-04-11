@@ -6,6 +6,8 @@ __all__ = []
 import openturns as ot
 import math as m
 import numpy as np
+from statsmodels.regression.linear_model import OLS
+from scipy.optimize import fmin
 
 
 
@@ -69,7 +71,7 @@ class LinearBoxCoxFactory:
 
 ######### computeBoxCox #########
 # This function applies the Box Cox transformation on the data.
-def computeBoxCox(factors, valuesInit, detection=None, lambdaBoxCox=None):
+def computeBoxCox(factors, valuesInit):
     # if no affine trend is considered
     # if lambdaBoxCox is None:
     #     myBoxCoxFactory = BoxCoxFactory()
@@ -78,21 +80,20 @@ def computeBoxCox(factors, valuesInit, detection=None, lambdaBoxCox=None):
     #     myModelTransform = ot.BoxCoxTransform([lambdaBoxCox])
 
     # if an affine trend is considered
-    if lambdaBoxCox is None:
-        myBoxCoxFactory = LinearBoxCoxFactory()
-        myModelTransform = myBoxCoxFactory.build(factors, valuesInit)
-        lambdaBoxCox = myModelTransform.getLambda()[0]
-    else:
-        myModelTransform = ot.BoxCoxTransform([lambdaBoxCox])
+    myBoxCoxFactory = LinearBoxCoxFactory()
+    myModelTransform = myBoxCoxFactory.build(factors, valuesInit)
+    lambdaBoxCox = myModelTransform.getLambda()[0]
 
-    valuesBC = myModelTransform(valuesInit)
-    valuesBC.setDescription(['BoxCox('+ valuesInit.getDescription()[0] + ')'])
-    
-    if detection is not None:
-        detectionBoxCox = myModelTransform([detection])[0]
-        return lambdaBoxCox, valuesBC, detectionBoxCox
-    else:
-        return lambdaBoxCox, valuesBC
+    return lambdaBoxCox
+
+
+######### computeR2 #########
+# This function the R2 of the linear regression model
+def computeR2(signals, residuals):
+    R2 = 1 - residuals.computeVariance()[0] / \
+         (signals - signals.computeMean()).computeVariance()[0]
+    return R2
+
 
 ######### computeZeroMeanTest #########
 # This function tests if the residuals have a zero mean
@@ -180,10 +181,110 @@ def computeDurbinWatsonTest(x, residuals, hypothesis="Equal"):
     # compute the pvalue with respect to hypothesis
     # Default pvalue is for hypothesis == "Equal"
     # complementary CDF of standard normal distribution
-    pValue = 2 * ot.DistFunc.pNormal((dw - dmean) / np.sqrt(dvar), True);
+    pValue = 2 * ot.DistFunc.pNormal(np.abs(dw - dmean) / np.sqrt(dvar), True)
     if hypothesis == "Less":
-        pValue = 1 - pValue / 2;
+        pValue = 1 - pValue / 2
     elif hypothesis == "Greater":
-        pValue = pValue / 2;
+        pValue = pValue / 2
 
     return pValue
+
+
+def censureFilter(defects, signals, noiseThres, saturationThres):
+    """
+    Sort defect sizes with respect to the signal if it is censored or not
+    """
+    # transform in numpy.array
+    defects = np.array(defects)
+    signals = np.array(signals)
+    # defects in the uncensored area
+    defectsUnc = defects[np.logical_and(signals > noiseThres, 
+                                        signals < saturationThres)]
+    # defects in the noisy area
+    defectsNoise = defects[signals <= noiseThres]
+    # defects in the saturation area
+    defectsSat = defects[signals >= saturationThres]
+    # signals in the uncensored area
+    signalsUnc = signals[np.logical_and(signals > noiseThres,
+                                        signals < saturationThres)]
+
+    # transform in numericalSample
+    defectsUnc = ot.NumericalSample(np.atleast_2d(defectsUnc).T)
+    defectsNoise = ot.NumericalSample(np.atleast_2d(defectsNoise).T)
+    defectsSat = ot.NumericalSample(np.atleast_2d(defectsSat).T)
+    signalsUnc = ot.NumericalSample(np.atleast_2d(signalsUnc).T)
+
+    return defectsUnc, defectsNoise, defectsSat, signalsUnc
+
+
+
+######### computeLinearParametersCensored #########
+# This function compute the linear regression parameters with censored data
+# using the MLE function (from Berens 1988 article)
+def MLE(X, defects, defectsNoise, defectsSat, signals, noiseThres,
+        saturationThres):
+    '''
+    Compute - log likelihood on censored data.
+    Parameters:
+    -----------
+    X : Contains [intercept, slope, sigma_residuals]
+    defects : vector of the defects in the uncensored area
+    defectsNoise : vector of the defects in the noisy area (low censored data)
+    defectsSat : vector of the defects in the saturation area
+    signals : vector of the signals in the uncensored area
+    noiseThres : noise threshold
+    saturationThres : saturation threshold
+    '''
+    b0 = X[0]
+    b1 = X[1]
+    s = X[2]
+
+    # uncensored area
+    MLE = len(defects) * np.log(s * np.sqrt(2. * np.pi))
+    MLE += 1.0 / (2 * s**2) * np.sum((signals - (b0 + b1 * defects))**2)
+
+    # noisy area
+    Znoise = (noiseThres - (b0 + b1 * defectsNoise)) / s
+    cdfZnoise = np.array([ot.DistFunc.pNormal(Znoise[i][0]) for i in range(len(Znoise))])
+    MLE += - np.sum(np.log(cdfZnoise))
+
+    # saturation area
+    Zsat = (saturationThres - (b0 + b1 * defectsSat)) / s
+    cdfZsat = np.array([ot.DistFunc.pNormal(Zsat[i][0]) for i in range(len(Zsat))])
+    MLE += - np.sum(np.log(1. - cdfZsat))
+
+    if np.isnan(MLE):
+        MLE = np.inf
+    return MLE
+
+def computeLinearParametersCensored(initialStartMLE, defects, defectsNoise,
+                            defectsSat, signals, noiseThres, saturationThres):
+    """
+    Compute the linear regression parameters using the MLE function taking
+    into account the censored data.
+    """
+
+    defects = np.array(defects)
+    defectsNoise = np.array(defectsNoise)
+    defectsSat = np.array(defectsSat)
+    signals = np.array(signals)
+
+    func = lambda x: MLE(x, defects, defectsNoise, defectsSat,
+                              signals, noiseThres, saturationThres)
+
+    testMLE = func(initialStartMLE)
+    if testMLE == np.inf:
+        iteration = 0
+        while testMLE == np.inf and iteration < 100:
+            iteration += 1
+            initialStartMLE = np.random.randn(3)
+            testMLE = func(initialStartMLE)
+        if iteration == 100:
+            raise Exception('Maximum Likelihood optimization for censored '+\
+                            'data : cannot find initial starting point.')
+    res = fmin(func, initialStartMLE, disp=0, full_output=1, maxiter=500)
+    if res[4] == 2:
+        ot.Log.Show(ot.Log.WARN)
+        ot.Log.Warn('Maximum Likelihood optimization for censored data : '+\
+                    'maximum number of iterations reached.')
+    return res[0]

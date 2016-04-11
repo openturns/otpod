@@ -1,13 +1,45 @@
 \begin{theindex}
 \def\bigletter#1{{\Large\sffamily#1}\nopagebreak\vspace{1mm}}
 
+  \bigletter D
+  \item drawBoxCoxLikelihood() (UnivariateLinearModelAnalysis method), \hyperpage{2}
+  \item drawLinearModel() (UnivariateLinearModelAnalysis method), \hyperpage{3}
+  \item drawResiduals() (UnivariateLinearModelAnalysis method), \hyperpage{3}
+  \item drawResidualsDistribution() (UnivariateLinearModelAnalysis method), \hyperpage{3}
+  \item drawResidualsQQplot() (UnivariateLinearModelAnalysis method), \hyperpage{4}
+
+  \indexspace
+  \bigletter G
+  \item getAndersonDarlingPValue() (UnivariateLinearModelAnalysis method), \hyperpage{4}
+  \item getBoxCoxParameter() (UnivariateLinearModelAnalysis method), \hyperpage{4}
+  \item getBreuschPaganPValue() (UnivariateLinearModelAnalysis method), \hyperpage{4}
+  \item getCramerVonMisesPValue() (UnivariateLinearModelAnalysis method), \hyperpage{4}
+  \item getDurbinWatsonPValue() (UnivariateLinearModelAnalysis method), \hyperpage{4}
+  \item getHarrisonMcCabePValue() (UnivariateLinearModelAnalysis method), \hyperpage{4}
+  \item getIntercept() (UnivariateLinearModelAnalysis method), \hyperpage{4}
+  \item getKolmogorovPValue() (UnivariateLinearModelAnalysis method), \hyperpage{5}
+  \item getR2() (UnivariateLinearModelAnalysis method), \hyperpage{5}
+  \item getResiduals() (UnivariateLinearModelAnalysis method), \hyperpage{5}
+  \item getResidualsDistribution() (UnivariateLinearModelAnalysis method), \hyperpage{5}
+  \item getSlope() (UnivariateLinearModelAnalysis method), \hyperpage{5}
+  \item getStandardError() (UnivariateLinearModelAnalysis method), \hyperpage{5}
+  \item getZeroMeanPValue() (UnivariateLinearModelAnalysis method), \hyperpage{5}
+
+  \indexspace
+  \bigletter P
+  \item printResults() (UnivariateLinearModelAnalysis method), \hyperpage{5}
+
+  \indexspace
   \bigletter R
-  \item run() (UnivariateLinearModelAnalysis method), \hyperpage{1}
-  \item run() (UnivariateLinearRegressionPOD method), \hyperpage{2}
+  \item run() (UnivariateLinearRegressionPOD method), \hyperpage{6}
+
+  \indexspace
+  \bigletter S
+  \item saveResults() (UnivariateLinearModelAnalysis method), \hyperpage{5}
 
   \indexspace
   \bigletter U
   \item UnivariateLinearModelAnalysis (class in otpod), \hyperpage{1}
-  \item UnivariateLinearRegressionPOD (class in otpod), \hyperpage{2}
+  \item UnivariateLinearRegressionPOD (class in otpod), \hyperpage{6}
 
 \end{theindex}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.2.23)  6 APR 2016 15:14
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.2.23)  11 APR 2016 16:25
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -967,41 +967,83 @@ Underfull \hbox (badness 10000) in paragraph at lines 213--215
 ult is
  []
 
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <9> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 225.
 [1
 
 
 ]
-LaTeX Font Info:    Try loading font information for TS1+ptm on input line 231.
+LaTeX Font Info:    Try loading font information for TS1+ptm on input line 229.
 
  (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
-) [2]
+) [2] [3] [4]
+[5] [6]
 Chapter 2.
-(./otpoddoc.ind [3
+(./otpoddoc.ind [7
 
-] [4
+] [8
 
-] [5
+]
+Underfull \hbox (badness 10000) in paragraph at lines 6--7
+[]\T1/ptm/m/n/10 drawLinearModel() (Uni-vari-ate-Lin-ear-Mod-e-l-Anal-y-sis
+ []
 
+
+Underfull \hbox (badness 10000) in paragraph at lines 7--8
+[]\T1/ptm/m/n/10 drawResiduals() (Uni-vari-ate-Lin-ear-Mod-e-l-Anal-y-sis
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 8--9
+[]\T1/ptm/m/n/10 drawResidualsDistribution() (Uni-vari-ate-Lin-ear-Mod-e-l-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--14
+[]\T1/ptm/m/n/10 getAndersonDarlingPValue() (Uni-vari-ate-Lin-ear-Mod-e-l-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 16--17
+[]\T1/ptm/m/n/10 getCramerVonMisesPValue() (Uni-vari-ate-Lin-ear-Mod-e-l-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 18--19
+[]\T1/ptm/m/n/10 getHarrisonMcCabePValue() (Uni-vari-ate-Lin-ear-Mod-e-l-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 25--26
+[]\T1/ptm/m/n/10 getStandardError() (Uni-vari-ate-Lin-ear-Mod-e-l-Anal-y-sis
+ []
+
+
+Underfull \hbox (badness 7291) in paragraph at lines 26--27
+[]\T1/ptm/m/n/10 getZeroMeanPValue() (Uni-vari-ate-Lin-ear-Mod-e-l-Anal-y-sis
+ []
+
+[9
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 334.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 334.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 944.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 944.
  (./otpoddoc.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 334.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 334.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 944.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 944.
 Package rerunfilecheck Info: File `otpoddoc.out' has not changed.
-(rerunfilecheck)             Checksum: 6E212210204067078459D2A681678B38;262.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 334.
+(rerunfilecheck)             Checksum: FB6EEE78D6F3C559EF682222B034E378;391.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 944.
  ) 
 Here is how much of TeX's memory you used:
- 9387 strings out of 494999
- 132055 string characters out of 6180228
- 226880 words of memory out of 5000000
- 12302 multiletter control sequences out of 15000+600000
- 58695 words of font info for 65 fonts, out of 8000000 for 9000
+ 9455 strings out of 494999
+ 134666 string characters out of 6180228
+ 235630 words of memory out of 5000000
+ 12335 multiletter control sequences out of 15000+600000
+ 64805 words of font info for 69 fonts, out of 8000000 for 9000
  15 hyphenation exceptions out of 8191
- 36i,11n,45p,275b,505s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,11n,45p,307b,669s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/urw/courier/ucrb8a.pfb></usr/share/texlive/texmf-dist/
 fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/u
@@ -1011,10 +1053,10 @@ uhvb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvbo8a.pfb>
 texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-d
 ist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1
 /urw/times/utmri8a.pfb>
-Output written on otpoddoc.pdf (9 pages, 94908 bytes).
+Output written on otpoddoc.pdf (13 pages, 119484 bytes).
 PDF statistics:
- 141 PDF objects out of 1000 (max. 8388607)
- 114 compressed objects within 2 object streams
- 27 named destinations out of 1000 (max. 500000)
- 61 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 266 PDF objects out of 1000 (max. 8388607)
+ 234 compressed objects within 3 object streams
+ 58 named destinations out of 1000 (max. 500000)
+ 77 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -21,12 +21,12 @@
 
 
 \title{otpod Documentation}
-\date{April 06, 2016}
+\date{April 11, 2016}
 \release{0.0.1}
 \author{Antoine Dumas}
 \newcommand{\sphinxlogo}{}
 \renewcommand{\releasename}{Release}
-\setcounter{tocdepth}{1}
+\setcounter{tocdepth}{2}
 \makeindex
 
 \makeatletter
@@ -175,7 +175,7 @@ Linear regression analysis with residuals hypothesis tests.
 \phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis}\pysiglinewithargsret{\strong{class }\bfcode{UnivariateLinearModelAnalysis}}{\emph{*args}}{}
 Linear regression analysis with residuals hypothesis tests.
 
-\textbf{Available constructors}
+\textbf{Available constructors:}
 
 UnivariateLinearModelAnalysis(\emph{inputSample, outputSample})
 
@@ -222,28 +222,615 @@ Cox transformation is enabled with the given value. Default is False.
 \end{quote}
 
 \end{description}\end{quote}
-\index{run() (UnivariateLinearModelAnalysis method)}
+\paragraph{Notes}
 
-\begin{fulllineitems}
-\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.run}\pysiglinewithargsret{\bfcode{run}}{}{}
-Run the analysis :
+This method automatically :
 \begin{itemize}
 \item {} 
-Compute the Box Cox parameter if boxCox is True,
+computes the Box Cox parameter if \emph{boxCox} is True,
 
 \item {} 
-Compute the transformed signals if boxCox is enabled,
+computes the transformed signals if \emph{boxCox} is True or a float,
 
 \item {} 
-Build the univariate linear regression model on the data,
+builds the univariate linear regression model on the data,
 
 \item {} 
-Compute the residuals,
+computes the linear regression parameters for censored data if needed,
 
 \item {} 
-Run all hypothesis tests.
+computes the residuals,
+
+\item {} 
+runs all hypothesis tests.
 
 \end{itemize}
+\paragraph{Methods}
+
+\begin{longtable}{ll}
+\hline
+\endfirsthead
+
+\multicolumn{2}{c}%
+{{\textsf{\tablename\ \thetable{} -- continued from previous page}}} \\
+\hline
+\endhead
+
+\hline \multicolumn{2}{|r|}{{\textsf{Continued on next page}}} \\ \hline
+\endfoot
+
+\endlastfoot
+
+
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.drawBoxCoxLikelihood]{\emph{\code{drawBoxCoxLikelihood}}}}({[}name{]})
+ & 
+Draw the loglikelihood versus the Box Cox parameter.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.drawLinearModel]{\emph{\code{drawLinearModel}}}}({[}model, name{]})
+ & 
+Draw the linear regression prediction versus the true data.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.drawResiduals]{\emph{\code{drawResiduals}}}}({[}model, name{]})
+ & 
+Draw the residuals versus the defect values.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.drawResidualsDistribution]{\emph{\code{drawResidualsDistribution}}}}({[}model, name{]})
+ & 
+Draw the residuals histogram with the fitted distribution.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.drawResidualsQQplot]{\emph{\code{drawResidualsQQplot}}}}({[}model, name{]})
+ & 
+Draw the residuals QQ plot with the fitted distribution.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getAndersonDarlingPValue]{\emph{\code{getAndersonDarlingPValue}}}}()
+ & 
+Accessor to the Anderson Darling test p-value.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getBoxCoxParameter]{\emph{\code{getBoxCoxParameter}}}}()
+ & 
+Accessor to the Box Cox parameter.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getBreuschPaganPValue]{\emph{\code{getBreuschPaganPValue}}}}()
+ & 
+Accessor to the Breusch Pagan test p-value.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getCramerVonMisesPValue]{\emph{\code{getCramerVonMisesPValue}}}}()
+ & 
+Accessor to the Cramer Von Mises test p-value.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getDurbinWatsonPValue]{\emph{\code{getDurbinWatsonPValue}}}}()
+ & 
+Accessor to the Durbin Watson test p-value.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getHarrisonMcCabePValue]{\emph{\code{getHarrisonMcCabePValue}}}}()
+ & 
+Accessor to the Harrison McCabe test p-value.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getIntercept]{\emph{\code{getIntercept}}}}()
+ & 
+Accessor to the intercept of the linear regression model.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getKolmogorovPValue]{\emph{\code{getKolmogorovPValue}}}}()
+ & 
+Accessor to the Kolmogorov test p-value.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getR2]{\emph{\code{getR2}}}}()
+ & 
+Accessor to the R2 value.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getResiduals]{\emph{\code{getResiduals}}}}()
+ & 
+Accessor to the residuals.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getResidualsDistribution]{\emph{\code{getResidualsDistribution}}}}()
+ & 
+Accessor to the residuals distribution.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getSlope]{\emph{\code{getSlope}}}}()
+ & 
+Accessor to the slope of the linear regression model.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getStandardError]{\emph{\code{getStandardError}}}}()
+ & 
+Accessor to the standard error of the estimate.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getZeroMeanPValue]{\emph{\code{getZeroMeanPValue}}}}()
+ & 
+Accessor to the Zero Mean test p-value.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.printResults]{\emph{\code{printResults}}}}()
+ & 
+Print results of the linear analysis.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.saveResults]{\emph{\code{saveResults}}}}(name)
+ & 
+Save all analysis test results in a file.
+\\
+\hline\end{longtable}
+
+\index{drawBoxCoxLikelihood() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.drawBoxCoxLikelihood}\pysiglinewithargsret{\bfcode{drawBoxCoxLikelihood}}{\emph{name=None}}{}
+Draw the loglikelihood versus the Box Cox parameter.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\textbf{name} : string
+\begin{quote}
+
+name of the figure to be saved with \emph{transparent} option sets to True
+and \emph{bbox\_inches='tight'}. It can be only the file name or the 
+full path name. Default is None.
+\end{quote}
+
+\item[{Returns}] \leavevmode
+\textbf{fig} : \href{http://matplotlib.org/api/figure\_api.html}{matplotlib.figure}
+\begin{quote}
+
+Matplotlib figure object.
+\end{quote}
+
+\textbf{ax} : \href{http://matplotlib.org/api/axes\_api.html}{matplotlib.axes}
+\begin{quote}
+
+Matplotlib axes object.
+\end{quote}
+
+\end{description}\end{quote}
+\paragraph{Notes}
+
+This method is available only when the parameter \emph{boxCox} is set to True.
+
+\end{fulllineitems}
+
+\index{drawLinearModel() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.drawLinearModel}\pysiglinewithargsret{\bfcode{drawLinearModel}}{\emph{model='uncensored'}, \emph{name=None}}{}
+Draw the linear regression prediction versus the true data.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\textbf{model} : string
+\begin{quote}
+
+The linear regression model to be used, either \emph{uncensored} or
+\emph{censored} if censored threshold were given. Default is \emph{uncensored}.
+\end{quote}
+
+\textbf{name} : string
+\begin{quote}
+
+name of the figure to be saved with \emph{transparent} option sets to True
+and \emph{bbox\_inches='tight'}. It can be only the file name or the 
+full path name. Default is None.
+\end{quote}
+
+\item[{Returns}] \leavevmode
+\textbf{fig} : \href{http://matplotlib.org/api/figure\_api.html}{matplotlib.figure}
+\begin{quote}
+
+Matplotlib figure object.
+\end{quote}
+
+\textbf{ax} : \href{http://matplotlib.org/api/axes\_api.html}{matplotlib.axes}
+\begin{quote}
+
+Matplotlib axes object.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{drawResiduals() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.drawResiduals}\pysiglinewithargsret{\bfcode{drawResiduals}}{\emph{model='uncensored'}, \emph{name=None}}{}
+Draw the residuals versus the defect values.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\textbf{model} : string
+\begin{quote}
+
+The residuals to be used, either \emph{uncensored} or
+\emph{censored} if censored threshold were given. Default is \emph{uncensored}.
+\end{quote}
+
+\textbf{name} : string
+\begin{quote}
+
+name of the figure to be saved with \emph{transparent} option sets to True
+and \emph{bbox\_inches='tight'}. It can be only the file name or the 
+full path name. Default is None.
+\end{quote}
+
+\item[{Returns}] \leavevmode
+\textbf{fig} : \href{http://matplotlib.org/api/figure\_api.html}{matplotlib.figure}
+\begin{quote}
+
+Matplotlib figure object.
+\end{quote}
+
+\textbf{ax} : \href{http://matplotlib.org/api/axes\_api.html}{matplotlib.axes}
+\begin{quote}
+
+Matplotlib axes object.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{drawResidualsDistribution() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.drawResidualsDistribution}\pysiglinewithargsret{\bfcode{drawResidualsDistribution}}{\emph{model='uncensored'}, \emph{name=None}}{}
+Draw the residuals histogram with the fitted distribution.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\textbf{model} : string
+\begin{quote}
+
+The residuals to be used, either \emph{uncensored} or
+\emph{censored} if censored threshold were given. Default is \emph{uncensored}.
+\end{quote}
+
+\textbf{name} : string
+\begin{quote}
+
+name of the figure to be saved with \emph{transparent} option sets to True
+and \emph{bbox\_inches='tight'}. It can be only the file name or the 
+full path name. Default is None.
+\end{quote}
+
+\item[{Returns}] \leavevmode
+\textbf{fig} : \href{http://matplotlib.org/api/figure\_api.html}{matplotlib.figure}
+\begin{quote}
+
+Matplotlib figure object.
+\end{quote}
+
+\textbf{ax} : \href{http://matplotlib.org/api/axes\_api.html}{matplotlib.axes}
+\begin{quote}
+
+Matplotlib axes object.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{drawResidualsQQplot() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.drawResidualsQQplot}\pysiglinewithargsret{\bfcode{drawResidualsQQplot}}{\emph{model='uncensored'}, \emph{name=None}}{}
+Draw the residuals QQ plot with the fitted distribution.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\textbf{model} : string
+\begin{quote}
+
+The residuals to be used, either \emph{uncensored} or
+\emph{censored} if censored threshold were given. Default is \emph{uncensored}.
+\end{quote}
+
+\textbf{name} : string
+\begin{quote}
+
+name of the figure to be saved with \emph{transparent} option sets to True
+and \emph{bbox\_inches='tight'}. It can be only the file name or the 
+full path name. Default is None.
+\end{quote}
+
+\item[{Returns}] \leavevmode
+\textbf{fig} : \href{http://matplotlib.org/api/figure\_api.html}{matplotlib.figure}
+\begin{quote}
+
+Matplotlib figure object.
+\end{quote}
+
+\textbf{ax} : \href{http://matplotlib.org/api/axes\_api.html}{matplotlib.axes}
+\begin{quote}
+
+Matplotlib axes object.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getAndersonDarlingPValue() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getAndersonDarlingPValue}\pysiglinewithargsret{\bfcode{getAndersonDarlingPValue}}{}{}
+Accessor to the Anderson Darling test p-value.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{pValue} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalPoint.html\#openturns.NumericalPoint}{\code{openturns.NumericalPoint}}
+\begin{quote}
+
+Either the p-value for the uncensored case or for both cases.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getBoxCoxParameter() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getBoxCoxParameter}\pysiglinewithargsret{\bfcode{getBoxCoxParameter}}{}{}
+Accessor to the Box Cox parameter.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{lambdaBoxCox} : float
+\begin{quote}
+
+The Box Cox parameter used to transform the data. If the transformation
+is not enabled None is returned.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getBreuschPaganPValue() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getBreuschPaganPValue}\pysiglinewithargsret{\bfcode{getBreuschPaganPValue}}{}{}
+Accessor to the Breusch Pagan test p-value.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{pValue} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalPoint.html\#openturns.NumericalPoint}{\code{openturns.NumericalPoint}}
+\begin{quote}
+
+Either the p-value for the uncensored case or for both cases.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getCramerVonMisesPValue() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getCramerVonMisesPValue}\pysiglinewithargsret{\bfcode{getCramerVonMisesPValue}}{}{}
+Accessor to the Cramer Von Mises test p-value.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{pValue} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalPoint.html\#openturns.NumericalPoint}{\code{openturns.NumericalPoint}}
+\begin{quote}
+
+Either the p-value for the uncensored case or for both cases.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getDurbinWatsonPValue() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getDurbinWatsonPValue}\pysiglinewithargsret{\bfcode{getDurbinWatsonPValue}}{}{}
+Accessor to the Durbin Watson test p-value.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{pValue} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalPoint.html\#openturns.NumericalPoint}{\code{openturns.NumericalPoint}}
+\begin{quote}
+
+Either the p-value for the uncensored case or for both cases.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getHarrisonMcCabePValue() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getHarrisonMcCabePValue}\pysiglinewithargsret{\bfcode{getHarrisonMcCabePValue}}{}{}
+Accessor to the Harrison McCabe test p-value.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{pValue} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalPoint.html\#openturns.NumericalPoint}{\code{openturns.NumericalPoint}}
+\begin{quote}
+
+Either the p-value for the uncensored case or for both cases.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getIntercept() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getIntercept}\pysiglinewithargsret{\bfcode{getIntercept}}{}{}
+Accessor to the intercept of the linear regression model.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{intercept} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalPoint.html\#openturns.NumericalPoint}{\code{openturns.NumericalPoint}}
+\begin{quote}
+
+The intercept parameter for the uncensored and censored (if so) linear
+regression model.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getKolmogorovPValue() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getKolmogorovPValue}\pysiglinewithargsret{\bfcode{getKolmogorovPValue}}{}{}
+Accessor to the Kolmogorov test p-value.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{pValue} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalPoint.html\#openturns.NumericalPoint}{\code{openturns.NumericalPoint}}
+\begin{quote}
+
+Either the p-value for the uncensored case or for both cases.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getR2() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getR2}\pysiglinewithargsret{\bfcode{getR2}}{}{}
+Accessor to the R2 value.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{R2} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalPoint.html\#openturns.NumericalPoint}{\code{openturns.NumericalPoint}}
+\begin{quote}
+
+Either the R2 for the uncensored case or for both cases.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getResiduals() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getResiduals}\pysiglinewithargsret{\bfcode{getResiduals}}{}{}
+Accessor to the residuals.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{residuals} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalSample.html\#openturns.NumericalSample}{\code{openturns.NumericalSample}}
+\begin{quote}
+
+The residuals computed from the uncensored and censored linear
+regression model. The first column corresponds with the uncensored case.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getResidualsDistribution() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getResidualsDistribution}\pysiglinewithargsret{\bfcode{getResidualsDistribution}}{}{}
+Accessor to the residuals distribution.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{distribution} : list of \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.Distribution.html\#openturns.Distribution}{\code{openturns.Distribution}}
+\begin{quote}
+
+The fitted distribution on the residuals, computed in the uncensored
+and censored (if so) case.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getSlope() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getSlope}\pysiglinewithargsret{\bfcode{getSlope}}{}{}
+Accessor to the slope of the linear regression model.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{slope} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalPoint.html\#openturns.NumericalPoint}{\code{openturns.NumericalPoint}}
+\begin{quote}
+
+The slope parameter for the uncensored and censored (if so) linear
+regression model.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getStandardError() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getStandardError}\pysiglinewithargsret{\bfcode{getStandardError}}{}{}
+Accessor to the standard error of the estimate.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{stderr} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalPoint.html\#openturns.NumericalPoint}{\code{openturns.NumericalPoint}}
+\begin{quote}
+
+The standard error of the estimate for the uncensored and censored
+(if so) linear regression model.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getZeroMeanPValue() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getZeroMeanPValue}\pysiglinewithargsret{\bfcode{getZeroMeanPValue}}{}{}
+Accessor to the Zero Mean test p-value.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{pValue} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalPoint.html\#openturns.NumericalPoint}{\code{openturns.NumericalPoint}}
+\begin{quote}
+
+Either the p-value for the uncensored case or for both cases.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{printResults() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.printResults}\pysiglinewithargsret{\bfcode{printResults}}{}{}
+Print results of the linear analysis.
+
+\end{fulllineitems}
+
+\index{saveResults() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.saveResults}\pysiglinewithargsret{\bfcode{saveResults}}{\emph{name}}{}
+Save all analysis test results in a file.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\textbf{name} : string
+\begin{quote}
+
+Name of the file or full path name.
+\end{quote}
+
+\end{description}\end{quote}
+\paragraph{Notes}
+
+The file can be saved as a csv file. Separations are made with tabulations.
+
+If \emph{name} is the file name, then it is saved in the current working
+directory.
 
 \end{fulllineitems}
 
@@ -283,6 +870,29 @@ doc
 \begin{fulllineitems}
 \phantomsection\label{_generated/otpod.UnivariateLinearRegressionPOD:otpod.UnivariateLinearRegressionPOD}\pysiglinewithargsret{\strong{class }\bfcode{UnivariateLinearRegressionPOD}}{\emph{*args}}{}
 doc
+\paragraph{Methods}
+
+\begin{longtable}{ll}
+\hline
+\endfirsthead
+
+\multicolumn{2}{c}%
+{{\textsf{\tablename\ \thetable{} -- continued from previous page}}} \\
+\hline
+\endhead
+
+\hline \multicolumn{2}{|r|}{{\textsf{Continued on next page}}} \\ \hline
+\endfoot
+
+\endlastfoot
+
+
+{\hyperref[_generated/otpod.UnivariateLinearRegressionPOD:otpod.UnivariateLinearRegressionPOD.run]{\emph{\code{run}}}}()
+ & 
+Bla bla bla
+\\
+\hline\end{longtable}
+
 \index{run() (UnivariateLinearRegressionPOD method)}
 
 \begin{fulllineitems}

@@ -66,7 +66,7 @@ class UnivariateLinearModelAnalysis():
             self.testResults = None
 
     def __init__(self, inputSample, outputSample, noiseThres=None,
-                 saturationThres=None, resDistFact=ot.NormalFactory(),
+                 saturationThres=None, resDistFact=None,
                  boxCox=False):
 
         self._inputSample = ot.NumericalSample(np.vstack(inputSample))
@@ -85,7 +85,11 @@ class UnivariateLinearModelAnalysis():
             # Results instance is created only for uncensored case.
             self._resultsUnc = self._Results()
 
-        self._resDistFact = resDistFact
+        if resDistFact is None:
+            # default is NormalFactory
+            self._resDistFact = ot.NormalFactory()
+        else:
+            self._resDistFact = resDistFact
 
         # if Box Cox is a float the transformation is enabled with the given value
         if type(boxCox) is float:
@@ -261,7 +265,7 @@ class UnivariateLinearModelAnalysis():
 ################################################################################
 
     def printResults(self):
-        """ Print results of the linear analysis.
+        """ Print results of the linear analysis in the terminal.
         """
         # Enable warning to be displayed
         ot.Log.Show(ot.Log.WARN)

@@ -14,7 +14,7 @@ class POD(object):
     def __init__(self, inputSample, outputSample, detection, noiseThres,
                  saturationThres, boxCox):
 
-        self._simulationSize = 100
+        self._simulationSize = 1000
 
 
         # inherited attributes
@@ -59,20 +59,5 @@ class POD(object):
         """
         self._simulationSize = size
 
-    # def _runComputeBoxCox(self):
-    #     # Compute Box Cox if enabled
-    #     if self._boxCox:
-    #         if self._lambdaBoxCox is None:
-    #             # optimization required, get optimal lambda and graph
-    #             self._lambdaBoxCox, self._graphBoxCox = computeBoxCox(defects, signals)
-
-    #         # Transformation of data
-    #         boxCoxTransform = ot.BoxCoxTransform([self._lambdaBoxCox])
-    #         signals = boxCoxTransform(signals)
-    #         if self._noiseThres is not None:
-    #             noiseThres = boxCoxTransform([self._noiseThres])[0]
-    #         if self._saturationThres is not None:
-    #             saturationThres = boxCoxTransform([self._saturationThres])[0]
-    #     else:
-    #         noiseThres = self._noiseThres
-    #         saturationThres = self._saturationThres
+    def _computeDetectionSize(self, model, probabilityLevel, defectMin, defectMax):
+        return ot.Brent().solve(model, probabilityLevel, defectMin, defectMax)

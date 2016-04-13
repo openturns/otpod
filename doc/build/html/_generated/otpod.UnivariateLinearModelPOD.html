@@ -176,23 +176,49 @@ built by bootstrap.</li>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getPODCLModel" title="otpod.UnivariateLinearModelPOD.getPODCLModel"><code class="xref py py-obj docutils literal"><span class="pre">getPODCLModel</span></code></a>([model,&nbsp;confLevel])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.computeDetectionSize" title="otpod.UnivariateLinearModelPOD.computeDetectionSize"><code class="xref py py-obj docutils literal"><span class="pre">computeDetectionSize</span></code></a>(probabilityLevel[,&nbsp;...])</td>
+<td>Compute the detection size for a given probability level.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getPODCLModel" title="otpod.UnivariateLinearModelPOD.getPODCLModel"><code class="xref py py-obj docutils literal"><span class="pre">getPODCLModel</span></code></a>([model,&nbsp;confLevel])</td>
 <td>Accessor to the POD model at a given confidence level.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getPODModel" title="otpod.UnivariateLinearModelPOD.getPODModel"><code class="xref py py-obj docutils literal"><span class="pre">getPODModel</span></code></a>([model])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getPODModel" title="otpod.UnivariateLinearModelPOD.getPODModel"><code class="xref py py-obj docutils literal"><span class="pre">getPODModel</span></code></a>([model])</td>
 <td>Accessor to the POD model.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getSimulationSize" title="otpod.UnivariateLinearModelPOD.getSimulationSize"><code class="xref py py-obj docutils literal"><span class="pre">getSimulationSize</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getSimulationSize" title="otpod.UnivariateLinearModelPOD.getSimulationSize"><code class="xref py py-obj docutils literal"><span class="pre">getSimulationSize</span></code></a>()</td>
 <td>Accessor to the simulation size.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.run" title="otpod.UnivariateLinearModelPOD.run"><code class="xref py py-obj docutils literal"><span class="pre">run</span></code></a>()</td>
-<td>Bla bla bla</td>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.run" title="otpod.UnivariateLinearModelPOD.run"><code class="xref py py-obj docutils literal"><span class="pre">run</span></code></a>()</td>
+<td>Build the POD models.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.setSimulationSize" title="otpod.UnivariateLinearModelPOD.setSimulationSize"><code class="xref py py-obj docutils literal"><span class="pre">setSimulationSize</span></code></a>(size)</td>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.setSimulationSize" title="otpod.UnivariateLinearModelPOD.setSimulationSize"><code class="xref py py-obj docutils literal"><span class="pre">setSimulationSize</span></code></a>(size)</td>
 <td>Accessor to the simulation size</td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelPOD.computeDetectionSize">
+<code class="descname">computeDetectionSize</code><span class="sig-paren">(</span><em>probabilityLevel</em>, <em>confidenceLevel=None</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelPOD.computeDetectionSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the detection size for a given probability level.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>probabilityLevel</strong> : float</p>
+<blockquote>
+<div><p>The probability level for which the defect size is computed.</p>
+</div></blockquote>
+<p><strong>confidenceLevel</strong> : float</p>
+<blockquote class="last">
+<div><p>The confidence level associated to the given probability level the
+defect size is computed.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="otpod.UnivariateLinearModelPOD.getPODCLModel">
 <code class="descname">getPODCLModel</code><span class="sig-paren">(</span><em>model='uncensored'</em>, <em>confLevel=0.95</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelPOD.getPODCLModel" title="Permalink to this definition">¶</a></dt>
@@ -258,7 +284,11 @@ defect value.</p>
 <dl class="method">
 <dt id="otpod.UnivariateLinearModelPOD.run">
 <code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelPOD.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bla bla bla</p>
+<dd><p>Build the POD models.</p>
+<p class="rubric">Notes</p>
+<p>This method build the linear model for the uncensored and censored case
+if required. Then it builds the POD model following the given residuals
+distribution factory.</p>
 </dd></dl>
 
 <dl class="method">

@@ -6,7 +6,6 @@ __all__ = ['UnivariateLinearModelPOD']
 import openturns as ot
 import math as m
 from ._pod import POD
-from . import UnivariateLinearModelAnalysis as LinearAnalysis
 from ._math_tools import computeBoxCox, censureFilter, computeLinearParametersCensored
 from statsmodels.regression.linear_model import OLS
 import numpy as np
@@ -90,13 +89,6 @@ class UnivariateLinearModelPOD(POD):
                                      'analysis as parameter must only have ' + \
                                      'the detection parameter.')
 
-        ############# Run the linear analysis if not given #####################
-        if self._analysis is not None:
-        #     # compute the 
-        #     self._analysis = LinearAnalysis(inputSample, outputSample, noiseThres,
-        #                                     saturationThres, resDistFact, boxCox)
-        #     boxCox = self._analysis.getBoxCoxParameter()
-        # else:
             # get back informations from analysis on input parameters
             inputSample = self._analysis.getInputSample()
             outputSample = self._analysis.getOutputSample()
@@ -104,6 +96,10 @@ class UnivariateLinearModelPOD(POD):
             saturationThres = self._analysis.getSaturationThreshold()
             # check if box cox was enabled or not.
             boxCox = self._analysis.getBoxCoxParameter()
+            self._resDistFact = self._analysis._resDistFact
+        else:
+            # residuals distribution factory attributes
+            self._resDistFact = resDistFact
 
         # initialize the POD class
         super(UnivariateLinearModelPOD, self).__init__(inputSample, outputSample,
@@ -119,9 +115,6 @@ class UnivariateLinearModelPOD(POD):
         # self._boxCox
         # self._size
         # self._dim
-
-        # residuals distribution factory attributes
-        self._resDistFact = resDistFact
 
         #################### check attributes for censoring ####################
         # Add flag to tell if censored data must taken into account or not.
@@ -142,7 +135,13 @@ class UnivariateLinearModelPOD(POD):
 
     def run(self):
         """
-        Bla bla bla
+        Build the POD models.
+
+        Notes
+        -----
+        This method build the linear model for the uncensored and censored case
+        if required. Then it builds the POD model following the given residuals
+        distribution factory.
         """
 
 
@@ -230,7 +229,7 @@ class UnivariateLinearModelPOD(POD):
         if model == "uncensored":
             PODmodel = self._resultsUnc.PODmodel
         elif model == "censored":
-            PODmodel = self._resultsCen.PODmodel
+            PODmodel = self._resultsCens.PODmodel
         else:
             raise NameError("model can be 'uncensored' or 'censored'.")
 
@@ -296,6 +295,57 @@ class UnivariateLinearModelPOD(POD):
 
         return PODmodelCl
 
+    def computeDetectionSize(self, probabilityLevel, confidenceLevel=None):
+        """
+        Compute the detection size for a given probability level.
+
+        Parameters
+        ----------
+        probabilityLevel : float
+            The probability level for which the defect size is computed.
+        confidenceLevel : float
+            The confidence level associated to the given probability level the
+            defect size is computed. 
+        """
+
+        defectMin = self._inputSample.getMin()[0]
+        defectMax = self._inputSample.getMax()[0]
+        result = ot.NumericalPointWithDescriptionCollection()
+
+        # compute 'a90' for uncensored model
+        model = self.getPODModel()
+        aProbLevel = ot.NumericalPointWithDescription(1, ot.Brent().solve(model,
+                                        probabilityLevel, defectMin, defectMax))
+        aProbLevel.setDescription(['a'+str(probabilityLevel*100)])
+        result.add(aProbLevel)
+
+        # compute 'a90_95' for uncensored model
+        if confidenceLevel is not None:
+            model = self.getPODCLModel(confLevel=confidenceLevel)
+            aProbLevelConfLevel = ot.NumericalPointWithDescription(1, ot.Brent().solve(model,
+                                        probabilityLevel, defectMin, defectMax))
+            aProbLevelConfLevel.setDescription(['a'+str(probabilityLevel*100)+'/'\
+                                                +str(confidenceLevel*100)])
+            result.add(aProbLevelConfLevel)
+
+        if self._censored:
+            # compute 'a90' for censored model
+            model = self.getPODModel('censored')
+            aProbLevel = ot.NumericalPointWithDescription(1, ot.Brent().solve(model,
+                                            probabilityLevel, defectMin, defectMax))
+            aProbLevel.setDescription(['a'+str(probabilityLevel*100)+' (censored)'])
+            result.add(aProbLevel)
+
+            # compute 'a90_95' for censored model
+            if confidenceLevel is not None:
+                model = self.getPODCLModel('censored', confidenceLevel)
+                aProbLevelConfLevel = ot.NumericalPointWithDescription(1, ot.Brent().solve(model,
+                                            probabilityLevel, defectMin, defectMax))
+                aProbLevelConfLevel.setDescription(['a'+str(probabilityLevel*100)+'/'\
+                                                    +str(confidenceLevel*100)+' (censored)'])
+                result.add(aProbLevelConfLevel)
+        
+        return result
 ################################################################################
 ####################### Linear regression Binomial #############################
 ################################################################################
@@ -425,8 +475,8 @@ def _computeLinearModel(inputSample, outputSample, detection, noiseThres,
     ###################### Box Cox transformation ##########################
     # Compute Box Cox if enabled
     if boxCox:
-        # optimization required, get optimal lambda and graph
-        lambdaBoxCox, graphBoxCox = computeBoxCox(defects, signals)
+        # optimization required, get optimal lambda without graph
+        lambdaBoxCox, graph = computeBoxCox(defects, signals)
 
         # Transformation of data
         boxCoxTransform = ot.BoxCoxTransform([lambdaBoxCox])

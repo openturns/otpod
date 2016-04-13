@@ -10,15 +10,23 @@
 \indexentry{getCramerVonMisesPValue() (UnivariateLinearModelAnalysis method)|hyperpage}{4}
 \indexentry{getDurbinWatsonPValue() (UnivariateLinearModelAnalysis method)|hyperpage}{4}
 \indexentry{getHarrisonMcCabePValue() (UnivariateLinearModelAnalysis method)|hyperpage}{4}
-\indexentry{getIntercept() (UnivariateLinearModelAnalysis method)|hyperpage}{4}
+\indexentry{getInputSample() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
+\indexentry{getIntercept() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
 \indexentry{getKolmogorovPValue() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
+\indexentry{getNoiseThreshold() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
+\indexentry{getOutputSample() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
 \indexentry{getR2() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
 \indexentry{getResiduals() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
 \indexentry{getResidualsDistribution() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
+\indexentry{getSaturationThreshold() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
 \indexentry{getSlope() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
-\indexentry{getStandardError() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
-\indexentry{getZeroMeanPValue() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
-\indexentry{printResults() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
-\indexentry{saveResults() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
-\indexentry{UnivariateLinearRegressionPOD (class in otpod)|hyperpage}{6}
-\indexentry{run() (UnivariateLinearRegressionPOD method)|hyperpage}{6}
+\indexentry{getStandardError() (UnivariateLinearModelAnalysis method)|hyperpage}{6}
+\indexentry{getZeroMeanPValue() (UnivariateLinearModelAnalysis method)|hyperpage}{6}
+\indexentry{printResults() (UnivariateLinearModelAnalysis method)|hyperpage}{6}
+\indexentry{saveResults() (UnivariateLinearModelAnalysis method)|hyperpage}{6}
+\indexentry{UnivariateLinearModelPOD (class in otpod)|hyperpage}{6}
+\indexentry{getPODCLModel() (UnivariateLinearModelPOD method)|hyperpage}{7}
+\indexentry{getPODModel() (UnivariateLinearModelPOD method)|hyperpage}{8}
+\indexentry{getSimulationSize() (UnivariateLinearModelPOD method)|hyperpage}{8}
+\indexentry{run() (UnivariateLinearModelPOD method)|hyperpage}{8}
+\indexentry{setSimulationSize() (UnivariateLinearModelPOD method)|hyperpage}{8}

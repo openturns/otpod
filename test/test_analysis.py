@@ -1,7 +1,6 @@
 import openturns as ot
 import otpod
 import numpy as np
-import sys
 
 beta0 = 2.52
 beta1 = 43.28
@@ -28,7 +27,6 @@ def generate_data():
 
 defects, signals = generate_data()
 
-seuilData = 200
 noiseThres = 60
 saturationThres = 1700
 

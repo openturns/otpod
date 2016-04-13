@@ -6,7 +6,6 @@ __all__ = []
 import openturns as ot
 import math as m
 import numpy as np
-from statsmodels.regression.linear_model import OLS
 from scipy.optimize import fmin
 
 
@@ -198,7 +197,9 @@ def computeDurbinWatsonTest(x, residuals, hypothesis="Equal"):
 
     return pValue
 
-
+######### censureFilter #########
+# This function filters the defects and signals in case where low and/or high
+# threshold are given.
 def censureFilter(defects, signals, noiseThres, saturationThres):
     """
     Sort defect sizes with respect to the signal if it is censored or not

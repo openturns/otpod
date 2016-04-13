@@ -24,4 +24,4 @@ POD model
     :template: class.rst_t
     :nosignatures:
 
-    UnivariateLinearRegressionPOD
+    UnivariateLinearModelPOD

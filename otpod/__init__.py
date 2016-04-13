@@ -8,9 +8,9 @@
 """
 
 from ._univariate_linear_model_analysis import *
-from ._univariate_linear_regression_pod import *
+from ._univariate_linear_model_pod import *
 
 __version__ = "0.0"
 
 __all__ = (_univariate_linear_model_analysis.__all__ +
-           _univariate_linear_regression_pod.__all__)
+           _univariate_linear_model_pod.__all__)

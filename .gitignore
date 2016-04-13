@@ -7,3 +7,4 @@ doc/build/html/.doctrees/*
 !doc/build/latex/*.pdf
 
 *.directory
+*.pyc

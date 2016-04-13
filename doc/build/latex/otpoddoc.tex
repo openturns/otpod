@@ -21,7 +21,7 @@
 
 
 \title{otpod Documentation}
-\date{April 11, 2016}
+\date{April 13, 2016}
 \release{0.0.1}
 \author{Antoine Dumas}
 \newcommand{\sphinxlogo}{}
@@ -317,6 +317,11 @@ Accessor to the Durbin Watson test p-value.
 Accessor to the Harrison McCabe test p-value.
 \\
 \hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getInputSample]{\emph{\code{getInputSample}}}}()
+ & 
+Accessor to the input sample.
+\\
+\hline
 {\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getIntercept]{\emph{\code{getIntercept}}}}()
  & 
 Accessor to the intercept of the linear regression model.
@@ -325,6 +330,16 @@ Accessor to the intercept of the linear regression model.
 {\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getKolmogorovPValue]{\emph{\code{getKolmogorovPValue}}}}()
  & 
 Accessor to the Kolmogorov test p-value.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getNoiseThreshold]{\emph{\code{getNoiseThreshold}}}}()
+ & 
+Accessor to the noise threshold.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getOutputSample]{\emph{\code{getOutputSample}}}}()
+ & 
+Accessor to the output sample.
 \\
 \hline
 {\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getR2]{\emph{\code{getR2}}}}()
@@ -340,6 +355,11 @@ Accessor to the residuals.
 {\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getResidualsDistribution]{\emph{\code{getResidualsDistribution}}}}()
  & 
 Accessor to the residuals distribution.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getSaturationThreshold]{\emph{\code{getSaturationThreshold}}}}()
+ & 
+Accessor to the saturation threshold.
 \\
 \hline
 {\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getSlope]{\emph{\code{getSlope}}}}()
@@ -359,7 +379,7 @@ Accessor to the Zero Mean test p-value.
 \hline
 {\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.printResults]{\emph{\code{printResults}}}}()
  & 
-Print results of the linear analysis.
+Print results of the linear analysis in the terminal.
 \\
 \hline
 {\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.saveResults]{\emph{\code{saveResults}}}}(name)
@@ -662,6 +682,23 @@ Either the p-value for the uncensored case or for both cases.
 
 \end{fulllineitems}
 
+\index{getInputSample() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getInputSample}\pysiglinewithargsret{\bfcode{getInputSample}}{}{}
+Accessor to the input sample.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{defects} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalSample.html\#openturns.NumericalSample}{\code{openturns.NumericalSample}}
+\begin{quote}
+
+The input sample which is the defect values.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
 \index{getIntercept() (UnivariateLinearModelAnalysis method)}
 
 \begin{fulllineitems}
@@ -691,6 +728,40 @@ Accessor to the Kolmogorov test p-value.
 \begin{quote}
 
 Either the p-value for the uncensored case or for both cases.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getNoiseThreshold() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getNoiseThreshold}\pysiglinewithargsret{\bfcode{getNoiseThreshold}}{}{}
+Accessor to the noise threshold.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{noiseThres} : float
+\begin{quote}
+
+The noise threhold if it exists, if not it returns \emph{None}.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getOutputSample() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getOutputSample}\pysiglinewithargsret{\bfcode{getOutputSample}}{}{}
+Accessor to the output sample.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{signals} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalSample.html\#openturns.NumericalSample}{\code{openturns.NumericalSample}}
+\begin{quote}
+
+The input sample which is the signal values.
 \end{quote}
 
 \end{description}\end{quote}
@@ -744,6 +815,23 @@ Accessor to the residuals distribution.
 
 The fitted distribution on the residuals, computed in the uncensored
 and censored (if so) case.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getSaturationThreshold() (UnivariateLinearModelAnalysis method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.getSaturationThreshold}\pysiglinewithargsret{\bfcode{getSaturationThreshold}}{}{}
+Accessor to the saturation threshold.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+\textbf{saturationThres} : float
+\begin{quote}
+
+The saturation threhold if it exists, if not it returns \emph{None}.
 \end{quote}
 
 \end{description}\end{quote}
@@ -807,7 +895,7 @@ Either the p-value for the uncensored case or for both cases.
 
 \begin{fulllineitems}
 \phantomsection\label{_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis.printResults}\pysiglinewithargsret{\bfcode{printResults}}{}{}
-Print results of the linear analysis.
+Print results of the linear analysis in the terminal.
 
 \end{fulllineitems}
 
@@ -856,20 +944,102 @@ directory.
 \endlastfoot
 
 
-{\hyperref[_generated/otpod.UnivariateLinearRegressionPOD:otpod.UnivariateLinearRegressionPOD]{\emph{\code{UnivariateLinearRegressionPOD}}}}
+{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD]{\emph{\code{UnivariateLinearModelPOD}}}}
  & 
-doc
+Linear regression based POD.
 \\
 \hline\end{longtable}
 
 
 
-\subsubsection{UnivariateLinearRegressionPOD}
-\label{_generated/otpod.UnivariateLinearRegressionPOD:univariatelinearregressionpod}\label{_generated/otpod.UnivariateLinearRegressionPOD::doc}\index{UnivariateLinearRegressionPOD (class in otpod)}
+\subsubsection{UnivariateLinearModelPOD}
+\label{_generated/otpod.UnivariateLinearModelPOD:univariatelinearmodelpod}\label{_generated/otpod.UnivariateLinearModelPOD::doc}\index{UnivariateLinearModelPOD (class in otpod)}
 
 \begin{fulllineitems}
-\phantomsection\label{_generated/otpod.UnivariateLinearRegressionPOD:otpod.UnivariateLinearRegressionPOD}\pysiglinewithargsret{\strong{class }\bfcode{UnivariateLinearRegressionPOD}}{\emph{*args}}{}
-doc
+\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD}\pysiglinewithargsret{\strong{class }\bfcode{UnivariateLinearModelPOD}}{\emph{*args}}{}
+Linear regression based POD.
+
+\textbf{Available constructors:}
+
+UnivariateLinearModelPOD(\emph{analysis=analysis, detection=detection})
+
+UnivariateLinearModelPOD(\emph{inputSample, outputSample, detection, noiseThres,
+saturationThres, resDistFact, boxCox})
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\textbf{analysis} : {\hyperref[_generated/otpod.UnivariateLinearModelAnalysis:otpod.UnivariateLinearModelAnalysis]{\emph{\code{UnivariateLinearModelAnalysis}}}}
+\begin{quote}
+
+Linear analysis object.
+\end{quote}
+
+\textbf{inputSample} : 2-d sequence of float
+\begin{quote}
+
+Vector of the defect sizes, of dimension 1.
+\end{quote}
+
+\textbf{outputSample} : 2-d sequence of float
+\begin{quote}
+
+Vector of the signals, of dimension 1.
+\end{quote}
+
+\textbf{detection} : float
+\begin{quote}
+
+Detection value of the signal.
+\end{quote}
+
+\textbf{noiseThres} : float
+\begin{quote}
+
+Value for low censored data. Default is None.
+\end{quote}
+
+\textbf{saturationThres} : float
+\begin{quote}
+
+Value for high censored data. Default is None
+\end{quote}
+
+\textbf{resDistFact} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.DistributionFactory.html\#openturns.DistributionFactory}{\code{openturns.DistributionFactory}}
+\begin{quote}
+
+Distribution hypothesis followed by the residuals. Default is None.
+\end{quote}
+
+\textbf{boxCox} : bool or float
+\begin{quote}
+
+Enable or not the Box Cox transformation. If boxCox is a float, the Box
+Cox transformation is enabled with the given value. Default is False.
+\end{quote}
+
+\end{description}\end{quote}
+\paragraph{Notes}
+
+This class aims at building the POD based on a linear regression
+model. If a linear analysis has been launched, it can be used as prescribed 
+in the first constructor. Otherwise, parameters must be given as in the
+second constructor.
+
+Following the given distribution in \emph{resDistFact}, the POD model is built
+different hypothesis:
+\begin{itemize}
+\item {} 
+if \emph{resDistFact = None}, it corresponds with Berens-Binomial. This
+is the default case.
+
+\item {} 
+if \emph{resDistFact} = \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NormalFactory.html\#openturns.NormalFactory}{\code{openturns.NormalFactory}}, it corresponds with Berens-Gauss.
+
+\item {} 
+if \emph{resDistFact} = \{\href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.KernelSmoothing.html\#openturns.KernelSmoothing}{\code{openturns.KernelSmoothing}},
+\href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.WeibullFactory.html\#openturns.WeibullFactory}{\code{openturns.WeibullFactory}}, ...\}, the confidence interval is
+built by bootstrap.
+
+\end{itemize}
 \paragraph{Methods}
 
 \begin{longtable}{ll}
@@ -887,29 +1057,117 @@ doc
 \endlastfoot
 
 
-{\hyperref[_generated/otpod.UnivariateLinearRegressionPOD:otpod.UnivariateLinearRegressionPOD.run]{\emph{\code{run}}}}()
+{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODCLModel]{\emph{\code{getPODCLModel}}}}({[}model, confLevel{]})
+ & 
+Accessor to the POD model at a given confidence level.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODModel]{\emph{\code{getPODModel}}}}({[}model{]})
+ & 
+Accessor to the POD model.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getSimulationSize]{\emph{\code{getSimulationSize}}}}()
+ & 
+Accessor to the simulation size.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.run]{\emph{\code{run}}}}()
  & 
 Bla bla bla
 \\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.setSimulationSize]{\emph{\code{setSimulationSize}}}}(size)
+ & 
+Accessor to the simulation size
+\\
 \hline\end{longtable}
 
-\index{run() (UnivariateLinearRegressionPOD method)}
+\index{getPODCLModel() (UnivariateLinearModelPOD method)}
 
 \begin{fulllineitems}
-\phantomsection\label{_generated/otpod.UnivariateLinearRegressionPOD:otpod.UnivariateLinearRegressionPOD.run}\pysiglinewithargsret{\bfcode{run}}{}{}
-Bla bla bla
+\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODCLModel}\pysiglinewithargsret{\bfcode{getPODCLModel}}{\emph{model='uncensored'}, \emph{confLevel=0.95}}{}
+Accessor to the POD model at a given confidence level.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode
-\textbf{sdfs} : float
+\textbf{model} : string
 \begin{quote}
 
-dfsdf
+The linear regression model to be used, either \emph{uncensored} or
+\emph{censored} if censored threshold were given. Default is \emph{uncensored}.
 \end{quote}
 
-\textbf{oko} : bool
+\textbf{confLevel} : float
 \begin{quote}
 
-ture
+The confidence level the POD must be computed. Default is 0.95
+\end{quote}
+
+\item[{Returns}] \leavevmode
+\textbf{PODModelCl} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalMathFunction.html\#openturns.NumericalMathFunction}{\code{openturns.NumericalMathFunction}}
+\begin{quote}
+
+The function which computes the probability of detection for a given
+defect value at the confidence level given as parameter.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getPODModel() (UnivariateLinearModelPOD method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODModel}\pysiglinewithargsret{\bfcode{getPODModel}}{\emph{model='uncensored'}}{}
+Accessor to the POD model.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\textbf{model} : string
+\begin{quote}
+
+The linear regression model to be used, either \emph{uncensored} or
+\emph{censored} if censored threshold were given. Default is \emph{uncensored}.
+\end{quote}
+
+\item[{Returns}] \leavevmode
+\textbf{PODModel} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalMathFunction.html\#openturns.NumericalMathFunction}{\code{openturns.NumericalMathFunction}}
+\begin{quote}
+
+The function which computes the probability of detection for a given
+defect value.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getSimulationSize() (UnivariateLinearModelPOD method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getSimulationSize}\pysiglinewithargsret{\bfcode{getSimulationSize}}{}{}
+Accessor to the simulation size.
+
+\end{fulllineitems}
+
+\index{run() (UnivariateLinearModelPOD method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.run}\pysiglinewithargsret{\bfcode{run}}{}{}
+Bla bla bla
+
+\end{fulllineitems}
+
+\index{setSimulationSize() (UnivariateLinearModelPOD method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.setSimulationSize}\pysiglinewithargsret{\bfcode{setSimulationSize}}{\emph{size}}{}
+Accessor to the simulation size
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\textbf{size} : int
+\begin{quote}
+
+The size of the simulation used to compute the confidence interval.
 \end{quote}
 
 \end{description}\end{quote}

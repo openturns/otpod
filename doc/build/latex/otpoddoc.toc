@@ -6,10 +6,11 @@
 \contentsline {paragraph}{Notes}{2}{paragraph*.5}
 \contentsline {paragraph}{Methods}{2}{paragraph*.6}
 \contentsline {paragraph}{Notes}{3}{paragraph*.8}
-\contentsline {paragraph}{Notes}{6}{paragraph*.29}
+\contentsline {paragraph}{Notes}{6}{paragraph*.33}
 \contentsline {subsection}{\numberline {1.1.2}POD model}{6}{subsection.1.1.2}
-\contentsline {subsubsection}{UnivariateLinearRegressionPOD}{6}{subsubsection*.30}
-\contentsline {paragraph}{Methods}{6}{paragraph*.32}
-\contentsline {section}{\numberline {1.2}Examples}{6}{section.1.2}
-\contentsline {chapter}{\numberline {2}Indices and tables}{7}{chapter.2}
-\contentsline {chapter}{Index}{9}{section*.34}
+\contentsline {subsubsection}{UnivariateLinearModelPOD}{6}{subsubsection*.34}
+\contentsline {paragraph}{Notes}{7}{paragraph*.36}
+\contentsline {paragraph}{Methods}{7}{paragraph*.37}
+\contentsline {section}{\numberline {1.2}Examples}{8}{section.1.2}
+\contentsline {chapter}{\numberline {2}Indices and tables}{9}{chapter.2}
+\contentsline {chapter}{Index}{11}{section*.43}

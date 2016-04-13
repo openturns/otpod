@@ -26,7 +26,7 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="top" title="otpod 0.0.1 documentation" href="../index.html" />
     <link rel="up" title="Documentation of the API" href="../user_manual.html" />
-    <link rel="next" title="UnivariateLinearRegressionPOD" href="otpod.UnivariateLinearRegressionPOD.html" />
+    <link rel="next" title="UnivariateLinearModelPOD" href="otpod.UnivariateLinearModelPOD.html" />
     <link rel="prev" title="Documentation of the API" href="../user_manual.html" />
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,700'
           rel='stylesheet' type='text/css' />
@@ -58,7 +58,7 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="otpod.UnivariateLinearRegressionPOD.html" title="UnivariateLinearRegressionPOD"
+          <a href="otpod.UnivariateLinearModelPOD.html" title="UnivariateLinearModelPOD"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="../user_manual.html" title="Documentation of the API"
@@ -73,8 +73,8 @@
   <p class="topless"><a href="../user_manual.html"
                         title="previous chapter">Documentation of the API</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="otpod.UnivariateLinearRegressionPOD.html"
-                        title="next chapter">UnivariateLinearRegressionPOD</a></p>
+  <p class="topless"><a href="otpod.UnivariateLinearModelPOD.html"
+                        title="next chapter">UnivariateLinearModelPOD</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -197,20 +197,32 @@ Cox transformation is enabled with the given value. Default is False.</p>
 <tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getHarrisonMcCabePValue" title="otpod.UnivariateLinearModelAnalysis.getHarrisonMcCabePValue"><code class="xref py py-obj docutils literal"><span class="pre">getHarrisonMcCabePValue</span></code></a>()</td>
 <td>Accessor to the Harrison McCabe test p-value.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getIntercept" title="otpod.UnivariateLinearModelAnalysis.getIntercept"><code class="xref py py-obj docutils literal"><span class="pre">getIntercept</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getInputSample" title="otpod.UnivariateLinearModelAnalysis.getInputSample"><code class="xref py py-obj docutils literal"><span class="pre">getInputSample</span></code></a>()</td>
+<td>Accessor to the input sample.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getIntercept" title="otpod.UnivariateLinearModelAnalysis.getIntercept"><code class="xref py py-obj docutils literal"><span class="pre">getIntercept</span></code></a>()</td>
 <td>Accessor to the intercept of the linear regression model.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getKolmogorovPValue" title="otpod.UnivariateLinearModelAnalysis.getKolmogorovPValue"><code class="xref py py-obj docutils literal"><span class="pre">getKolmogorovPValue</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getKolmogorovPValue" title="otpod.UnivariateLinearModelAnalysis.getKolmogorovPValue"><code class="xref py py-obj docutils literal"><span class="pre">getKolmogorovPValue</span></code></a>()</td>
 <td>Accessor to the Kolmogorov test p-value.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getR2" title="otpod.UnivariateLinearModelAnalysis.getR2"><code class="xref py py-obj docutils literal"><span class="pre">getR2</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getNoiseThreshold" title="otpod.UnivariateLinearModelAnalysis.getNoiseThreshold"><code class="xref py py-obj docutils literal"><span class="pre">getNoiseThreshold</span></code></a>()</td>
+<td>Accessor to the noise threshold.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getOutputSample" title="otpod.UnivariateLinearModelAnalysis.getOutputSample"><code class="xref py py-obj docutils literal"><span class="pre">getOutputSample</span></code></a>()</td>
+<td>Accessor to the output sample.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getR2" title="otpod.UnivariateLinearModelAnalysis.getR2"><code class="xref py py-obj docutils literal"><span class="pre">getR2</span></code></a>()</td>
 <td>Accessor to the R2 value.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getResiduals" title="otpod.UnivariateLinearModelAnalysis.getResiduals"><code class="xref py py-obj docutils literal"><span class="pre">getResiduals</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getResiduals" title="otpod.UnivariateLinearModelAnalysis.getResiduals"><code class="xref py py-obj docutils literal"><span class="pre">getResiduals</span></code></a>()</td>
 <td>Accessor to the residuals.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getResidualsDistribution" title="otpod.UnivariateLinearModelAnalysis.getResidualsDistribution"><code class="xref py py-obj docutils literal"><span class="pre">getResidualsDistribution</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getResidualsDistribution" title="otpod.UnivariateLinearModelAnalysis.getResidualsDistribution"><code class="xref py py-obj docutils literal"><span class="pre">getResidualsDistribution</span></code></a>()</td>
 <td>Accessor to the residuals distribution.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getSaturationThreshold" title="otpod.UnivariateLinearModelAnalysis.getSaturationThreshold"><code class="xref py py-obj docutils literal"><span class="pre">getSaturationThreshold</span></code></a>()</td>
+<td>Accessor to the saturation threshold.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.getSlope" title="otpod.UnivariateLinearModelAnalysis.getSlope"><code class="xref py py-obj docutils literal"><span class="pre">getSlope</span></code></a>()</td>
 <td>Accessor to the slope of the linear regression model.</td>
@@ -222,7 +234,7 @@ Cox transformation is enabled with the given value. Default is False.</p>
 <td>Accessor to the Zero Mean test p-value.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.printResults" title="otpod.UnivariateLinearModelAnalysis.printResults"><code class="xref py py-obj docutils literal"><span class="pre">printResults</span></code></a>()</td>
-<td>Print results of the linear analysis.</td>
+<td>Print results of the linear analysis in the terminal.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelAnalysis.saveResults" title="otpod.UnivariateLinearModelAnalysis.saveResults"><code class="xref py py-obj docutils literal"><span class="pre">saveResults</span></code></a>(name)</td>
 <td>Save all analysis test results in a file.</td>
@@ -511,6 +523,24 @@ is not enabled None is returned.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getInputSample">
+<code class="descname">getInputSample</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getInputSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the input sample.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>defects</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalSample.html#openturns.NumericalSample" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalSample</span></code></a></p>
+<blockquote class="last">
+<div><p>The input sample which is the defect values.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="otpod.UnivariateLinearModelAnalysis.getIntercept">
 <code class="descname">getIntercept</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getIntercept" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the intercept of the linear regression model.</p>
@@ -540,6 +570,42 @@ regression model.</p>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pValue</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalPoint.html#openturns.NumericalPoint" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalPoint</span></code></a></p>
 <blockquote class="last">
 <div><p>Either the p-value for the uncensored case or for both cases.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getNoiseThreshold">
+<code class="descname">getNoiseThreshold</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getNoiseThreshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the noise threshold.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>noiseThres</strong> : float</p>
+<blockquote class="last">
+<div><p>The noise threhold if it exists, if not it returns <em>None</em>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getOutputSample">
+<code class="descname">getOutputSample</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getOutputSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the output sample.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>signals</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalSample.html#openturns.NumericalSample" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalSample</span></code></a></p>
+<blockquote class="last">
+<div><p>The input sample which is the signal values.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -596,6 +662,24 @@ regression model. The first column corresponds with the uncensored case.</p>
 <blockquote class="last">
 <div><p>The fitted distribution on the residuals, computed in the uncensored
 and censored (if so) case.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelAnalysis.getSaturationThreshold">
+<code class="descname">getSaturationThreshold</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.getSaturationThreshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the saturation threshold.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>saturationThres</strong> : float</p>
+<blockquote class="last">
+<div><p>The saturation threhold if it exists, if not it returns <em>None</em>.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -662,7 +746,7 @@ regression model.</p>
 <dl class="method">
 <dt id="otpod.UnivariateLinearModelAnalysis.printResults">
 <code class="descname">printResults</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelAnalysis.printResults" title="Permalink to this definition">¶</a></dt>
-<dd><p>Print results of the linear analysis.</p>
+<dd><p>Print results of the linear analysis in the terminal.</p>
 </dd></dl>
 
 <dl class="method">
@@ -704,7 +788,7 @@ directory.</p>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="otpod.UnivariateLinearRegressionPOD.html" title="UnivariateLinearRegressionPOD"
+          <a href="otpod.UnivariateLinearModelPOD.html" title="UnivariateLinearModelPOD"
              >next</a> |</li>
         <li class="right" >
           <a href="../user_manual.html" title="Documentation of the API"
@@ -715,7 +799,7 @@ directory.</p>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, moi.
-      Last updated on Apr 11, 2016.
+      Last updated on Apr 13, 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
     </div>
   </body>

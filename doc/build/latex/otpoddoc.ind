@@ -16,30 +16,38 @@
   \item getCramerVonMisesPValue() (UnivariateLinearModelAnalysis method), \hyperpage{4}
   \item getDurbinWatsonPValue() (UnivariateLinearModelAnalysis method), \hyperpage{4}
   \item getHarrisonMcCabePValue() (UnivariateLinearModelAnalysis method), \hyperpage{4}
-  \item getIntercept() (UnivariateLinearModelAnalysis method), \hyperpage{4}
+  \item getInputSample() (UnivariateLinearModelAnalysis method), \hyperpage{5}
+  \item getIntercept() (UnivariateLinearModelAnalysis method), \hyperpage{5}
   \item getKolmogorovPValue() (UnivariateLinearModelAnalysis method), \hyperpage{5}
+  \item getNoiseThreshold() (UnivariateLinearModelAnalysis method), \hyperpage{5}
+  \item getOutputSample() (UnivariateLinearModelAnalysis method), \hyperpage{5}
+  \item getPODCLModel() (UnivariateLinearModelPOD method), \hyperpage{7}
+  \item getPODModel() (UnivariateLinearModelPOD method), \hyperpage{8}
   \item getR2() (UnivariateLinearModelAnalysis method), \hyperpage{5}
   \item getResiduals() (UnivariateLinearModelAnalysis method), \hyperpage{5}
   \item getResidualsDistribution() (UnivariateLinearModelAnalysis method), \hyperpage{5}
+  \item getSaturationThreshold() (UnivariateLinearModelAnalysis method), \hyperpage{5}
+  \item getSimulationSize() (UnivariateLinearModelPOD method), \hyperpage{8}
   \item getSlope() (UnivariateLinearModelAnalysis method), \hyperpage{5}
-  \item getStandardError() (UnivariateLinearModelAnalysis method), \hyperpage{5}
-  \item getZeroMeanPValue() (UnivariateLinearModelAnalysis method), \hyperpage{5}
+  \item getStandardError() (UnivariateLinearModelAnalysis method), \hyperpage{6}
+  \item getZeroMeanPValue() (UnivariateLinearModelAnalysis method), \hyperpage{6}
 
   \indexspace
   \bigletter P
-  \item printResults() (UnivariateLinearModelAnalysis method), \hyperpage{5}
+  \item printResults() (UnivariateLinearModelAnalysis method), \hyperpage{6}
 
   \indexspace
   \bigletter R
-  \item run() (UnivariateLinearRegressionPOD method), \hyperpage{6}
+  \item run() (UnivariateLinearModelPOD method), \hyperpage{8}
 
   \indexspace
   \bigletter S
-  \item saveResults() (UnivariateLinearModelAnalysis method), \hyperpage{5}
+  \item saveResults() (UnivariateLinearModelAnalysis method), \hyperpage{6}
+  \item setSimulationSize() (UnivariateLinearModelPOD method), \hyperpage{8}
 
   \indexspace
   \bigletter U
   \item UnivariateLinearModelAnalysis (class in otpod), \hyperpage{1}
-  \item UnivariateLinearRegressionPOD (class in otpod), \hyperpage{6}
+  \item UnivariateLinearModelPOD (class in otpod), \hyperpage{6}
 
 \end{theindex}

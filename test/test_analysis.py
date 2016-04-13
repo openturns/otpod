@@ -76,35 +76,34 @@ def test_2_residual_dist():
     param = dist.getParametersCollection()[0]
     Nparam = dist.getParametersNumber()
     values = [param[i] for i in range(Nparam)]
-    np.testing.assert_almost_equal(values, [7.327471962526033e-15, 2.0377558683620425])
+    np.testing.assert_almost_equal(values, [7.44293515708705e-15, 1.9277340138649486])
 def test_2_intercept():
-    np.testing.assert_almost_equal(analysis2.getIntercept()[0], 2.3311133393)
+    np.testing.assert_almost_equal(analysis2.getIntercept()[0], 2.49892917786)
 def test_2_slope():
-    np.testing.assert_almost_equal(analysis2.getSlope()[0], 41.4333711418)
+    np.testing.assert_almost_equal(analysis2.getSlope()[0], 39.1864764933)
 def test_2_standard_error():
-    np.testing.assert_almost_equal(analysis2.getStandardError()[0], 2.04812619421)
+    np.testing.assert_almost_equal(analysis2.getStandardError()[0], 1.93754442844)
 def test_2_boxcox():
-    np.testing.assert_almost_equal(analysis2.getBoxCoxParameter(), 0.291620614739)
+    np.testing.assert_almost_equal(analysis2.getBoxCoxParameter(), 0.282443618674)
 def test_2_R2():
-    np.testing.assert_almost_equal(analysis2.getR2()[0], 0.890055061942)
+    np.testing.assert_almost_equal(analysis2.getR2()[0], 0.890005925784)
 def test_2_kolmogorov():
-    np.testing.assert_almost_equal(analysis2.getKolmogorovPValue()[0], 0.850176099802)
+    np.testing.assert_almost_equal(analysis2.getKolmogorovPValue()[0], 0.858370833532)
 def test_2_anderson():
-    np.testing.assert_almost_equal(analysis2.getAndersonDarlingPValue()[0], 0.519743422792)
+    np.testing.assert_almost_equal(analysis2.getAndersonDarlingPValue()[0], 0.479646586112)
 def test_2_cramer():
-    np.testing.assert_almost_equal(analysis2.getCramerVonMisesPValue()[0], 0.507024010721)
+    np.testing.assert_almost_equal(analysis2.getCramerVonMisesPValue()[0], 0.465610653203)
 def test_2_zeromean():
     np.testing.assert_almost_equal(analysis2.getZeroMeanPValue()[0], 1.0)
 def test_2_breusch():
-    np.testing.assert_almost_equal(analysis2.getBreuschPaganPValue()[0], 0.849606518321)
+    np.testing.assert_almost_equal(analysis2.getBreuschPaganPValue()[0], 0.756088416904)
 def test_2_harrison():
     np.testing.assert_almost_equal(analysis2.getHarrisonMcCabePValue()[0], 0.032)
 def test_2_durbin():
-    np.testing.assert_almost_equal(analysis2.getDurbinWatsonPValue()[0], 0.562666809226)
+    np.testing.assert_almost_equal(analysis2.getDurbinWatsonPValue()[0], 0.565540794481)
 def test_2_warnings():
     msg = analysis2._printWarnings()
     assert msg == ['', 'Some hypothesis tests failed : please consider to use quantile regression or polynomial chaos to build POD.', '']
-
 
 
 # Test with residual distribution as Weibull
@@ -153,35 +152,34 @@ def test_4_residual_dist():
     param = dist.getParametersCollection()[0]
     Nparam = dist.getParametersNumber()
     values = [param[i] for i in range(Nparam)]
-    np.testing.assert_almost_equal(values, [6.261323292287102, 2.990260212432986, -5.5904355659096])
+    np.testing.assert_almost_equal(values, [5.8945050002139014, 2.973243515863942, -5.261613781071394])
 def test_4_intercept():
-    np.testing.assert_almost_equal(analysis4.getIntercept()[0], 2.33111333972)
+    np.testing.assert_almost_equal(analysis4.getIntercept()[0], 2.49892917613)
 def test_4_slope():
-    np.testing.assert_almost_equal(analysis4.getSlope()[0], 41.4333711363)
+    np.testing.assert_almost_equal(analysis4.getSlope()[0], 39.1864765171)
 def test_4_standard_error():
-    np.testing.assert_almost_equal(analysis4.getStandardError()[0], 2.04812619394)
+    np.testing.assert_almost_equal(analysis4.getStandardError()[0], 1.93754442961)
 def test_4_boxcox():
-    np.testing.assert_almost_equal(analysis4.getBoxCoxParameter(), 0.291620614717)
+    np.testing.assert_almost_equal(analysis4.getBoxCoxParameter(), 0.282443618774)
 def test_4_R2():
-    np.testing.assert_almost_equal(analysis4.getR2()[0], 0.890055061942)
+    np.testing.assert_almost_equal(analysis4.getR2()[0], 0.890005925785)
 def test_4_kolmogorov():
-    np.testing.assert_almost_equal(analysis4.getKolmogorovPValue()[0], 0.619803993597)
+    np.testing.assert_almost_equal(analysis4.getKolmogorovPValue()[0], 0.628989851926)
 def test_4_anderson():
-    np.testing.assert_almost_equal(analysis4.getAndersonDarlingPValue()[0], 0.519743422727)
+    np.testing.assert_almost_equal(analysis4.getAndersonDarlingPValue()[0], 0.47964658675)
 def test_4_cramer():
-    np.testing.assert_almost_equal(analysis4.getCramerVonMisesPValue()[0], 0.507024010652)
+    np.testing.assert_almost_equal(analysis4.getCramerVonMisesPValue()[0], 0.46561065371)
 def test_4_zeromean():
     np.testing.assert_almost_equal(analysis4.getZeroMeanPValue()[0], 1.0)
 def test_4_breusch():
-    np.testing.assert_almost_equal(analysis4.getBreuschPaganPValue()[0], 0.849606518098)
+    np.testing.assert_almost_equal(analysis4.getBreuschPaganPValue()[0], 0.756088417911)
 def test_4_harrison():
     np.testing.assert_almost_equal(analysis4.getHarrisonMcCabePValue()[0], 0.032)
 def test_4_durbin():
-    np.testing.assert_almost_equal(analysis4.getDurbinWatsonPValue()[0], 0.562666809232)
+    np.testing.assert_almost_equal(analysis4.getDurbinWatsonPValue()[0], 0.565540794446)
 def test_4_warnings():
     msg = analysis4._printWarnings()
     assert msg == ['', 'Some hypothesis tests failed : please consider to use quantile regression or polynomial chaos to build POD.', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
-
 
 # Test with censored data
 ot.RandomGenerator.SetSeed(0)
@@ -229,35 +227,34 @@ def test_6_residual_dist():
     param = dist.getParametersCollection()[0]
     Nparam = dist.getParametersNumber()
     values = [param[i] for i in range(Nparam)]
-    np.testing.assert_almost_equal(values, [3.573131573506251e-15, 1.2741757016281947])
+    np.testing.assert_almost_equal(values, [5.155518413201876e-15, 1.3889338794567685])
 def test_6_intercept():
-    np.testing.assert_almost_equal(analysis6.getIntercept()[0], 4.34622732593)
+    np.testing.assert_almost_equal(analysis6.getIntercept()[0], 4.28145128492)
 def test_6_slope():
-    np.testing.assert_almost_equal(analysis6.getSlope()[0], 26.1060824512)
+    np.testing.assert_almost_equal(analysis6.getSlope()[0], 28.4503453525)
 def test_6_standard_error():
-    np.testing.assert_almost_equal(analysis6.getStandardError()[0], 1.28164893698)
+    np.testing.assert_almost_equal(analysis6.getStandardError()[0], 1.39708018907)
 def test_6_boxcox():
-    np.testing.assert_almost_equal(analysis6.getBoxCoxParameter(), 0.234403282224)
+    np.testing.assert_almost_equal(analysis6.getBoxCoxParameter(), 0.248476219177)
 def test_6_R2():
-    np.testing.assert_almost_equal(analysis6.getR2()[0], 0.871719601413)
+    np.testing.assert_almost_equal(analysis6.getR2()[0], 0.871664790582)
 def test_6_kolmogorov():
-    np.testing.assert_almost_equal(analysis6.getKolmogorovPValue()[0], 0.447927768902)
+    np.testing.assert_almost_equal(analysis6.getKolmogorovPValue()[0], 0.414252477686)
 def test_6_anderson():
-    np.testing.assert_almost_equal(analysis6.getAndersonDarlingPValue()[0], 0.0421100349166)
+    np.testing.assert_almost_equal(analysis6.getAndersonDarlingPValue()[0], 0.0439405361179)
 def test_6_cramer():
-    np.testing.assert_almost_equal(analysis6.getCramerVonMisesPValue()[0], 0.0458836926039)
+    np.testing.assert_almost_equal(analysis6.getCramerVonMisesPValue()[0], 0.0481033088591)
 def test_6_zeromean():
     np.testing.assert_almost_equal(analysis6.getZeroMeanPValue()[0], 1.0)
 def test_6_breusch():
-    np.testing.assert_almost_equal(analysis6.getBreuschPaganPValue()[0], 0.817094647783)
+    np.testing.assert_almost_equal(analysis6.getBreuschPaganPValue()[0], 0.859123679656)
 def test_6_harrison():
-    np.testing.assert_almost_equal(analysis6.getHarrisonMcCabePValue()[0], 0.062)
+    np.testing.assert_almost_equal(analysis6.getHarrisonMcCabePValue()[0], 0.061)
 def test_6_durbin():
-    np.testing.assert_almost_equal(analysis6.getDurbinWatsonPValue()[0], 0.77244098756)
+    np.testing.assert_almost_equal(analysis6.getDurbinWatsonPValue()[0], 0.771991711693)
 def test_6_warnings():
     msg = analysis6._printWarnings()
     assert msg == ['', 'Some hypothesis tests failed : please consider to use quantile regression or polynomial chaos to build POD.', '']
-
 
 # Test with censored data and Weibull distribution
 ot.RandomGenerator.SetSeed(0)
@@ -305,31 +302,31 @@ def test_8_residual_dist():
     param = dist.getParametersCollection()[0]
     Nparam = dist.getParametersNumber()
     values = [param[i] for i in range(Nparam)]
-    np.testing.assert_almost_equal(values, [3.864717052215486, 2.9452014203397994, -3.448360775506706])
+    np.testing.assert_almost_equal(values, [4.2084342987316266, 2.9416335632358823, -3.75485509626758])
 def test_8_intercept():
-    np.testing.assert_almost_equal(analysis8.getIntercept()[0], 4.34622732593)
+    np.testing.assert_almost_equal(analysis8.getIntercept()[0], 4.28145128492)
 def test_8_slope():
-    np.testing.assert_almost_equal(analysis8.getSlope()[0], 26.1060824512)
+    np.testing.assert_almost_equal(analysis8.getSlope()[0], 28.4503453525)
 def test_8_standard_error():
-    np.testing.assert_almost_equal(analysis8.getStandardError()[0], 1.28164893698)
+    np.testing.assert_almost_equal(analysis8.getStandardError()[0], 1.39708018907)
 def test_8_boxcox():
-    np.testing.assert_almost_equal(analysis8.getBoxCoxParameter(), 0.234403282224)
+    np.testing.assert_almost_equal(analysis8.getBoxCoxParameter(), 0.248476219177)
 def test_8_R2():
-    np.testing.assert_almost_equal(analysis8.getR2()[0], 0.871719601413)
+    np.testing.assert_almost_equal(analysis8.getR2()[0], 0.871664790582)
 def test_8_kolmogorov():
-    np.testing.assert_almost_equal(analysis8.getKolmogorovPValue()[0], 0.578110500023)
+    np.testing.assert_almost_equal(analysis8.getKolmogorovPValue()[0], 0.541521326911)
 def test_8_anderson():
-    np.testing.assert_almost_equal(analysis8.getAndersonDarlingPValue()[0], 0.0421100349166)
+    np.testing.assert_almost_equal(analysis8.getAndersonDarlingPValue()[0], 0.0439405361179)
 def test_8_cramer():
-    np.testing.assert_almost_equal(analysis8.getCramerVonMisesPValue()[0], 0.0458836926039)
+    np.testing.assert_almost_equal(analysis8.getCramerVonMisesPValue()[0], 0.0481033088591)
 def test_8_zeromean():
     np.testing.assert_almost_equal(analysis8.getZeroMeanPValue()[0], 1.0)
 def test_8_breusch():
-    np.testing.assert_almost_equal(analysis8.getBreuschPaganPValue()[0], 0.817094647783)
+    np.testing.assert_almost_equal(analysis8.getBreuschPaganPValue()[0], 0.859123679656)
 def test_8_harrison():
-    np.testing.assert_almost_equal(analysis8.getHarrisonMcCabePValue()[0], 0.062)
+    np.testing.assert_almost_equal(analysis8.getHarrisonMcCabePValue()[0], 0.061)
 def test_8_durbin():
-    np.testing.assert_almost_equal(analysis8.getDurbinWatsonPValue()[0], 0.77244098756)
+    np.testing.assert_almost_equal(analysis8.getDurbinWatsonPValue()[0], 0.771991711693)
 def test_8_warnings():
     msg = analysis8._printWarnings()
     assert msg == ['', 'Some hypothesis tests failed : please consider to use quantile regression or polynomial chaos to build POD.', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
@@ -381,31 +378,31 @@ def test_10_residual_dist():
     param = dist.getParametersCollection()[0]
     Nparam = dist.getParametersNumber()
     values = [param[i] for i in range(Nparam)]
-    np.testing.assert_almost_equal(values, [-3.798380050206918e-15, 0.7218825904706281])
+    np.testing.assert_almost_equal(values, [-7.369991142192528e-16, 1.045892341894865])
 def test_10_intercept():
-    np.testing.assert_almost_equal(analysis10.getIntercept()[0], 4.17596521137)
+    np.testing.assert_almost_equal(analysis10.getIntercept()[0], 4.12213956419)
 def test_10_slope():
-    np.testing.assert_almost_equal(analysis10.getSlope()[0], 15.0365339733)
+    np.testing.assert_almost_equal(analysis10.getSlope()[0], 21.6589228719)
 def test_10_standard_error():
-    np.testing.assert_almost_equal(analysis10.getStandardError()[0], 0.725795261896)
+    np.testing.assert_almost_equal(analysis10.getStandardError()[0], 1.0515611766)
 def test_10_boxcox():
-    np.testing.assert_almost_equal(analysis10.getBoxCoxParameter(), 0.136467875244)
+    np.testing.assert_almost_equal(analysis10.getBoxCoxParameter(), 0.195379066467)
 def test_10_R2():
-    np.testing.assert_almost_equal(analysis10.getR2()[0], 0.88443917678)
+    np.testing.assert_almost_equal(analysis10.getR2()[0], 0.883242398756)
 def test_10_kolmogorov():
-    np.testing.assert_almost_equal(analysis10.getKolmogorovPValue()[0], 0.718137908584)
+    np.testing.assert_almost_equal(analysis10.getKolmogorovPValue()[0], 0.69014192754)
 def test_10_anderson():
-    np.testing.assert_almost_equal(analysis10.getAndersonDarlingPValue()[0], 0.0695291677487)
+    np.testing.assert_almost_equal(analysis10.getAndersonDarlingPValue()[0], 0.0851157758707)
 def test_10_cramer():
-    np.testing.assert_almost_equal(analysis10.getCramerVonMisesPValue()[0], 0.0860128835908)
+    np.testing.assert_almost_equal(analysis10.getCramerVonMisesPValue()[0], 0.106869822661)
 def test_10_zeromean():
     np.testing.assert_almost_equal(analysis10.getZeroMeanPValue()[0], 1.0)
 def test_10_breusch():
-    np.testing.assert_almost_equal(analysis10.getBreuschPaganPValue()[0], 0.829941992108)
+    np.testing.assert_almost_equal(analysis10.getBreuschPaganPValue()[0], 0.86092186831)
 def test_10_harrison():
-    np.testing.assert_almost_equal(analysis10.getHarrisonMcCabePValue()[0], 0.09)
+    np.testing.assert_almost_equal(analysis10.getHarrisonMcCabePValue()[0], 0.081)
 def test_10_durbin():
-    np.testing.assert_almost_equal(analysis10.getDurbinWatsonPValue()[0], 0.997374856001)
+    np.testing.assert_almost_equal(analysis10.getDurbinWatsonPValue()[0], 0.961978522957)
 def test_10_warnings():
     msg = analysis10._printWarnings()
     assert msg == ['', '', '']
@@ -457,35 +454,34 @@ def test_12_residual_dist():
     param = dist.getParametersCollection()[0]
     Nparam = dist.getParametersNumber()
     values = [param[i] for i in range(Nparam)]
-    np.testing.assert_almost_equal(values, [2.183648836408875, 2.9359053918979043, -1.9481373848475716])
+    np.testing.assert_almost_equal(values, [3.214540830870479, 2.991213147115559, -2.870149515568862])
 def test_12_intercept():
-    np.testing.assert_almost_equal(analysis12.getIntercept()[0], 4.17596521137)
+    np.testing.assert_almost_equal(analysis12.getIntercept()[0], 4.12213956422)
 def test_12_slope():
-    np.testing.assert_almost_equal(analysis12.getSlope()[0], 15.0365339733)
+    np.testing.assert_almost_equal(analysis12.getSlope()[0], 21.658922871)
 def test_12_standard_error():
-    np.testing.assert_almost_equal(analysis12.getStandardError()[0], 0.725795261896)
+    np.testing.assert_almost_equal(analysis12.getStandardError()[0], 1.05156117655)
 def test_12_boxcox():
-    np.testing.assert_almost_equal(analysis12.getBoxCoxParameter(), 0.136467875244)
+    np.testing.assert_almost_equal(analysis12.getBoxCoxParameter(), 0.19537906646)
 def test_12_R2():
-    np.testing.assert_almost_equal(analysis12.getR2()[0], 0.88443917678)
+    np.testing.assert_almost_equal(analysis12.getR2()[0], 0.883242398757)
 def test_12_kolmogorov():
-    np.testing.assert_almost_equal(analysis12.getKolmogorovPValue()[0], 0.611677938294)
+    np.testing.assert_almost_equal(analysis12.getKolmogorovPValue()[0], 0.5372107773)
 def test_12_anderson():
-    np.testing.assert_almost_equal(analysis12.getAndersonDarlingPValue()[0], 0.0695291677487)
+    np.testing.assert_almost_equal(analysis12.getAndersonDarlingPValue()[0], 0.0851157758678)
 def test_12_cramer():
-    np.testing.assert_almost_equal(analysis12.getCramerVonMisesPValue()[0], 0.0860128835908)
+    np.testing.assert_almost_equal(analysis12.getCramerVonMisesPValue()[0], 0.106869822657)
 def test_12_zeromean():
     np.testing.assert_almost_equal(analysis12.getZeroMeanPValue()[0], 1.0)
 def test_12_breusch():
-    np.testing.assert_almost_equal(analysis12.getBreuschPaganPValue()[0], 0.829941992108)
+    np.testing.assert_almost_equal(analysis12.getBreuschPaganPValue()[0], 0.860921868345)
 def test_12_harrison():
-    np.testing.assert_almost_equal(analysis12.getHarrisonMcCabePValue()[0], 0.09)
+    np.testing.assert_almost_equal(analysis12.getHarrisonMcCabePValue()[0], 0.081)
 def test_12_durbin():
-    np.testing.assert_almost_equal(analysis12.getDurbinWatsonPValue()[0], 0.997374856001)
+    np.testing.assert_almost_equal(analysis12.getDurbinWatsonPValue()[0], 0.96197852296)
 def test_12_warnings():
     msg = analysis12._printWarnings()
     assert msg == ['', '', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
-
 
 
 # Test with high censored data
@@ -534,31 +530,31 @@ def test_14_residual_dist():
     param = dist.getParametersCollection()[0]
     Nparam = dist.getParametersNumber()
     values = [param[i] for i in range(Nparam)]
-    np.testing.assert_almost_equal(values, [-3.5336130676241546e-15, 3.2511148499474363])
+    np.testing.assert_almost_equal(values, [-1.2606403376388875e-15, 2.4508852295357273])
 def test_14_intercept():
-    np.testing.assert_almost_equal(analysis14.getIntercept()[0], 0.755536451374)
+    np.testing.assert_almost_equal(analysis14.getIntercept()[0], 2.13686409675)
 def test_14_slope():
-    np.testing.assert_almost_equal(analysis14.getSlope()[0], 66.7037333416)
+    np.testing.assert_almost_equal(analysis14.getSlope()[0], 50.0190600361)
 def test_14_standard_error():
-    np.testing.assert_almost_equal(analysis14.getStandardError()[0], 3.26892931125)
+    np.testing.assert_almost_equal(analysis14.getStandardError()[0], 2.46431483817)
 def test_14_boxcox():
-    np.testing.assert_almost_equal(analysis14.getBoxCoxParameter(), 0.37964301023)
+    np.testing.assert_almost_equal(analysis14.getBoxCoxParameter(), 0.331569838524)
 def test_14_R2():
-    np.testing.assert_almost_equal(analysis14.getR2()[0], 0.883217674808)
+    np.testing.assert_almost_equal(analysis14.getR2()[0], 0.882118212744)
 def test_14_kolmogorov():
-    np.testing.assert_almost_equal(analysis14.getKolmogorovPValue()[0], 0.948228960311)
+    np.testing.assert_almost_equal(analysis14.getKolmogorovPValue()[0], 0.657004524302)
 def test_14_anderson():
-    np.testing.assert_almost_equal(analysis14.getAndersonDarlingPValue()[0], 0.596698354892)
+    np.testing.assert_almost_equal(analysis14.getAndersonDarlingPValue()[0], 0.372627831653)
 def test_14_cramer():
-    np.testing.assert_almost_equal(analysis14.getCramerVonMisesPValue()[0], 0.644182422269)
+    np.testing.assert_almost_equal(analysis14.getCramerVonMisesPValue()[0], 0.369904297054)
 def test_14_zeromean():
     np.testing.assert_almost_equal(analysis14.getZeroMeanPValue()[0], 1.0)
 def test_14_breusch():
-    np.testing.assert_almost_equal(analysis14.getBreuschPaganPValue()[0], 0.788186694459)
+    np.testing.assert_almost_equal(analysis14.getBreuschPaganPValue()[0], 0.496055842)
 def test_14_harrison():
-    np.testing.assert_almost_equal(analysis14.getHarrisonMcCabePValue()[0], 0.018)
+    np.testing.assert_almost_equal(analysis14.getHarrisonMcCabePValue()[0], 0.015)
 def test_14_durbin():
-    np.testing.assert_almost_equal(analysis14.getDurbinWatsonPValue()[0], 0.8227883166)
+    np.testing.assert_almost_equal(analysis14.getDurbinWatsonPValue()[0], 0.816864678987)
 def test_14_warnings():
     msg = analysis14._printWarnings()
     assert msg == ['', 'Some hypothesis tests failed : please consider to use quantile regression or polynomial chaos to build POD.', '']
@@ -610,31 +606,32 @@ def test_16_residual_dist():
     param = dist.getParametersCollection()[0]
     Nparam = dist.getParametersNumber()
     values = [param[i] for i in range(Nparam)]
-    np.testing.assert_almost_equal(values, [9.977141645819927, 2.9859018121005647, -8.907543950895313])
+    np.testing.assert_almost_equal(values, [7.333918167967567, 2.8989242654479312, -6.539478667132534])
 def test_16_intercept():
-    np.testing.assert_almost_equal(analysis16.getIntercept()[0], 0.755536451012)
+    np.testing.assert_almost_equal(analysis16.getIntercept()[0], 2.13686409675)
 def test_16_slope():
-    np.testing.assert_almost_equal(analysis16.getSlope()[0], 66.7037333456)
+    np.testing.assert_almost_equal(analysis16.getSlope()[0], 50.0190600361)
 def test_16_standard_error():
-    np.testing.assert_almost_equal(analysis16.getStandardError()[0], 3.26892931144)
+    np.testing.assert_almost_equal(analysis16.getStandardError()[0], 2.46431483817)
 def test_16_boxcox():
-    np.testing.assert_almost_equal(analysis16.getBoxCoxParameter(), 0.37964301024)
+    np.testing.assert_almost_equal(analysis16.getBoxCoxParameter(), 0.331569838524)
 def test_16_R2():
-    np.testing.assert_almost_equal(analysis16.getR2()[0], 0.883217674809)
+    np.testing.assert_almost_equal(analysis16.getR2()[0], 0.882118212744)
 def test_16_kolmogorov():
-    np.testing.assert_almost_equal(analysis16.getKolmogorovPValue()[0], 0.772165223254)
+    np.testing.assert_almost_equal(analysis16.getKolmogorovPValue()[0], 0.406045399402)
 def test_16_anderson():
-    np.testing.assert_almost_equal(analysis16.getAndersonDarlingPValue()[0], 0.596698354918)
+    np.testing.assert_almost_equal(analysis16.getAndersonDarlingPValue()[0], 0.372627831653)
 def test_16_cramer():
-    np.testing.assert_almost_equal(analysis16.getCramerVonMisesPValue()[0], 0.644182422319)
+    np.testing.assert_almost_equal(analysis16.getCramerVonMisesPValue()[0], 0.369904297054)
 def test_16_zeromean():
     np.testing.assert_almost_equal(analysis16.getZeroMeanPValue()[0], 1.0)
 def test_16_breusch():
-    np.testing.assert_almost_equal(analysis16.getBreuschPaganPValue()[0], 0.788186694524)
+    np.testing.assert_almost_equal(analysis16.getBreuschPaganPValue()[0], 0.496055842)
 def test_16_harrison():
-    np.testing.assert_almost_equal(analysis16.getHarrisonMcCabePValue()[0], 0.018)
+    np.testing.assert_almost_equal(analysis16.getHarrisonMcCabePValue()[0], 0.015)
 def test_16_durbin():
-    np.testing.assert_almost_equal(analysis16.getDurbinWatsonPValue()[0], 0.822788316602)
+    np.testing.assert_almost_equal(analysis16.getDurbinWatsonPValue()[0], 0.816864678987)
 def test_16_warnings():
     msg = analysis16._printWarnings()
     assert msg == ['', 'Some hypothesis tests failed : please consider to use quantile regression or polynomial chaos to build POD.', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
+

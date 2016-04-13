@@ -1,6 +1,10 @@
 \begin{theindex}
 \def\bigletter#1{{\Large\sffamily#1}\nopagebreak\vspace{1mm}}
 
+  \bigletter C
+  \item computeDetectionSize() (UnivariateLinearModelPOD method), \hyperpage{7}
+
+  \indexspace
   \bigletter D
   \item drawBoxCoxLikelihood() (UnivariateLinearModelAnalysis method), \hyperpage{2}
   \item drawLinearModel() (UnivariateLinearModelAnalysis method), \hyperpage{3}
@@ -21,7 +25,7 @@
   \item getKolmogorovPValue() (UnivariateLinearModelAnalysis method), \hyperpage{5}
   \item getNoiseThreshold() (UnivariateLinearModelAnalysis method), \hyperpage{5}
   \item getOutputSample() (UnivariateLinearModelAnalysis method), \hyperpage{5}
-  \item getPODCLModel() (UnivariateLinearModelPOD method), \hyperpage{7}
+  \item getPODCLModel() (UnivariateLinearModelPOD method), \hyperpage{8}
   \item getPODModel() (UnivariateLinearModelPOD method), \hyperpage{8}
   \item getR2() (UnivariateLinearModelAnalysis method), \hyperpage{5}
   \item getResiduals() (UnivariateLinearModelAnalysis method), \hyperpage{5}

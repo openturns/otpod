@@ -11,6 +11,7 @@
 \contentsline {subsubsection}{UnivariateLinearModelPOD}{6}{subsubsection*.34}
 \contentsline {paragraph}{Notes}{7}{paragraph*.36}
 \contentsline {paragraph}{Methods}{7}{paragraph*.37}
+\contentsline {paragraph}{Notes}{8}{paragraph*.43}
 \contentsline {section}{\numberline {1.2}Examples}{8}{section.1.2}
 \contentsline {chapter}{\numberline {2}Indices and tables}{9}{chapter.2}
-\contentsline {chapter}{Index}{11}{section*.43}
+\contentsline {chapter}{Index}{11}{section*.45}

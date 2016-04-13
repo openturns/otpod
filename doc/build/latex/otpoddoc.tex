@@ -1021,8 +1021,11 @@ Cox transformation is enabled with the given value. Default is False.
 
 This class aims at building the POD based on a linear regression
 model. If a linear analysis has been launched, it can be used as prescribed 
-in the first constructor. Otherwise, parameters must be given as in the
-second constructor.
+in the first constructor. It can be noticed that, in this case, with the
+default parameters of the linear analysis, the POD will corresponds with the
+linear regression model associated to a Gaussian hypothesis on the residuals.
+
+Otherwise, all parameters can be given as in the second constructor.
 
 Following the given distribution in \emph{resDistFact}, the POD model is built
 different hypothesis:
@@ -1057,7 +1060,12 @@ built by bootstrap.
 \endlastfoot
 
 
-{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODCLModel]{\emph{\code{getPODCLModel}}}}({[}model, confLevel{]})
+{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.computeDetectionSize]{\emph{\code{computeDetectionSize}}}}(probabilityLevel{[}, ...{]})
+ & 
+Compute the detection size for a given probability level.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODCLModel]{\emph{\code{getPODCLModel}}}}({[}model, confidenceLevel{]})
  & 
 Accessor to the POD model at a given confidence level.
 \\
@@ -1074,7 +1082,7 @@ Accessor to the simulation size.
 \hline
 {\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.run]{\emph{\code{run}}}}()
  & 
-Bla bla bla
+Build the POD models.
 \\
 \hline
 {\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.setSimulationSize]{\emph{\code{setSimulationSize}}}}(size)
@@ -1083,10 +1091,42 @@ Accessor to the simulation size
 \\
 \hline\end{longtable}
 
+\index{computeDetectionSize() (UnivariateLinearModelPOD method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.computeDetectionSize}\pysiglinewithargsret{\bfcode{computeDetectionSize}}{\emph{probabilityLevel}, \emph{confidenceLevel=None}}{}
+Compute the detection size for a given probability level.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\textbf{probabilityLevel} : float
+\begin{quote}
+
+The probability level for which the defect size is computed.
+\end{quote}
+
+\textbf{confidenceLevel} : float
+\begin{quote}
+
+The confidence level associated to the given probability level the
+defect size is computed.
+\end{quote}
+
+\item[{Returns}] \leavevmode
+\textbf{result} : collection of \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalPointWithDescription.html\#openturns.NumericalPointWithDescription}{\code{openturns.NumericalPointWithDescription}}
+\begin{quote}
+
+A list of NumericalPointWithDescription containing the detection size
+computing for each case.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
 \index{getPODCLModel() (UnivariateLinearModelPOD method)}
 
 \begin{fulllineitems}
-\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODCLModel}\pysiglinewithargsret{\bfcode{getPODCLModel}}{\emph{model='uncensored'}, \emph{confLevel=0.95}}{}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODCLModel}\pysiglinewithargsret{\bfcode{getPODCLModel}}{\emph{model='uncensored'}, \emph{confidenceLevel=0.95}}{}
 Accessor to the POD model at a given confidence level.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode
@@ -1097,7 +1137,7 @@ The linear regression model to be used, either \emph{uncensored} or
 \emph{censored} if censored threshold were given. Default is \emph{uncensored}.
 \end{quote}
 
-\textbf{confLevel} : float
+\textbf{confidenceLevel} : float
 \begin{quote}
 
 The confidence level the POD must be computed. Default is 0.95
@@ -1153,7 +1193,12 @@ Accessor to the simulation size.
 
 \begin{fulllineitems}
 \phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.run}\pysiglinewithargsret{\bfcode{run}}{}{}
-Bla bla bla
+Build the POD models.
+\paragraph{Notes}
+
+This method build the linear model for the uncensored and censored case
+if required. Then it builds the POD model following the given residuals
+distribution factory.
 
 \end{fulllineitems}
 

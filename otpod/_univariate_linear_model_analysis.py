@@ -728,7 +728,7 @@ class UnivariateLinearModelAnalysis():
         saturationThres : float
             The saturation threhold if it exists, if not it returns *None*.
         """
-        return self._noiseThres
+        return self._saturationThres
 
     def getResiduals(self):
         """

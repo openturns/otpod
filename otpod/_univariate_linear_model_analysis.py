@@ -12,6 +12,18 @@ from statsmodels.regression.linear_model import OLS
 import numpy as np
 import matplotlib.pyplot as plt
 
+class _Results():
+    """
+    This class contains the result of the analysis. Instances are created
+    for uncensored data or if needed for censored data.
+    """
+    def __init__(self):
+        self.intercept = None
+        self.slope = None
+        self.stderr = None
+        self.confInt = None
+        self.testResults = None
+
 class UnivariateLinearModelAnalysis():
 
     """
@@ -53,18 +65,6 @@ class UnivariateLinearModelAnalysis():
     - runs all hypothesis tests.
     """
 
-    class _Results():
-        """
-        This class contains the result of the analysis. Instances are created
-        for uncensored data or if needed for censored data.
-        """
-        def __init__(self):
-            self.intercept = None
-            self.slope = None
-            self.stderr = None
-            self.confInt = None
-            self.testResults = None
-
     def __init__(self, inputSample, outputSample, noiseThres=None,
                  saturationThres=None, resDistFact=None,
                  boxCox=False):
@@ -78,12 +78,12 @@ class UnivariateLinearModelAnalysis():
             # flag to tell censoring is enabled
             self._censored = True
             # Results instances are created for both cases.
-            self._resultsCens = self._Results()
-            self._resultsUnc = self._Results()
+            self._resultsCens = _Results()
+            self._resultsUnc = _Results()
         else:
             self._censored = False
             # Results instance is created only for uncensored case.
-            self._resultsUnc = self._Results()
+            self._resultsUnc = _Results()
 
         if resDistFact is None:
             # default is NormalFactory
@@ -685,6 +685,50 @@ class UnivariateLinearModelAnalysis():
 ################################################################################
 ###################### get methods #############################################
 ################################################################################
+
+    def getInputSample(self):
+        """
+        Accessor to the input sample. 
+
+        Returns
+        -------
+        defects : :py:class:`openturns.NumericalSample`
+            The input sample which is the defect values.
+        """
+        return self._inputSample
+
+    def getOutputSample(self):
+        """
+        Accessor to the output sample. 
+
+        Returns
+        -------
+        signals : :py:class:`openturns.NumericalSample`
+            The input sample which is the signal values.
+        """
+        return self._outputSample
+
+    def getNoiseThreshold(self):
+        """
+        Accessor to the noise threshold. 
+
+        Returns
+        -------
+        noiseThres : float
+            The noise threhold if it exists, if not it returns *None*.
+        """
+        return self._noiseThres
+
+    def getSaturationThreshold(self):
+        """
+        Accessor to the saturation threshold. 
+
+        Returns
+        -------
+        saturationThres : float
+            The saturation threhold if it exists, if not it returns *None*.
+        """
+        return self._noiseThres
 
     def getResiduals(self):
         """

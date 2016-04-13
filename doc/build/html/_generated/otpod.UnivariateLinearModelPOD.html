@@ -157,8 +157,10 @@ Cox transformation is enabled with the given value. Default is False.</p>
 <p class="rubric">Notes</p>
 <p>This class aims at building the POD based on a linear regression
 model. If a linear analysis has been launched, it can be used as prescribed 
-in the first constructor. Otherwise, parameters must be given as in the
-second constructor.</p>
+in the first constructor. It can be noticed that, in this case, with the
+default parameters of the linear analysis, the POD will corresponds with the
+linear regression model associated to a Gaussian hypothesis on the residuals.</p>
+<p>Otherwise, all parameters can be given as in the second constructor.</p>
 <p>Following the given distribution in <em>resDistFact</em>, the POD model is built
 different hypothesis:</p>
 <ul class="simple">
@@ -179,7 +181,7 @@ built by bootstrap.</li>
 <tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.computeDetectionSize" title="otpod.UnivariateLinearModelPOD.computeDetectionSize"><code class="xref py py-obj docutils literal"><span class="pre">computeDetectionSize</span></code></a>(probabilityLevel[,&nbsp;...])</td>
 <td>Compute the detection size for a given probability level.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getPODCLModel" title="otpod.UnivariateLinearModelPOD.getPODCLModel"><code class="xref py py-obj docutils literal"><span class="pre">getPODCLModel</span></code></a>([model,&nbsp;confLevel])</td>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getPODCLModel" title="otpod.UnivariateLinearModelPOD.getPODCLModel"><code class="xref py py-obj docutils literal"><span class="pre">getPODCLModel</span></code></a>([model,&nbsp;confidenceLevel])</td>
 <td>Accessor to the POD model at a given confidence level.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getPODModel" title="otpod.UnivariateLinearModelPOD.getPODModel"><code class="xref py py-obj docutils literal"><span class="pre">getPODModel</span></code></a>([model])</td>
@@ -209,9 +211,16 @@ built by bootstrap.</li>
 <div><p>The probability level for which the defect size is computed.</p>
 </div></blockquote>
 <p><strong>confidenceLevel</strong> : float</p>
-<blockquote class="last">
+<blockquote>
 <div><p>The confidence level associated to the given probability level the
 defect size is computed.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>result</strong> : collection of <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalPointWithDescription.html#openturns.NumericalPointWithDescription" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalPointWithDescription</span></code></a></p>
+<blockquote class="last">
+<div><p>A list of NumericalPointWithDescription containing the detection size
+computing for each case.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -221,7 +230,7 @@ defect size is computed.</p>
 
 <dl class="method">
 <dt id="otpod.UnivariateLinearModelPOD.getPODCLModel">
-<code class="descname">getPODCLModel</code><span class="sig-paren">(</span><em>model='uncensored'</em>, <em>confLevel=0.95</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelPOD.getPODCLModel" title="Permalink to this definition">¶</a></dt>
+<code class="descname">getPODCLModel</code><span class="sig-paren">(</span><em>model='uncensored'</em>, <em>confidenceLevel=0.95</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelPOD.getPODCLModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the POD model at a given confidence level.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -232,7 +241,7 @@ defect size is computed.</p>
 <div><p>The linear regression model to be used, either <em>uncensored</em> or
 <em>censored</em> if censored threshold were given. Default is <em>uncensored</em>.</p>
 </div></blockquote>
-<p><strong>confLevel</strong> : float</p>
+<p><strong>confidenceLevel</strong> : float</p>
 <blockquote>
 <div><p>The confidence level the POD must be computed. Default is 0.95</p>
 </div></blockquote>

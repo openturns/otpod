@@ -55,8 +55,12 @@ class UnivariateLinearModelPOD(POD):
     -----
     This class aims at building the POD based on a linear regression
     model. If a linear analysis has been launched, it can be used as prescribed 
-    in the first constructor. Otherwise, parameters must be given as in the
-    second constructor.
+    in the first constructor. It can be noticed that, in this case, with the
+    default parameters of the linear analysis, the POD will corresponds with the
+    linear regression model associated to a Gaussian hypothesis on the residuals.
+
+
+    Otherwise, all parameters can be given as in the second constructor.
 
     Following the given distribution in *resDistFact*, the POD model is built
     different hypothesis:
@@ -100,6 +104,10 @@ class UnivariateLinearModelPOD(POD):
         else:
             # residuals distribution factory attributes
             self._resDistFact = resDistFact
+
+        if self._resDistFact is not None:
+            if self._resDistFact.getClassName() == 'NormalFactory':
+                raise Exception('Not yet implemented.')
 
         # initialize the POD class
         super(UnivariateLinearModelPOD, self).__init__(inputSample, outputSample,
@@ -235,7 +243,7 @@ class UnivariateLinearModelPOD(POD):
 
         return PODmodel
 
-    def getPODCLModel(self, model='uncensored', confLevel=0.95):
+    def getPODCLModel(self, model='uncensored', confidenceLevel=0.95):
         """
         Accessor to the POD model at a given confidence level.
 
@@ -244,7 +252,7 @@ class UnivariateLinearModelPOD(POD):
         model : string
             The linear regression model to be used, either *uncensored* or
             *censored* if censored threshold were given. Default is *uncensored*.
-        confLevel : float
+        confidenceLevel : float
             The confidence level the POD must be computed. Default is 0.95
 
         Returns
@@ -263,14 +271,14 @@ class UnivariateLinearModelPOD(POD):
                 # Berens Binomial
                 PODfunction = self._PODbinomialModelCl(self._resultsUnc.residuals,
                                                        self._resultsUnc.linearModel,
-                                                       confLevel)
+                                                       confidenceLevel)
             else:
                 # Linear regression model + bootstrap
                 def PODfunction(x):
                     samplePODDef = ot.NumericalSample(self._simulationSize, 1)
                     for i in range(self._simulationSize):
                         samplePODDef[i] = [self._PODcollDict['Uncensored'][i](x[0])]
-                    return samplePODDef.computeQuantilePerComponent(1. - confLevel)
+                    return samplePODDef.computeQuantilePerComponent(1. - confidenceLevel)
 
             PODmodelCl = ot.PythonFunction(1, 1, PODfunction)
 
@@ -280,14 +288,14 @@ class UnivariateLinearModelPOD(POD):
                 # Berens Binomial
                 PODfunction = self._PODbinomialModelCl(self._resultsCens.residuals,
                                                        self._resultsCens.linearModel,
-                                                       confLevel)
+                                                       confidenceLevel)
             else:
                 # Linear regression model + bootstrap
                 def PODfunction(x):
                     samplePODDef = ot.NumericalSample(self._simulationSize, 1)
                     for i in range(self._simulationSize):
                         samplePODDef[i] = [self._PODcollDict['Censored'][i](x[0])]
-                    return samplePODDef.computeQuantilePerComponent(1. - confLevel)
+                    return samplePODDef.computeQuantilePerComponent(1. - confidenceLevel)
 
             PODmodelCl = ot.PythonFunction(1, 1, PODfunction)
         else:
@@ -305,7 +313,13 @@ class UnivariateLinearModelPOD(POD):
             The probability level for which the defect size is computed.
         confidenceLevel : float
             The confidence level associated to the given probability level the
-            defect size is computed. 
+            defect size is computed.
+
+        Returns
+        -------
+        result : collection of :py:class:`openturns.NumericalPointWithDescription`
+            A list of NumericalPointWithDescription containing the detection size
+            computing for each case.
         """
 
         defectMin = self._inputSample.getMin()[0]
@@ -321,7 +335,7 @@ class UnivariateLinearModelPOD(POD):
 
         # compute 'a90_95' for uncensored model
         if confidenceLevel is not None:
-            model = self.getPODCLModel(confLevel=confidenceLevel)
+            model = self.getPODCLModel(confidenceLevel=confidenceLevel)
             aProbLevelConfLevel = ot.NumericalPointWithDescription(1, ot.Brent().solve(model,
                                         probabilityLevel, defectMin, defectMax))
             aProbLevelConfLevel.setDescription(['a'+str(probabilityLevel*100)+'/'\

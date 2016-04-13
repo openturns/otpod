@@ -46,7 +46,7 @@ def test_1_PODModelCl():
     PODmodelCl = POD1.getPODCLModel()
     np.testing.assert_almost_equal(PODmodelCl([0.3])[0], 0.8128338902211437)
 def test_1_PODModelCl09():
-    PODmodelCl = POD1.getPODCLModel(confLevel=0.9)
+    PODmodelCl = POD1.getPODCLModel(confidenceLevel=0.9)
     np.testing.assert_almost_equal(PODmodelCl([0.3])[0], 0.827366884824)
 
 
@@ -61,7 +61,7 @@ def test_2_PODModelCl():
     PODmodelCl = POD2.getPODCLModel()
     np.testing.assert_almost_equal(PODmodelCl([0.3])[0], 0.897873469605)
 def test_2_PODModelCl09():
-    PODmodelCl = POD2.getPODCLModel(confLevel=0.9)
+    PODmodelCl = POD2.getPODCLModel(confidenceLevel=0.9)
     np.testing.assert_almost_equal(PODmodelCl([0.3])[0], 0.910216675197)
 def test_2_PODModelCensore():
     PODmodel = POD2.getPODModel('censored')
@@ -70,7 +70,7 @@ def test_2_PODModelClCensore():
     PODmodelCl = POD2.getPODCLModel('censored')
     np.testing.assert_almost_equal(PODmodelCl([0.3])[0], 0.840198204355)
 def test_2_PODModelCl09Censore():
-    PODmodelCl = POD2.getPODCLModel('censored',confLevel=0.9)
+    PODmodelCl = POD2.getPODCLModel('censored',confidenceLevel=0.9)
     np.testing.assert_almost_equal(PODmodelCl([0.3])[0], 0.854928609849)
 
 

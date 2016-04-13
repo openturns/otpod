@@ -73,7 +73,6 @@ class LinearBoxCoxFactory:
         c.setColor("red")
         c.setPointStyle("circle")
         graph.add(c)
-
         return ot.BoxCoxTransform([optimalLambda]), graph
 
 
@@ -81,18 +80,21 @@ class LinearBoxCoxFactory:
 # This function applies the Box Cox transformation on the data.
 def computeBoxCox(factors, valuesInit):
     # if no affine trend is considered
-    # if lambdaBoxCox is None:
-    #     myBoxCoxFactory = BoxCoxFactory()
-    #     myModelTransform = myBoxCoxFactory.build(valuesInit)
-    # else:
-    #     myModelTransform = ot.BoxCoxTransform([lambdaBoxCox])
-
-    # if an affine trend is considered
-    myBoxCoxFactory = LinearBoxCoxFactory()
-    myModelTransform, graph = myBoxCoxFactory.build(factors, valuesInit)
+    if valuesInit.getMin() < 0:
+        shift = - valuesInit.getMin()[0]
+    else:
+        shift = 0.
+    graph = ot.Graph()
+    myBoxCoxFactory = ot.BoxCoxFactory()
+    myModelTransform = myBoxCoxFactory.build(valuesInit, [shift], graph)
     lambdaBoxCox = myModelTransform.getLambda()[0]
-
+    
+    # if an affine trend is considered (more computing required)
+    # myBoxCoxFactory = LinearBoxCoxFactory(graph=graph)
+    # myModelTransform, graph = myBoxCoxFactory.build(factors, valuesInit)
+    # lambdaBoxCox = myModelTransform.getLambda()[0]
     return lambdaBoxCox, graph
+
 
 
 ######### computeR2 #########

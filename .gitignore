@@ -8,3 +8,4 @@ doc/build/html/.doctrees/*
 
 *.directory
 *.pyc
+*.cache

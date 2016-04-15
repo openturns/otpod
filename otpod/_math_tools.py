@@ -88,9 +88,9 @@ def computeBoxCox(factors, valuesInit):
     myBoxCoxFactory = ot.BoxCoxFactory()
     myModelTransform = myBoxCoxFactory.build(valuesInit, [shift], graph)
     lambdaBoxCox = myModelTransform.getLambda()[0]
-    
+
     # if an affine trend is considered (more computing required)
-    # myBoxCoxFactory = LinearBoxCoxFactory(graph=graph)
+    # myBoxCoxFactory = LinearBoxCoxFactory()
     # myModelTransform, graph = myBoxCoxFactory.build(factors, valuesInit)
     # lambdaBoxCox = myModelTransform.getLambda()[0]
     return lambdaBoxCox, graph

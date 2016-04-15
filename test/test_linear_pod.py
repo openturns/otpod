@@ -420,3 +420,175 @@ def test_24_a90c():
 def test_24_a9095c():
     np.testing.assert_almost_equal(detectionSize24[3][0], 0.345249438995)
 
+
+
+######### Test with the Linear regression and Normal factory #################
+resDistFact = ot.NormalFactory()
+# Test with Box Cox
+ot.RandomGenerator.SetSeed(0)
+POD25 = otpod.UnivariateLinearModelPOD(defects, signals, detection, resDistFact=resDistFact, boxCox=True)
+POD25.run()
+detectionSize25 = POD25.computeDetectionSize(0.9, 0.95)
+def test_25_a90():
+    np.testing.assert_almost_equal(detectionSize25[0][0], 0.313117629683)
+def test_25_a9095():
+    np.testing.assert_almost_equal(detectionSize25[1][0], 0.324672954397)
+
+# Test with censored data and box cox
+ot.RandomGenerator.SetSeed(0)
+POD26 = otpod.UnivariateLinearModelPOD(defects, signals, detection, noiseThres, saturationThres, resDistFact=resDistFact, boxCox=True)
+POD26.run()
+detectionSize26 = POD26.computeDetectionSize(0.9, 0.95)
+def test_26_a90():
+    np.testing.assert_almost_equal(detectionSize26[0][0], 0.299146302309)
+def test_26_a9095():
+    np.testing.assert_almost_equal(detectionSize26[1][0], 0.312151341166)
+def test_26_a90c():
+    np.testing.assert_almost_equal(detectionSize26[2][0], 0.311596807823)
+def test_26_a9095c():
+    np.testing.assert_almost_equal(detectionSize26[3][0], 0.325402374286, decimal=6)
+
+
+# Test linear regression with no hypothesis on residuals, low censored data and Box Cox
+ot.RandomGenerator.SetSeed(0)
+POD27 = otpod.UnivariateLinearModelPOD(defects, signals, detection, noiseThres, None, resDistFact=resDistFact, boxCox=True)
+POD27.run()
+detectionSize27 = POD27.computeDetectionSize(0.9, 0.95)
+def test_27_a90():
+    np.testing.assert_almost_equal(detectionSize27[0][0], 0.301408668669)
+def test_27_a9095():
+    np.testing.assert_almost_equal(detectionSize27[1][0], 0.31401833588)
+def test_27_a90c():
+    np.testing.assert_almost_equal(detectionSize27[2][0], 0.31307250797)
+def test_27_a9095c():
+    np.testing.assert_almost_equal(detectionSize27[3][0], 0.326503056754)
+
+
+# Test linear regression with no hypothesis on residuals, high censored data and Box Cox
+ot.RandomGenerator.SetSeed(0)
+POD28 = otpod.UnivariateLinearModelPOD(defects, signals, detection, None, saturationThres, resDistFact=resDistFact, boxCox=True)
+POD28.run()
+detectionSize28 = POD28.computeDetectionSize(0.9, 0.95)
+def test_28_a90():
+    np.testing.assert_almost_equal(detectionSize28[0][0], 0.309836092182)
+def test_28_a9095():
+    np.testing.assert_almost_equal(detectionSize28[1][0], 0.321785408774)
+def test_28_a90c():
+    np.testing.assert_almost_equal(detectionSize28[2][0], 0.309757773325)
+def test_28_a9095c():
+    np.testing.assert_almost_equal(detectionSize28[3][0], 0.322801120557)
+
+
+# Test from the linear analysis
+ot.RandomGenerator.SetSeed(0)
+analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, resDistFact=resDistFact, boxCox=True)
+ot.RandomGenerator.SetSeed(0)
+POD29 = otpod.UnivariateLinearModelPOD(analysis=analysis, detection=detection)
+POD29.run()
+detectionSize29 = POD29.computeDetectionSize(0.9, 0.95)
+def test_29_a90():
+    np.testing.assert_almost_equal(detectionSize29[0][0], 0.313117628628)
+def test_29_a9095():
+    np.testing.assert_almost_equal(detectionSize29[1][0], 0.324672953337)
+
+
+# Test from the linear analysis with censored data
+ot.RandomGenerator.SetSeed(0)
+analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, saturationThres, resDistFact=resDistFact, boxCox=True)
+ot.RandomGenerator.SetSeed(0)
+POD30 = otpod.UnivariateLinearModelPOD(analysis=analysis, detection=detection)
+POD30.run()
+detectionSize30 = POD30.computeDetectionSize(0.9, 0.95)
+def test_30_a90():
+    np.testing.assert_almost_equal(detectionSize30[0][0], 0.299146302309)
+def test_30_a9095():
+    np.testing.assert_almost_equal(detectionSize30[1][0], 0.312151341166)
+def test_30_a90c():
+    np.testing.assert_almost_equal(detectionSize30[2][0], 0.311596807823)
+def test_30_a9095c():
+    np.testing.assert_almost_equal(detectionSize30[3][0], 0.325402374286, decimal=6)
+
+
+# Test without Box Cox
+ot.RandomGenerator.SetSeed(0)
+POD31 = otpod.UnivariateLinearModelPOD(defects, signals, detection, resDistFact=resDistFact, boxCox=False)
+POD31.run()
+detectionSize31 = POD31.computeDetectionSize(0.9, 0.95)
+def test_31_a90():
+    np.testing.assert_almost_equal(detectionSize31[0][0], 0.331990846766)
+def test_31_a9095():
+    np.testing.assert_almost_equal(detectionSize31[1][0], 0.349279588446)
+
+# Test linear regression with no hypothesis on residuals, censored data
+ot.RandomGenerator.SetSeed(0)
+POD32 = otpod.UnivariateLinearModelPOD(defects, signals, detection, noiseThres, saturationThres, resDistFact=resDistFact, boxCox=False)
+POD32.run()
+detectionSize32 = POD32.computeDetectionSize(0.9, 0.95)
+def test_32_a90():
+    np.testing.assert_almost_equal(detectionSize32[0][0], 0.315140656175)
+def test_32_a9095():
+    np.testing.assert_almost_equal(detectionSize32[1][0], 0.330681043393)
+def test_32_a90c():
+    np.testing.assert_almost_equal(detectionSize32[2][0], 0.327103582077)
+def test_32_a9095c():
+    np.testing.assert_almost_equal(detectionSize32[3][0], 0.34440466678)
+
+
+# Test linear regression with no hypothesis on residuals, low censored data
+ot.RandomGenerator.SetSeed(0)
+POD33 = otpod.UnivariateLinearModelPOD(defects, signals, detection, noiseThres, None, resDistFact=resDistFact, boxCox=False)
+POD33.run()
+detectionSize33 = POD33.computeDetectionSize(0.9, 0.95)
+def test_33_a90():
+    np.testing.assert_almost_equal(detectionSize33[0][0], 0.337543459298)
+def test_33_a9095():
+    np.testing.assert_almost_equal(detectionSize33[1][0], 0.355084903907)
+def test_33_a90c():
+    np.testing.assert_almost_equal(detectionSize33[2][0], 0.338759336615)
+def test_33_a9095c():
+    np.testing.assert_almost_equal(detectionSize33[3][0], 0.357317212558)
+
+
+# Test linear regression with no hypothesis on residuals, high censored data
+ot.RandomGenerator.SetSeed(0)
+POD34 = otpod.UnivariateLinearModelPOD(defects, signals, detection, None, saturationThres, resDistFact=resDistFact, boxCox=False)
+POD34.run()
+detectionSize34 = POD34.computeDetectionSize(0.9, 0.95)
+def test_34_a90():
+    np.testing.assert_almost_equal(detectionSize34[0][0], 0.310528422747)
+def test_34_a9095():
+    np.testing.assert_almost_equal(detectionSize34[1][0], 0.325524450395)
+def test_34_a90c():
+    np.testing.assert_almost_equal(detectionSize34[2][0], 0.319447937432)
+def test_34_a9095c():
+    np.testing.assert_almost_equal(detectionSize34[3][0], 0.336700232574)
+
+
+# Test from the linear analysis
+ot.RandomGenerator.SetSeed(0)
+analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, resDistFact=resDistFact, boxCox=False)
+ot.RandomGenerator.SetSeed(0)
+POD35 = otpod.UnivariateLinearModelPOD(analysis=analysis, detection=detection)
+POD35.run()
+detectionSize35 = POD35.computeDetectionSize(0.9, 0.95)
+def test_35_a90():
+    np.testing.assert_almost_equal(detectionSize35[0][0], 0.331990846766)
+def test_35_a9095():
+    np.testing.assert_almost_equal(detectionSize35[1][0], 0.349279588446)
+
+
+# Test from the linear analysis
+ot.RandomGenerator.SetSeed(0)
+analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, saturationThres, resDistFact=resDistFact, boxCox=False)
+ot.RandomGenerator.SetSeed(0)
+POD36 = otpod.UnivariateLinearModelPOD(analysis=analysis, detection=detection)
+POD36.run()
+detectionSize36 = POD36.computeDetectionSize(0.9, 0.95)
+def test_36_a90():
+    np.testing.assert_almost_equal(detectionSize36[0][0], 0.315140656175)
+def test_36_a9095():
+    np.testing.assert_almost_equal(detectionSize36[1][0], 0.330681043393)
+def test_36_a90c():
+    np.testing.assert_almost_equal(detectionSize36[2][0], 0.327103582077)
+def test_36_a9095c():
+    np.testing.assert_almost_equal(detectionSize36[3][0], 0.34440466678)

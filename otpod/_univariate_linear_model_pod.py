@@ -123,19 +123,9 @@ class UnivariateLinearModelPOD(POD):
         # self._boxCox
         # self._size
         # self._dim
-
-        #################### check attributes for censoring ####################
-        # Add flag to tell if censored data must taken into account or not.
-        if self._noiseThres is not None or self._saturationThres is not None:
-            # flag to tell censoring is enabled
-            self._censored = True
-            # Results instances are created for both cases.
-            self._resultsCens = _Results()
-            self._resultsUnc = _Results()
-        else:
-            self._censored = False
-            # Results instance is created only for uncensored case.
-            self._resultsUnc = _Results()
+        # self._censored
+        # self._resultsUnc
+        # self._resultsCens
         
         # assertion input dimension is 1
         assert (self._dim == 1), "InputSample must be of dimension 1."
@@ -152,11 +142,13 @@ class UnivariateLinearModelPOD(POD):
         distribution factory.
         """
 
-
+        # as it is required to build several time the linear model for the case
+        # with bootstrap, the _run method of POD is not used here.
         results = _computeLinearModel(self._inputSample, self._outputSample,
                                       self._detection, self._noiseThres,
                                       self._saturationThres, self._boxCox,
                                       self._censored)
+        defects = results['defects']
         # contains intercept, slope, stderr, residuals
         self._resultsUnc = results['uncensored']
         self._resultsCens = results['censored']
@@ -182,7 +174,8 @@ class UnivariateLinearModelPOD(POD):
             PODfunction = self._PODbinomialModel(self._resultsUnc.residuals,
                                                  self._resultsUnc.linearModel)
         elif self._resDistFact.getClassName() == 'NormalFactory':
-            PODfunction = self._PODgaussModel(self._resultsUnc.stderr,
+            PODfunction = self._PODgaussModel(defects,
+                                              self._resultsUnc.stderr,
                                               self._resultsUnc.linearModel)
         else:
             # Linear regression model + bootstrap
@@ -197,6 +190,10 @@ class UnivariateLinearModelPOD(POD):
                 # Berens Binomial
                 PODfunction = self._PODbinomialModel(self._resultsCens.residuals,
                                                      self._resultsCens.linearModel)
+            elif self._resDistFact.getClassName() == 'NormalFactory':
+                PODfunction = self._PODgaussModel(defects,
+                                                  self._resultsCens.stderr,
+                                                  self._resultsCens.linearModel)
             else:
                 # Linear regression model + bootstrap
                 PODfunction = self._PODbootstrapModel(self._resultsCens.residuals,
@@ -207,12 +204,23 @@ class UnivariateLinearModelPOD(POD):
 
         ############## build PODModel function with conf interval ##############
         # Berens binomial : build directly in the get method
-
-        # Linear regression model + bootstrap : build the collection of function
-        # which is time consuming. The final PODmodelCl is built in the get method 
-        if self._resDistFact is not None and \
-           self._resDistFact.getClassName() is not 'NormalFactory':
-            self._PODcollDict = self._PODbootstrapModelCl()
+        if self._resDistFact is not None:
+            if self._resDistFact.getClassName() == 'NormalFactory':
+                # Linear regression with gaussian residuals hypothesis : build POD 
+                # collection function for uncensored and censore if required.
+                # The final PODmodelCl is built in the get method.
+                self._PODcollDict= {'uncensored': self._PODgaussModelCl(defects,
+                                    self._resultsUnc.intercept, self._resultsUnc.slope,
+                                    self._resultsUnc.stderr, self._detectionBoxCox)}
+                if self._censored:
+                    self._PODcollDict['censored'] = self._PODgaussModelCl(defects,
+                                    self._resultsCens.intercept, self._resultsCens.slope,
+                                    self._resultsCens.stderr, self._detectionBoxCox)
+            else:
+                # Linear regression model + bootstrap : build the collection of function
+                # for uncensored and censored case which is time consuming.
+                # The final PODmodelCl is built in the get method.
+                self._PODcollDict = self._PODbootstrapModelCl()
 
 
 
@@ -233,7 +241,7 @@ class UnivariateLinearModelPOD(POD):
             defect value.
         """
 
-        # Check is the censored model exists when asking for it 
+        # Check if the censored model exists when asking for it 
         if model == "censored" and not self._censored:
             raise NameError('POD model for censored data is not available.')
 
@@ -276,11 +284,11 @@ class UnivariateLinearModelPOD(POD):
                                                        self._resultsUnc.linearModel,
                                                        confidenceLevel)
             else:
-                # Linear regression model + bootstrap
+                # Linear regression model + gaussian residuals or + bootstrap
                 def PODfunction(x):
                     samplePODDef = ot.NumericalSample(self._simulationSize, 1)
                     for i in range(self._simulationSize):
-                        samplePODDef[i] = [self._PODcollDict['Uncensored'][i](x[0])]
+                        samplePODDef[i] = [self._PODcollDict['uncensored'][i](x[0])]
                     return samplePODDef.computeQuantilePerComponent(1. - confidenceLevel)
 
             PODmodelCl = ot.PythonFunction(1, 1, PODfunction)
@@ -293,11 +301,11 @@ class UnivariateLinearModelPOD(POD):
                                                        self._resultsCens.linearModel,
                                                        confidenceLevel)
             else:
-                # Linear regression model + bootstrap
+                # Linear regression model + gaussian residuals or + bootstrap
                 def PODfunction(x):
                     samplePODDef = ot.NumericalSample(self._simulationSize, 1)
                     for i in range(self._simulationSize):
-                        samplePODDef[i] = [self._PODcollDict['Censored'][i](x[0])]
+                        samplePODDef[i] = [self._PODcollDict['censored'][i](x[0])]
                     return samplePODDef.computeQuantilePerComponent(1. - confidenceLevel)
 
             PODmodelCl = ot.PythonFunction(1, 1, PODfunction)
@@ -397,9 +405,9 @@ class UnivariateLinearModelPOD(POD):
 ####################### Linear regression Gauss ################################
 ################################################################################
 
-    def _PODgaussModel(self, stderr, linearModel):
-        X = ot.NumericalSample(self._size, [1, 0])
-        X[:, 1] = self._inputSample
+    def _PODgaussModel(self, defects, stderr, linearModel):
+        X = ot.NumericalSample(defects.getSize(), [1, 0])
+        X[:, 1] = defects
         X = ot.Matrix(X)
         # compute the prediction variance of the linear regression model
         def predictionVariance(x):
@@ -412,6 +420,40 @@ class UnivariateLinearModelPOD(POD):
             # DistFunc.pNormal(t,True) = complementary CDF of the Normal(0,1)
             return [ot.DistFunc.pNormal(t,True)]
         return PODmodel
+
+    def _PODgaussModelCl(self, defects, intercept, slope, stderr, detection):
+
+        class buildPODModel():
+            def __init__(self, intercept, slope, sigmaEpsilon, detection):
+
+                self.intercept = intercept
+                self.slope = slope
+                self.sigmaEpsilon = sigmaEpsilon
+                self.detection = detection
+
+            def PODmodel(self, x):
+                t = (self.detection - (self.intercept + 
+                              self.slope * x)) / self.sigmaEpsilon
+                return ot.DistFunc.pNormal(t,True)
+
+
+        N = defects.getSize()
+        X = ot.NumericalSample(N, [1, 0])
+        X[:, 1] = defects
+        X = ot.Matrix(X)
+        covMatrix = X.computeGram(True).solveLinearSystem(ot.IdentityMatrix(2))
+        sampleNormal = ot.Normal([0,0], ot.CovarianceMatrix(
+                    covMatrix.getImplementation())).getSample(self._simulationSize)
+        sampleSigmaEpsilon = (ot.Chi(N-2).inverse()*np.sqrt(N-2)*stderr).getSample(self._simulationSize)
+
+        PODcoll = []
+        for i in range(self._simulationSize):
+            sigmaEpsilon = sampleSigmaEpsilon[i][0]
+            interceptSimu = sampleNormal[i][0] * sigmaEpsilon + intercept
+            slopeSimu = sampleNormal[i][1] * sigmaEpsilon + slope
+            PODcoll.append(buildPODModel(interceptSimu, slopeSimu, sigmaEpsilon,
+                                         detection).PODmodel)
+        return PODcoll
 
 ################################################################################
 ####################### Linear regression bootstrap ############################
@@ -475,7 +517,7 @@ class UnivariateLinearModelPOD(POD):
             if self._censored:
                 PODcollCens.append(model.PODmodelCens)
 
-        return {'Uncensored':PODcollUnc, 'Censored':PODcollCens}
+        return {'uncensored':PODcollUnc, 'censored':PODcollCens}
 
 
 ################################################################################
@@ -555,5 +597,5 @@ def _computeLinearModel(inputSample, outputSample, detection, noiseThres,
         resultsCens.stderr = res[2]
         resultsCens.residuals = signals - (resultsCens.intercept + resultsCens.slope * defects)
 
-    return {'uncensored':resultsUnc, 'censored':resultsCens,
-            'detection':detectionBoxCox}
+    return {'defects':defects, 'signals':signals, 'uncensored':resultsUnc,
+            'censored':resultsCens, 'detection':detectionBoxCox}

@@ -105,9 +105,9 @@ class UnivariateLinearModelPOD(POD):
             # residuals distribution factory attributes
             self._resDistFact = resDistFact
 
-        if self._resDistFact is not None:
-            if self._resDistFact.getClassName() == 'NormalFactory':
-                raise Exception('Not yet implemented.')
+        # if self._resDistFact is not None:
+        #     if self._resDistFact.getClassName() == 'NormalFactory':
+        #         raise Exception('Not yet implemented.')
 
         # initialize the POD class
         super(UnivariateLinearModelPOD, self).__init__(inputSample, outputSample,
@@ -181,6 +181,9 @@ class UnivariateLinearModelPOD(POD):
             # Berens Binomial
             PODfunction = self._PODbinomialModel(self._resultsUnc.residuals,
                                                  self._resultsUnc.linearModel)
+        elif self._resDistFact.getClassName() == 'NormalFactory':
+            PODfunction = self._PODgaussModel(self._resultsUnc.stderr,
+                                              self._resultsUnc.linearModel)
         else:
             # Linear regression model + bootstrap
             PODfunction = self._PODbootstrapModel(self._resultsUnc.residuals,
@@ -360,6 +363,7 @@ class UnivariateLinearModelPOD(POD):
                 result.add(aProbLevelConfLevel)
         
         return result
+
 ################################################################################
 ####################### Linear regression Binomial #############################
 ################################################################################
@@ -389,6 +393,25 @@ class UnivariateLinearModelPOD(POD):
             return [pod]
         return PODmodelCl
 
+################################################################################
+####################### Linear regression Gauss ################################
+################################################################################
+
+    def _PODgaussModel(self, stderr, linearModel):
+        X = ot.NumericalSample(self._size, [1, 0])
+        X[:, 1] = self._inputSample
+        X = ot.Matrix(X)
+        # compute the prediction variance of the linear regression model
+        def predictionVariance(x):
+            Y = ot.NumericalPoint([1.0, x])
+            gramX = X.computeGram()
+            return stderr**2 * (1. + ot.dot(Y, gramX.solveLinearSystem(Y)))
+        # function to compute the POD(defect)
+        def PODmodel(x):
+            t = (self._detectionBoxCox - linearModel(x[0])) / np.sqrt(predictionVariance(x[0]))
+            # DistFunc.pNormal(t,True) = complementary CDF of the Normal(0,1)
+            return [ot.DistFunc.pNormal(t,True)]
+        return PODmodel
 
 ################################################################################
 ####################### Linear regression bootstrap ############################
@@ -532,4 +555,5 @@ def _computeLinearModel(inputSample, outputSample, detection, noiseThres,
         resultsCens.stderr = res[2]
         resultsCens.residuals = signals - (resultsCens.intercept + resultsCens.slope * defects)
 
-    return {'uncensored':resultsUnc, 'censored':resultsCens, 'detection':detectionBoxCox}
+    return {'uncensored':resultsUnc, 'censored':resultsCens,
+            'detection':detectionBoxCox}

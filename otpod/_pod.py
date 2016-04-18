@@ -11,7 +11,7 @@ from ._math_tools import computeBoxCox, DataHandling
 
 class POD(object):
     """
-    Base class to compute the POD with the children class.
+    Base class to compute the POD with the subclass.
     """
 
     def __init__(self, inputSample, outputSample, detection, noiseThres,
@@ -107,6 +107,10 @@ class POD(object):
             The size of the simulation used to compute the confidence interval.
         """
         self._simulationSize = size
+
+################################################################################
+################ Common methods called inside subclass #########################
+################################################################################
 
     def _computeDetectionSize(self, model, modelCl, probabilityLevel, confidenceLevel=None):
         """

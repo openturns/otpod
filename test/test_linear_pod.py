@@ -438,3 +438,75 @@ def test_36_a90():
     np.testing.assert_almost_equal(detectionSize36[0], 0.327103582077)
 def test_36_a9095():
     np.testing.assert_almost_equal(detectionSize36[1], 0.342861356319)
+
+
+######### Test with filterCensoredData #######################################
+dataFiltered = otpod.DataHandling.filterCensoredData(defects, signals,
+                                                    noiseThres, saturationThres)
+# linear regression binomial
+ot.RandomGenerator.SetSeed(0)
+POD37 = otpod.UnivariateLinearModelPOD(dataFiltered[0], dataFiltered[3],
+                            detection, resDistFact=None, boxCox=False)
+POD37.run()
+detectionSize37 = POD37.computeDetectionSize(0.9, 0.95)
+def test_37_a90():
+    np.testing.assert_almost_equal(detectionSize37[0], 0.301918226192)
+def test_37_a9095():
+    np.testing.assert_almost_equal(detectionSize37[1], 0.331276651014)
+
+# linear regression binomial with box cox
+ot.RandomGenerator.SetSeed(0)
+POD38 = otpod.UnivariateLinearModelPOD(dataFiltered[0], dataFiltered[3],
+                            detection, resDistFact=None, boxCox=True)
+POD38.run()
+detectionSize38 = POD38.computeDetectionSize(0.9, 0.95)
+def test_38_a90():
+    np.testing.assert_almost_equal(detectionSize38[0], 0.285933846089)
+def test_38_a9095():
+    np.testing.assert_almost_equal(detectionSize38[1], 0.301444232939)
+
+# linear regression Gauss
+ot.RandomGenerator.SetSeed(0)
+POD39 = otpod.UnivariateLinearModelPOD(dataFiltered[0], dataFiltered[3],
+                            detection, resDistFact=ot.NormalFactory(), boxCox=False)
+POD39.run()
+detectionSize39 = POD39.computeDetectionSize(0.9, 0.95)
+def test_39_a90():
+    np.testing.assert_almost_equal(detectionSize39[0], 0.315143231299)
+def test_39_a9095():
+    np.testing.assert_almost_equal(detectionSize39[1], 0.330683811473)
+
+# linear regression Gauss with box cox
+ot.RandomGenerator.SetSeed(0)
+POD40 = otpod.UnivariateLinearModelPOD(dataFiltered[0], dataFiltered[3],
+                            detection, resDistFact=ot.NormalFactory(), boxCox=True)
+POD40.run()
+detectionSize40 = POD40.computeDetectionSize(0.9, 0.95)
+def test_40_a90():
+    np.testing.assert_almost_equal(detectionSize40[0], 0.299146252531)
+def test_40_a9095():
+    np.testing.assert_almost_equal(detectionSize40[1], 0.312151336843)
+
+# linear regression Kernel smoothing
+ot.RandomGenerator.SetSeed(0)
+POD41 = otpod.UnivariateLinearModelPOD(dataFiltered[0], dataFiltered[3],
+                            detection, resDistFact=ot.KernelSmoothing(), boxCox=False)
+POD41.setSimulationSize(100)
+POD41.run()
+detectionSize41 = POD41.computeDetectionSize(0.9, 0.95)
+def test_41_a90():
+    np.testing.assert_almost_equal(detectionSize41[0], 0.316002992074)
+def test_41_a9095():
+    np.testing.assert_almost_equal(detectionSize41[1], 0.327902796622)
+
+# linear regression kernel smoothing with box cox
+ot.RandomGenerator.SetSeed(0)
+POD42 = otpod.UnivariateLinearModelPOD(dataFiltered[0], dataFiltered[3],
+                            detection, resDistFact=ot.KernelSmoothing(), boxCox=True)
+POD42.setSimulationSize(100)
+POD42.run()
+detectionSize42 = POD42.computeDetectionSize(0.9, 0.95)
+def test_42_a90():
+    np.testing.assert_almost_equal(detectionSize42[0], 0.291284124471)
+def test_42_a9095():
+    np.testing.assert_almost_equal(detectionSize42[1], 0.304376327495)

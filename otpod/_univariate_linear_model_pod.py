@@ -4,13 +4,11 @@
 __all__ = ['UnivariateLinearModelPOD']
 
 import openturns as ot
-from openturns.viewer import View
 import math as m
 from ._pod import POD
 from ._math_tools import computeBoxCox, DataHandling, computeLinearParametersCensored
 from statsmodels.regression.linear_model import OLS
 import numpy as np
-import matplotlib.pyplot as plt
 from _docstring_inherit import DocInherit
 docInherit = DocInherit
 

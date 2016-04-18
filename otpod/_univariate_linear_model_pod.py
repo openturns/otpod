@@ -6,7 +6,7 @@ __all__ = ['UnivariateLinearModelPOD']
 import openturns as ot
 import math as m
 from ._pod import POD
-from ._math_tools import computeBoxCox, censureFilter, computeLinearParametersCensored
+from ._math_tools import computeBoxCox, DataHandling, computeLinearParametersCensored
 from statsmodels.regression.linear_model import OLS
 import numpy as np
 
@@ -434,7 +434,7 @@ def _computeLinearModel(inputSample, outputSample, detection, noiseThres,
             saturationThres = ot.sys.float_info.max
         # Filter censored data
         defects, defectsNoise, defectsSat, signals = \
-            censureFilter(inputSample, outputSample,
+            DataHandling.filterCensoredData(inputSample, outputSample,
                           noiseThres, saturationThres)
     else:
         defects, signals = inputSample, outputSample

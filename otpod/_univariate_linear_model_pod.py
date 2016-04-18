@@ -6,7 +6,8 @@ __all__ = ['UnivariateLinearModelPOD']
 import openturns as ot
 import math as m
 from ._pod import POD
-from ._math_tools import computeBoxCox, censureFilter, computeLinearParametersCensored
+from ._math_tools import computeBoxCox, computeLinearParametersCensored
+from ._math_tools import DataHandling
 from statsmodels.regression.linear_model import OLS
 import numpy as np
 
@@ -98,7 +99,6 @@ class UnivariateLinearModelPOD(POD):
             outputSample = self._analysis.getOutputSample()
             noiseThres = self._analysis.getNoiseThreshold()
             saturationThres = self._analysis.getSaturationThreshold()
-            # check if box cox was enabled or not.
             boxCox = self._analysis.getBoxCoxParameter()
             self._resDistFact = self._analysis._resDistFact
         else:
@@ -156,7 +156,7 @@ class UnivariateLinearModelPOD(POD):
         # case detection = detectionBoxCox
         self._detectionBoxCox = results['detection']
 
-        ############# get results from analsys and build linear model ##########
+        ######################### build linear model ###########################
         # define the linear model
         def LinModel(x):
             return self._resultsUnc.intercept + self._resultsUnc.slope * x
@@ -544,7 +544,7 @@ def _computeLinearModel(inputSample, outputSample, detection, noiseThres,
             saturationThres = ot.sys.float_info.max
         # Filter censored data
         defects, defectsNoise, defectsSat, signals = \
-            censureFilter(inputSample, outputSample,
+            DataHandling.filterCensoredData(inputSample, outputSample,
                           noiseThres, saturationThres)
     else:
         defects, signals = inputSample, outputSample

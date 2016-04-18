@@ -5,7 +5,8 @@ __all__ = []
 
 import openturns as ot
 import numpy as np
-from ._math_tools import computeBoxCox, censureFilter
+from ._math_tools import computeBoxCox, DataHandling
+
 
 
 class _Results():
@@ -78,7 +79,7 @@ class POD(object):
                 saturationThres = ot.sys.float_info.max
             # Filter censored data
             defects, defectsNoise, defectsSat, signals = \
-                censureFilter(self._inputSample, self._outputSample,
+                DataHandling.filterCensoredData(self._inputSample, self._outputSample,
                               self._noiseThres, self._saturationThres)
         else:
             defects, signals = self._inputSample, self._outputSample

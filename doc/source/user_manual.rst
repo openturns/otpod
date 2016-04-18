@@ -25,3 +25,13 @@ POD model
     :nosignatures:
 
     UnivariateLinearModelPOD
+
+Tools
+=========
+
+.. autosummary:: 
+    :toctree: _generated/
+    :template: class.rst_t
+    :nosignatures:
+
+    DataHandling

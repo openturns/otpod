@@ -7,16 +7,6 @@ import openturns as ot
 import numpy as np
 from ._math_tools import computeBoxCox, censureFilter
 
-
-class _Results():
-    """
-    This class contains the result of the run. Instances are created
-    for uncensored data or if needed for censored data.
-    """
-    def __init__(self):
-        pass
-
-
 class POD(object):
     """
     Base class to compute the POD with the children class.
@@ -51,13 +41,8 @@ class POD(object):
         if self._noiseThres is not None or self._saturationThres is not None:
             # flag to tell censoring is enabled
             self._censored = True
-            # Results instances are created for both cases.
-            self._resultsCens = _Results()
-            self._resultsUnc = _Results()
         else:
             self._censored = False
-            # Results instance is created only for uncensored case.
-            self._resultsUnc = _Results()
 
         # Assertions on parameters
         assert (self._size >=3), "Not enough observations."

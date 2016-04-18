@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # -*- Python -*-
 
-__all__ = []
+__all__ = ['DataHandling']
 
 import openturns as ot
 import math as m

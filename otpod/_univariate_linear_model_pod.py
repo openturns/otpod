@@ -376,10 +376,10 @@ class UnivariateLinearModelPOD(POD):
 
         class buildPODModel():
             def __init__(self, inputSample, outputSample, detection, noiseThres,
-                            saturationThres, resDistFact, boxCox):
+                            saturationThres, resDistFact, boxCox, censored):
 
                 results = _computeLinearModel(inputSample, outputSample, detection,
-                                        noiseThres, saturationThres, boxCox)
+                                        noiseThres, saturationThres, boxCox, censored)
 
                 self.intercept = results['intercept']
                 self.slope = results['slope']
@@ -406,7 +406,7 @@ class UnivariateLinearModelPOD(POD):
             model = buildPODModel(bootstrapData[:,0], bootstrapData[:,1],
                                   self._detection, self._noiseThres,
                                   self._saturationThres, self._resDistFact,
-                                  self._boxCox)
+                                  self._boxCox, self._censored)
 
             PODcoll.append(model.PODmodel)
 

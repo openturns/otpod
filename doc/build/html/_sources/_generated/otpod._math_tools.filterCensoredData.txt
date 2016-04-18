@@ -1,0 +1,7 @@
+filterCensoredData
+====================================
+
+.. currentmodule:: otpod._math_tools
+
+.. autoclass:: filterCensoredData(*args)
+    :members:

@@ -7,7 +7,7 @@ import openturns as ot
 from openturns.viewer import View
 from ._math_tools import computeBoxCox, computeZeroMeanTest, computeBreuschPaganTest, \
                          computeHarrisonMcCabeTest, computeDurbinWatsonTest, \
-                         computeR2, censureFilter, computeLinearParametersCensored
+                         computeR2, DataHandling, computeLinearParametersCensored
 from statsmodels.regression.linear_model import OLS
 import numpy as np
 import matplotlib.pyplot as plt
@@ -142,7 +142,7 @@ class UnivariateLinearModelAnalysis():
             # signals in the non censored area
             # check if one the threshold is None
             defects, defectsNoise, defectsSat, signals = \
-                censureFilter(self._inputSample, self._outputSample,
+                DataHandling.filterCensoredData(self._inputSample, self._outputSample,
                               noiseThres, saturationThres)
         else:
             defects, signals = self._inputSample, self._outputSample

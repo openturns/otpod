@@ -238,6 +238,12 @@ class DataHandling(object):
         The data are sorted in three different vectors whether they belong to
         the noisy area, the uncensored area or the saturation area.
         """
+        # check if one sided censoring
+        if noiseThres is None:
+            noiseThres = -ot.sys.float_info.max
+        if saturationThres is None:
+            saturationThres = ot.sys.float_info.max
+            
         # transform in numpy.array
         defects = np.array(defects)
         signals = np.array(signals)

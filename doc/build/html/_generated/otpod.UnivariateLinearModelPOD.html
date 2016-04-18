@@ -26,6 +26,7 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="top" title="otpod 0.0.1 documentation" href="../index.html" />
     <link rel="up" title="Documentation of the API" href="../user_manual.html" />
+    <link rel="next" title="DataHandling" href="otpod.DataHandling.html" />
     <link rel="prev" title="UnivariateLinearModelAnalysis" href="otpod.UnivariateLinearModelAnalysis.html" />
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,700'
           rel='stylesheet' type='text/css' />
@@ -57,6 +58,9 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="otpod.DataHandling.html" title="DataHandling"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
           <a href="otpod.UnivariateLinearModelAnalysis.html" title="UnivariateLinearModelAnalysis"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">otpod 0.0.1 documentation</a> &raquo;</li>
@@ -68,6 +72,9 @@
   <h4>Previous topic</h4>
   <p class="topless"><a href="otpod.UnivariateLinearModelAnalysis.html"
                         title="previous chapter">UnivariateLinearModelAnalysis</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="otpod.DataHandling.html"
+                        title="next chapter">DataHandling</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -171,29 +178,32 @@ built by bootstrap.</li>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.computeDetectionSize" title="otpod.UnivariateLinearModelPOD.computeDetectionSize"><code class="xref py py-obj docutils literal"><span class="pre">computeDetectionSize</span></code></a>(probabilityLevel[,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.computeDetectionSize" title="otpod.UnivariateLinearModelPOD.computeDetectionSize"><code class="xref py py-obj docutils literal"><span class="pre">computeDetectionSize</span></code></a>(*args,&nbsp;**kwargs)</td>
 <td>Compute the detection size for a given probability level.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getPODCLModel" title="otpod.UnivariateLinearModelPOD.getPODCLModel"><code class="xref py py-obj docutils literal"><span class="pre">getPODCLModel</span></code></a>([confidenceLevel])</td>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.drawPOD" title="otpod.UnivariateLinearModelPOD.drawPOD"><code class="xref py py-obj docutils literal"><span class="pre">drawPOD</span></code></a>(*args,&nbsp;**kwargs)</td>
+<td>Draw the POD curve.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getPODCLModel" title="otpod.UnivariateLinearModelPOD.getPODCLModel"><code class="xref py py-obj docutils literal"><span class="pre">getPODCLModel</span></code></a>([confidenceLevel])</td>
 <td>Accessor to the POD model at a given confidence level.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getPODModel" title="otpod.UnivariateLinearModelPOD.getPODModel"><code class="xref py py-obj docutils literal"><span class="pre">getPODModel</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getPODModel" title="otpod.UnivariateLinearModelPOD.getPODModel"><code class="xref py py-obj docutils literal"><span class="pre">getPODModel</span></code></a>()</td>
 <td>Accessor to the POD model.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getSimulationSize" title="otpod.UnivariateLinearModelPOD.getSimulationSize"><code class="xref py py-obj docutils literal"><span class="pre">getSimulationSize</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getSimulationSize" title="otpod.UnivariateLinearModelPOD.getSimulationSize"><code class="xref py py-obj docutils literal"><span class="pre">getSimulationSize</span></code></a>()</td>
 <td>Accessor to the simulation size.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.run" title="otpod.UnivariateLinearModelPOD.run"><code class="xref py py-obj docutils literal"><span class="pre">run</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.run" title="otpod.UnivariateLinearModelPOD.run"><code class="xref py py-obj docutils literal"><span class="pre">run</span></code></a>()</td>
 <td>Build the POD models.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.setSimulationSize" title="otpod.UnivariateLinearModelPOD.setSimulationSize"><code class="xref py py-obj docutils literal"><span class="pre">setSimulationSize</span></code></a>(size)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.setSimulationSize" title="otpod.UnivariateLinearModelPOD.setSimulationSize"><code class="xref py py-obj docutils literal"><span class="pre">setSimulationSize</span></code></a>(size)</td>
 <td>Accessor to the simulation size</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="otpod.UnivariateLinearModelPOD.computeDetectionSize">
-<code class="descname">computeDetectionSize</code><span class="sig-paren">(</span><em>probabilityLevel</em>, <em>confidenceLevel=None</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelPOD.computeDetectionSize" title="Permalink to this definition">¶</a></dt>
+<code class="descname">computeDetectionSize</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelPOD.computeDetectionSize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the detection size for a given probability level.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -214,6 +224,54 @@ defect size is computed.</p>
 <blockquote class="last">
 <div><p>A list of NumericalPointWithDescription containing the detection size
 computing for each case.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelPOD.drawPOD">
+<code class="descname">drawPOD</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelPOD.drawPOD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw the POD curve.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>probabilityLevel</strong> : float</p>
+<blockquote>
+<div><p>The probability level for which the defect size is computed.</p>
+</div></blockquote>
+<p><strong>confidenceLevel</strong> : float</p>
+<blockquote>
+<div><p>The confidence level associated to the given probability level the
+defect size is computed.</p>
+</div></blockquote>
+<p><strong>defectMin, defectMax</strong> : float</p>
+<blockquote>
+<div><p>Define the interval where the curve is plotted. Default : min and
+max values of the inputSample.</p>
+</div></blockquote>
+<p><strong>nbPt</strong> : int</p>
+<blockquote>
+<div><p>The number of points to draw the curves.</p>
+</div></blockquote>
+<p><strong>name</strong> : string</p>
+<blockquote>
+<div><p>name of the figure to be saved with <em>transparent</em> option sets to True
+and <em>bbox_inches=&#8217;tight&#8217;</em>. It can be only the file name or the 
+full path name. Default is None.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fig</strong> : <a class="reference external" href="http://matplotlib.org/api/figure_api.html">matplotlib.figure</a></p>
+<blockquote>
+<div><p>Matplotlib figure object.</p>
+</div></blockquote>
+<p><strong>ax</strong> : <a class="reference external" href="http://matplotlib.org/api/axes_api.html">matplotlib.axes</a></p>
+<blockquote class="last">
+<div><p>Matplotlib axes object.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -274,9 +332,9 @@ defect value.</p>
 <code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelPOD.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build the POD models.</p>
 <p class="rubric">Notes</p>
-<p>This method build the linear model for the uncensored and censored case
-if required. Then it builds the POD model following the given residuals
-distribution factory.</p>
+<p>This method build the linear model for the uncensored or censored case
+depending of the input parameters. Then it builds the POD model
+following the given residuals distribution factory.</p>
 </dd></dl>
 
 <dl class="method">
@@ -313,6 +371,9 @@ distribution factory.</p>
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="otpod.DataHandling.html" title="DataHandling"
+             >next</a> |</li>
         <li class="right" >
           <a href="otpod.UnivariateLinearModelAnalysis.html" title="UnivariateLinearModelAnalysis"
              >previous</a> |</li>

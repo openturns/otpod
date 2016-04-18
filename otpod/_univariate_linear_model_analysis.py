@@ -125,15 +125,6 @@ class UnivariateLinearModelAnalysis():
 
         #################### Filter censored data ##############################
         if self._censored:
-            # check if one sided censoring
-            if self._noiseThres is None:
-                noiseThres = -ot.sys.float_info.max
-            else:
-                noiseThres = self._noiseThres
-            if self._saturationThres is None:
-                saturationThres = ot.sys.float_info.max
-            else:
-                saturationThres = self._saturationThres
             # Filter censored data
             # Returns:
             # defects in the non censored area
@@ -143,7 +134,7 @@ class UnivariateLinearModelAnalysis():
             # check if one the threshold is None
             defects, defectsNoise, defectsSat, signals = \
                 DataHandling.filterCensoredData(self._inputSample, self._outputSample,
-                              noiseThres, saturationThres)
+                              self._noiseThres, self._saturationThres)
         else:
             defects, signals = self._inputSample, self._outputSample
         
@@ -161,8 +152,12 @@ class UnivariateLinearModelAnalysis():
             signals = boxCoxTransform(signals)
             if self._noiseThres is not None:
                 noiseThres = boxCoxTransform([self._noiseThres])[0]
+            else:
+                noiseThres = self._noiseThres
             if self._saturationThres is not None:
                 saturationThres = boxCoxTransform([self._saturationThres])[0]
+            else:
+                saturationThres = self._saturationThres
         else:
             noiseThres = self._noiseThres
             saturationThres = self._saturationThres

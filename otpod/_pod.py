@@ -4,6 +4,8 @@
 __all__ = []
 
 import openturns as ot
+from openturns.viewer import View
+import matplotlib.pyplot as plt
 import numpy as np
 from ._math_tools import computeBoxCox, DataHandling
 
@@ -56,11 +58,6 @@ class POD(object):
         """
         #################### Filter censored data ##############################
         if self._censored:
-            # check if one sided censoring
-            if self._noiseThres is None:
-                noiseThres = -ot.sys.float_info.max
-            if self._saturationThres is None:
-                saturationThres = ot.sys.float_info.max
             # Filter censored data
             defects, defectsNoise, defectsSat, signals = \
                 DataHandling.filterCensoredData(self._inputSample, self._outputSample,
@@ -69,8 +66,6 @@ class POD(object):
             defects, signals = self._inputSample, self._outputSample
             defectsNoise = None
             defectsSat = None
-
-        defectsSize = defects.getSize()
 
         ###################### Box Cox transformation ##########################
         # Compute Box Cox if enabled
@@ -113,5 +108,106 @@ class POD(object):
         """
         self._simulationSize = size
 
-    def _computeDetectionSize(self, model, probabilityLevel, defectMin, defectMax):
-        return ot.Brent().solve(model, probabilityLevel, defectMin, defectMax)
+    def _computeDetectionSize(self, model, modelCl, probabilityLevel, confidenceLevel=None):
+        """
+        Compute the detection size for a given probability level.
+
+        Parameters
+        ----------
+        probabilityLevel : float
+            The probability level for which the defect size is computed.
+        confidenceLevel : float
+            The confidence level associated to the given probability level the
+            defect size is computed.
+
+        Returns
+        -------
+        result : collection of :py:class:`openturns.NumericalPointWithDescription`
+            A list of NumericalPointWithDescription containing the detection size
+            computing for each case.
+        """
+
+        defectMin = self._inputSample.getMin()[0]
+        defectMax = self._inputSample.getMax()[0]
+
+        # compute 'a90'
+        model = self.getPODModel()
+        detectionSize = ot.NumericalPointWithDescription(1, ot.Brent().solve(model,
+                                        probabilityLevel, defectMin, defectMax))
+        description = ['a'+str(int(probabilityLevel*100))]
+
+        # compute 'a90_95'
+        if confidenceLevel is not None:
+            model = self.getPODCLModel(confidenceLevel=confidenceLevel)
+            detectionSize.add(ot.Brent().solve(model, probabilityLevel,
+                                               defectMin, defectMax))
+            description.append('a'+str(int(probabilityLevel*100))+'/'\
+                                                +str(int(confidenceLevel*100)))
+        # add description to the NumericalPoint
+        detectionSize.setDescription(description)
+        return detectionSize
+
+    def _drawPOD(self, PODmodel, PODmodelCl, probabilityLevel=None,
+                 confidenceLevel=None, defectMin=None, defectMax=None,
+                 nbPt=100, name=None):
+        """
+        Draw the POD curve.
+
+        Parameters
+        ----------
+        probabilityLevel : float
+            The probability level for which the defect size is computed.
+        confidenceLevel : float
+            The confidence level associated to the given probability level the
+            defect size is computed.
+        defectMin, defectMax : float
+            Define the interval where the curve is plotted. Default : min and
+            max values of the inputSample.
+        nbPt : int
+            The number of points to draw the curves.
+        name : string
+            name of the figure to be saved with *transparent* option sets to True
+            and *bbox_inches='tight'*. It can be only the file name or the 
+            full path name. Default is None.
+
+        Returns
+        -------
+        fig : `matplotlib.figure <http://matplotlib.org/api/figure_api.html>`_
+            Matplotlib figure object.
+        ax : `matplotlib.axes <http://matplotlib.org/api/axes_api.html>`_
+            Matplotlib axes object.
+        """
+
+        if defectMin is None:
+            defectMin = self._inputSample.getMin()[0]
+        if defectMax is None:
+            defectMax = self._inputSample.getMax()[0]
+
+        fig, ax = plt.subplots()
+        # POD model graph
+        View(PODmodel.draw(defectMin, defectMax, nbPt), axes=[ax],
+            plot_kwargs={'color':'red', 'label':'POD'})
+
+        if confidenceLevel is not None:
+            # POD at confidence level graph
+            View(PODmodelCl.draw(defectMin, defectMax, nbPt), axes=[ax],
+                plot_kwargs={'color':'blue', 'label':'POD at confidence level '+\
+                                                      str(confidenceLevel)})
+        if probabilityLevel is not None:
+            # horizontal line at the given probability level
+            ax.hlines(probabilityLevel, defectMin, defectMax, 'black', 'solid',
+                      'Probability level '+str(probabilityLevel))
+
+            # compute detection size at the given probability level
+            detectionSize = self.computeDetectionSize(probabilityLevel, confidenceLevel)
+            ax.vlines(detectionSize[0], 0., probabilityLevel, 'red', 'dashed',
+                      'a'+str(int(probabilityLevel*100))+' : '+str(round(detectionSize[0], 3)))
+            if confidenceLevel is not None:
+                ax.vlines(detectionSize[1], 0., probabilityLevel, 'blue', 'dashed',
+                      'a'+str(int(probabilityLevel*100))+'/'+str(int(confidenceLevel*100))+\
+                      ' : '+str(round(detectionSize[1], 3)))
+
+        ax.legend(loc='lower right', fontsize='small')
+        ax.set_xlabel('Defects')
+        ax.set_ylabel('POD')
+        return fig, ax

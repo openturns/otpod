@@ -202,31 +202,63 @@ def computeDurbinWatsonTest(x, residuals, hypothesis="Equal"):
 ######### censureFilter #########
 # This function filters the defects and signals in case where low and/or high
 # threshold are given.
-def censureFilter(defects, signals, noiseThres, saturationThres):
+class DataHandling(object):
     """
-    Sort defect sizes with respect to the signal if it is censored or not
+    Static methods for data handling.
     """
-    # transform in numpy.array
-    defects = np.array(defects)
-    signals = np.array(signals)
-    # defects in the uncensored area
-    defectsUnc = defects[np.logical_and(signals > noiseThres, 
-                                        signals < saturationThres)]
-    # defects in the noisy area
-    defectsNoise = defects[signals <= noiseThres]
-    # defects in the saturation area
-    defectsSat = defects[signals >= saturationThres]
-    # signals in the uncensored area
-    signalsUnc = signals[np.logical_and(signals > noiseThres,
-                                        signals < saturationThres)]
+    @staticmethod
+    def filterCensoredData(defects, signals, noiseThres, saturationThres):
+        """
+        Sort defect sizes with respect to the censored signals.
 
-    # transform in numericalSample
-    defectsUnc = ot.NumericalSample(np.atleast_2d(defectsUnc).T)
-    defectsNoise = ot.NumericalSample(np.atleast_2d(defectsNoise).T)
-    defectsSat = ot.NumericalSample(np.atleast_2d(defectsSat).T)
-    signalsUnc = ot.NumericalSample(np.atleast_2d(signalsUnc).T)
+        Parameters
+        ----------
+        defects : 2-d sequence of float
+            Vector of the defect sizes.
+        signals : 2-d sequence of float
+            Vector of the signals, of dimension 1.
+        noiseThres : float
+            Value for low censored data. Default is None.
+        saturationThres : float
+            Value for high censored data. Default is None
 
-    return defectsUnc, defectsNoise, defectsSat, signalsUnc
+        Returns
+        -------
+        defectsUnc : 2-d sequence of float
+            Vector of the defect sizes in the uncensored area.
+        defectsNoise : 2-d sequence of float
+            Vector of the defect sizes in the noisy area.
+        defectsSat : 2-d sequence of float
+            Vector of the defect sizes in the saturation area.
+        signalsUnc : 2-d sequence of float
+            Vector of the signals in the uncensored area.
+
+        Notes
+        -----
+        The data are sorted in three different vectors whether they belong to
+        the noisy area, the uncensored area or the saturation area.
+        """
+        # transform in numpy.array
+        defects = np.array(defects)
+        signals = np.array(signals)
+        # defects in the uncensored area
+        defectsUnc = defects[np.logical_and(signals > noiseThres, 
+                                            signals < saturationThres)]
+        # defects in the noisy area
+        defectsNoise = defects[signals <= noiseThres]
+        # defects in the saturation area
+        defectsSat = defects[signals >= saturationThres]
+        # signals in the uncensored area
+        signalsUnc = signals[np.logical_and(signals > noiseThres,
+                                            signals < saturationThres)]
+
+        # transform in numericalSample
+        defectsUnc = ot.NumericalSample(np.atleast_2d(defectsUnc).T)
+        defectsNoise = ot.NumericalSample(np.atleast_2d(defectsNoise).T)
+        defectsSat = ot.NumericalSample(np.atleast_2d(defectsSat).T)
+        signalsUnc = ot.NumericalSample(np.atleast_2d(signalsUnc).T)
+
+        return defectsUnc, defectsNoise, defectsSat, signalsUnc
 
 
 

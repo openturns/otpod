@@ -11,6 +11,8 @@ from ._math_tools import computeBoxCox, computeZeroMeanTest, computeBreuschPagan
 from statsmodels.regression.linear_model import OLS
 import numpy as np
 import matplotlib.pyplot as plt
+import logging
+
 
 class _Results():
     """
@@ -63,6 +65,45 @@ class UnivariateLinearModelAnalysis():
     - computes the linear regression parameters for censored data if needed,
     - computes the residuals,
     - runs all hypothesis tests.
+
+    Examples
+    --------
+    Generate data :
+
+    >>> import openturns as ot
+    >>> import otpod
+    >>> N = 100
+    >>> ot.RandomGenerator.SetSeed(0)
+    >>> defectDist = ot.Uniform(0.1, 0.6)
+    >>> epsilon = ot.Normal(0, 1.9)
+    >>> defects = defectDist.getSample(N)
+    >>> signalsInvBoxCox = defects * 43. + epsilon.getSample(N) + 2.5
+    >>> invBoxCox = ot.InverseBoxCoxTransform(0.3)
+    >>> signals = invBoxCox(signalsInvBoxCox)
+    
+    Run analysis with gaussian hypothesis on the residuals :
+
+    >>> analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, boxCox=True)
+    >>> print analysis.getIntercept() # get intercept value
+    [Intercept for uncensored case : 2.51037]
+    >>> print analysis.getKolmogorovPValue()
+    [Kolmogorov p-value for uncensored case : 0.835529]
+    
+    Run analysis with noise and saturation threshold :
+
+    >>> analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, 60., 1700., boxCox=True)
+    >>> print analysis.getIntercept() # get intercept value for uncensored and censored case
+    [Intercept for uncensored case : 4.28758, Intercept for censored case : 3.11243]
+    >>> print analysis.getKolmogorovPValue()
+    [Kolmogorov p-value for uncensored case : 0.346827, Kolmogorov p-value for censored case : 0.885006]
+
+    Run analysis with a Weibull distribution hypothesis on the residuals
+
+    >>> analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, 60., 1700., ot.WeibullFactory(), boxCox=True)
+    >>> print analysis.getIntercept() # get intercept value for uncensored and censored case
+    [Intercept for uncensored case : 4.28758, Intercept for censored case : 3.11243]
+    >>> print analysis.getKolmogorovPValue()
+    [Kolmogorov p-value for uncensored case : 0.476036, Kolmogorov p-value for censored case : 0.71764]
     """
 
     def __init__(self, inputSample, outputSample, noiseThres=None,
@@ -111,6 +152,10 @@ class UnivariateLinearModelAnalysis():
 
         # run the analysis
         self._run()
+
+        # initialize the logger to display warnings
+        logger = logging.getLogger()
+        logger.setLevel(logging.WARNING)
 
     def _run(self):
         """
@@ -283,7 +328,7 @@ class UnivariateLinearModelAnalysis():
         print '-' * ndash
         print residualsResult
         print '-' * ndash
-
+        print ''
         # print warnings
         self._printWarnings()
 
@@ -302,20 +347,23 @@ class UnivariateLinearModelAnalysis():
         if testPValues and not self._boxCox:
             msg[0] = 'Some hypothesis tests failed : please consider to use '+\
                         'the Box Cox transformation.'
-            ot.Log.Warn(msg[0])
-            ot.Log.Flush()
+            logging.warn(msg[0])
+            # ot.Log.Warn(msg[0])
+            # ot.Log.Flush()
         elif testPValues and self._boxCox:
             msg[1] = 'Some hypothesis tests failed : please consider to use '+\
                         'quantile regression or polynomial chaos to build POD.'
-            ot.Log.Warn(msg[1])
-            ot.Log.Flush()
+            logging.warn(msg[1])
+            # ot.Log.Warn(msg[1])
+            # ot.Log.Flush()
 
         if self._resultsUnc.resDist.getClassName() != 'Normal':
             msg[2] = 'Confidence interval, Normality tests and zero ' + \
                         'residual mean test are given assuming the residuals ' +\
                         'follow a Normal distribution.'
-            ot.Log.Warn(msg[2])
-            ot.Log.Flush()
+            logging.warn(msg[2])
+            # ot.Log.Warn(msg[2])
+            # ot.Log.Flush()
         # return msg for the test with pytest
         return msg
 

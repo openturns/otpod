@@ -1,36 +1,36 @@
 \indexentry{UnivariateLinearModelAnalysis (class in otpod)|hyperpage}{1}
-\indexentry{drawBoxCoxLikelihood() (UnivariateLinearModelAnalysis method)|hyperpage}{2}
+\indexentry{drawBoxCoxLikelihood() (UnivariateLinearModelAnalysis method)|hyperpage}{3}
 \indexentry{drawLinearModel() (UnivariateLinearModelAnalysis method)|hyperpage}{3}
-\indexentry{drawResiduals() (UnivariateLinearModelAnalysis method)|hyperpage}{3}
-\indexentry{drawResidualsDistribution() (UnivariateLinearModelAnalysis method)|hyperpage}{3}
+\indexentry{drawResiduals() (UnivariateLinearModelAnalysis method)|hyperpage}{4}
+\indexentry{drawResidualsDistribution() (UnivariateLinearModelAnalysis method)|hyperpage}{4}
 \indexentry{drawResidualsQQplot() (UnivariateLinearModelAnalysis method)|hyperpage}{4}
-\indexentry{getAndersonDarlingPValue() (UnivariateLinearModelAnalysis method)|hyperpage}{4}
-\indexentry{getBoxCoxParameter() (UnivariateLinearModelAnalysis method)|hyperpage}{4}
-\indexentry{getBreuschPaganPValue() (UnivariateLinearModelAnalysis method)|hyperpage}{4}
-\indexentry{getCramerVonMisesPValue() (UnivariateLinearModelAnalysis method)|hyperpage}{4}
-\indexentry{getDurbinWatsonPValue() (UnivariateLinearModelAnalysis method)|hyperpage}{4}
-\indexentry{getHarrisonMcCabePValue() (UnivariateLinearModelAnalysis method)|hyperpage}{4}
+\indexentry{getAndersonDarlingPValue() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
+\indexentry{getBoxCoxParameter() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
+\indexentry{getBreuschPaganPValue() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
+\indexentry{getCramerVonMisesPValue() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
+\indexentry{getDurbinWatsonPValue() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
+\indexentry{getHarrisonMcCabePValue() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
 \indexentry{getInputSample() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
 \indexentry{getIntercept() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
 \indexentry{getKolmogorovPValue() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
-\indexentry{getNoiseThreshold() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
-\indexentry{getOutputSample() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
-\indexentry{getR2() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
-\indexentry{getResiduals() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
-\indexentry{getResidualsDistribution() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
-\indexentry{getSaturationThreshold() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
-\indexentry{getSlope() (UnivariateLinearModelAnalysis method)|hyperpage}{5}
+\indexentry{getNoiseThreshold() (UnivariateLinearModelAnalysis method)|hyperpage}{6}
+\indexentry{getOutputSample() (UnivariateLinearModelAnalysis method)|hyperpage}{6}
+\indexentry{getR2() (UnivariateLinearModelAnalysis method)|hyperpage}{6}
+\indexentry{getResiduals() (UnivariateLinearModelAnalysis method)|hyperpage}{6}
+\indexentry{getResidualsDistribution() (UnivariateLinearModelAnalysis method)|hyperpage}{6}
+\indexentry{getSaturationThreshold() (UnivariateLinearModelAnalysis method)|hyperpage}{6}
+\indexentry{getSlope() (UnivariateLinearModelAnalysis method)|hyperpage}{6}
 \indexentry{getStandardError() (UnivariateLinearModelAnalysis method)|hyperpage}{6}
 \indexentry{getZeroMeanPValue() (UnivariateLinearModelAnalysis method)|hyperpage}{6}
-\indexentry{printResults() (UnivariateLinearModelAnalysis method)|hyperpage}{6}
-\indexentry{saveResults() (UnivariateLinearModelAnalysis method)|hyperpage}{6}
-\indexentry{UnivariateLinearModelPOD (class in otpod)|hyperpage}{6}
-\indexentry{computeDetectionSize() (UnivariateLinearModelPOD method)|hyperpage}{7}
+\indexentry{printResults() (UnivariateLinearModelAnalysis method)|hyperpage}{7}
+\indexentry{saveResults() (UnivariateLinearModelAnalysis method)|hyperpage}{7}
+\indexentry{UnivariateLinearModelPOD (class in otpod)|hyperpage}{7}
+\indexentry{computeDetectionSize() (UnivariateLinearModelPOD method)|hyperpage}{8}
 \indexentry{drawPOD() (UnivariateLinearModelPOD method)|hyperpage}{8}
-\indexentry{getPODCLModel() (UnivariateLinearModelPOD method)|hyperpage}{8}
-\indexentry{getPODModel() (UnivariateLinearModelPOD method)|hyperpage}{8}
-\indexentry{getSimulationSize() (UnivariateLinearModelPOD method)|hyperpage}{8}
-\indexentry{run() (UnivariateLinearModelPOD method)|hyperpage}{8}
+\indexentry{getPODCLModel() (UnivariateLinearModelPOD method)|hyperpage}{9}
+\indexentry{getPODModel() (UnivariateLinearModelPOD method)|hyperpage}{9}
+\indexentry{getSimulationSize() (UnivariateLinearModelPOD method)|hyperpage}{9}
+\indexentry{run() (UnivariateLinearModelPOD method)|hyperpage}{9}
 \indexentry{setSimulationSize() (UnivariateLinearModelPOD method)|hyperpage}{9}
-\indexentry{DataHandling (class in otpod)|hyperpage}{9}
-\indexentry{filterCensoredData() (DataHandling static method)|hyperpage}{9}
+\indexentry{DataHandling (class in otpod)|hyperpage}{10}
+\indexentry{filterCensoredData() (DataHandling static method)|hyperpage}{10}

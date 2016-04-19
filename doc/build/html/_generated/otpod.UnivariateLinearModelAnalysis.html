@@ -45,9 +45,9 @@
   <a href="../index.html">
     <h1>
       <img src="../_static/logo-openturns-wo-bg.png" alt="" width=100px height=100px />
-      OpenTURNS
+      otpod
     </h1>
-    <h2> An Open source initiative for the Treatment of Uncertainties, Risks'N Statistics</h2>
+    <h2> A module to build Probability of Detection for Non Destructive Testing. </h2>
   </a>
 </div>
 
@@ -157,6 +157,44 @@ Cox transformation is enabled with the given value. Default is False.</p>
 <li>computes the residuals,</li>
 <li>runs all hypothesis tests.</li>
 </ul>
+<p class="rubric">Examples</p>
+<p>Generate data :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">openturns</span> <span class="kn">as</span> <span class="nn">ot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">otpod</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">N</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ot</span><span class="o">.</span><span class="n">RandomGenerator</span><span class="o">.</span><span class="n">SetSeed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">defectDist</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.9</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">defects</span> <span class="o">=</span> <span class="n">defectDist</span><span class="o">.</span><span class="n">getSample</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signalsInvBoxCox</span> <span class="o">=</span> <span class="n">defects</span> <span class="o">*</span> <span class="mf">43.</span> <span class="o">+</span> <span class="n">epsilon</span><span class="o">.</span><span class="n">getSample</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">+</span> <span class="mf">2.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">invBoxCox</span> <span class="o">=</span> <span class="n">ot</span><span class="o">.</span><span class="n">InverseBoxCoxTransform</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signals</span> <span class="o">=</span> <span class="n">invBoxCox</span><span class="p">(</span><span class="n">signalsInvBoxCox</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Run analysis with gaussian hypothesis on the residuals :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">otpod</span><span class="o">.</span><span class="n">UnivariateLinearModelAnalysis</span><span class="p">(</span><span class="n">defects</span><span class="p">,</span> <span class="n">signals</span><span class="p">,</span> <span class="n">boxCox</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">analysis</span><span class="o">.</span><span class="n">getIntercept</span><span class="p">()</span> <span class="c1"># get intercept value</span>
+<span class="go">[Intercept for uncensored case : 2.51037]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">analysis</span><span class="o">.</span><span class="n">getKolmogorovPValue</span><span class="p">()</span>
+<span class="go">[Kolmogorov p-value for uncensored case : 0.835529]</span>
+</pre></div>
+</div>
+<p>Run analysis with noise and saturation threshold :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">otpod</span><span class="o">.</span><span class="n">UnivariateLinearModelAnalysis</span><span class="p">(</span><span class="n">defects</span><span class="p">,</span> <span class="n">signals</span><span class="p">,</span> <span class="mf">60.</span><span class="p">,</span> <span class="mf">1700.</span><span class="p">,</span> <span class="n">boxCox</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">analysis</span><span class="o">.</span><span class="n">getIntercept</span><span class="p">()</span> <span class="c1"># get intercept value for uncensored and censored case</span>
+<span class="go">[Intercept for uncensored case : 4.28758, Intercept for censored case : 3.11243]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">analysis</span><span class="o">.</span><span class="n">getKolmogorovPValue</span><span class="p">()</span>
+<span class="go">[Kolmogorov p-value for uncensored case : 0.346827, Kolmogorov p-value for censored case : 0.885006]</span>
+</pre></div>
+</div>
+<p>Run analysis with a Weibull distribution hypothesis on the residuals</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">analysis</span> <span class="o">=</span> <span class="n">otpod</span><span class="o">.</span><span class="n">UnivariateLinearModelAnalysis</span><span class="p">(</span><span class="n">defects</span><span class="p">,</span> <span class="n">signals</span><span class="p">,</span> <span class="mf">60.</span><span class="p">,</span> <span class="mf">1700.</span><span class="p">,</span> <span class="n">ot</span><span class="o">.</span><span class="n">WeibullFactory</span><span class="p">(),</span> <span class="n">boxCox</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">analysis</span><span class="o">.</span><span class="n">getIntercept</span><span class="p">()</span> <span class="c1"># get intercept value for uncensored and censored case</span>
+<span class="go">[Intercept for uncensored case : 4.28758, Intercept for censored case : 3.11243]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">analysis</span><span class="o">.</span><span class="n">getKolmogorovPValue</span><span class="p">()</span>
+<span class="go">[Kolmogorov p-value for uncensored case : 0.476036, Kolmogorov p-value for censored case : 0.71764]</span>
+</pre></div>
+</div>
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>

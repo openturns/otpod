@@ -154,7 +154,7 @@ def computeHarrisonMcCabeTest(residuals, breakRatio=0.5, simulationSize=1000):
                   xSampleNor.computeStandardDeviation()[0, 0])
         stat[i] = np.sum(xstand[:breakpoint]**2) / np.sum(xstand**2)
 
-    return np.mean(stat < hmc)
+    return np.mean(stat <= hmc)
 
 ######### computeDurbinWatsonTest #########
 # This function tests if the residuals have non autocorrelation
@@ -243,7 +243,7 @@ class DataHandling(object):
             noiseThres = -ot.sys.float_info.max
         if saturationThres is None:
             saturationThres = ot.sys.float_info.max
-            
+
         # transform in numpy.array
         defects = np.array(defects)
         signals = np.array(signals)

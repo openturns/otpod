@@ -511,7 +511,7 @@ class UnivariateLinearModelAnalysis():
             # get the fitted values from the linear model of statsmodels
             fittedSignals = self._algoLinear.fittedvalues
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 6))
         ax.plot(defects, signals, 'b.', label='Data', ms=9)
         ax.plot(defects, fittedSignals, 'r-', label='Linear model')
         ax.set_xlabel('Defects')
@@ -562,7 +562,7 @@ class UnivariateLinearModelAnalysis():
         else:
             residuals = self._resultsUnc.residuals
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 6))
         ax.grid()
         ax.plot(defects, residuals, 'b.', ms=9)
         ax.hlines(0, defects.min(), defects.max(), 'r', 'dashed')
@@ -611,7 +611,7 @@ class UnivariateLinearModelAnalysis():
             residuals = self._resultsUnc.residuals
             distribution = self._resultsUnc.resDist
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 8))
         graph = ot.VisualTest.DrawQQplot(residuals, distribution)
         drawables = graph.getDrawables()
         drawables[1].setPointStyle('dot')
@@ -620,7 +620,8 @@ class UnivariateLinearModelAnalysis():
         graph = ot.Graph()
         graph.add(drawables)
 
-        graph.setXTitle('Defects empirical quantiles')
+        graph.setXTitle('Residuals empirical quantiles')
+        graph.setYTitle('Fitted residuals distribution')
         graph.setGrid(True)
         View(graph, axes=[ax])
         if model == "censored":
@@ -667,7 +668,7 @@ class UnivariateLinearModelAnalysis():
             residuals = self._resultsUnc.residuals
             distribution = self._resultsUnc.resDist
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 6))
         graphHist = ot.VisualTest.DrawHistogram(residuals)
         graphPDF = distribution.drawPDF()
         graphHist.setGrid(True)
@@ -712,7 +713,7 @@ class UnivariateLinearModelAnalysis():
         if not self._boxCox:
             raise Exception('Box Cox transformation of the analysis not enabled.')
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 6))
         # get the graph from the method 'computeBoxCox'
         View(self._graphBoxCox, axes=[ax])
         ax.set_xlabel('Box Cox parameter')

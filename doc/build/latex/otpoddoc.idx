@@ -26,8 +26,11 @@
 \indexentry{saveResults() (UnivariateLinearModelAnalysis method)|hyperpage}{6}
 \indexentry{UnivariateLinearModelPOD (class in otpod)|hyperpage}{6}
 \indexentry{computeDetectionSize() (UnivariateLinearModelPOD method)|hyperpage}{7}
+\indexentry{drawPOD() (UnivariateLinearModelPOD method)|hyperpage}{8}
 \indexentry{getPODCLModel() (UnivariateLinearModelPOD method)|hyperpage}{8}
 \indexentry{getPODModel() (UnivariateLinearModelPOD method)|hyperpage}{8}
 \indexentry{getSimulationSize() (UnivariateLinearModelPOD method)|hyperpage}{8}
 \indexentry{run() (UnivariateLinearModelPOD method)|hyperpage}{8}
-\indexentry{setSimulationSize() (UnivariateLinearModelPOD method)|hyperpage}{8}
+\indexentry{setSimulationSize() (UnivariateLinearModelPOD method)|hyperpage}{9}
+\indexentry{DataHandling (class in otpod)|hyperpage}{9}
+\indexentry{filterCensoredData() (DataHandling static method)|hyperpage}{9}

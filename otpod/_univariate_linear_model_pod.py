@@ -9,8 +9,7 @@ from ._pod import POD
 from ._math_tools import computeBoxCox, DataHandling, computeLinearParametersCensored
 from statsmodels.regression.linear_model import OLS
 import numpy as np
-from _docstring_inherit import DocInherit
-docInherit = DocInherit
+from _decorator import DocInherit, keepingArgs
 
 
 class UnivariateLinearModelPOD(POD):
@@ -234,14 +233,16 @@ class UnivariateLinearModelPOD(POD):
 
         return PODmodelCl
 
-    @docInherit
+    @DocInherit # decorator to inherit the docstring from POD class
+    @keepingArgs # decorator to keep the real signature
     def computeDetectionSize(self, probabilityLevel, confidenceLevel=None):
         return self._computeDetectionSize(self.getPODModel(),
                                           self.getPODCLModel(),
                                           probabilityLevel,
                                           confidenceLevel)
 
-    @docInherit
+    @DocInherit # decorator to inherit the docstring from POD class
+    @keepingArgs # decorator to keep the real signature
     def drawPOD(self, probabilityLevel=None, confidenceLevel=None, defectMin=None,
                 defectMax=None, nbPt=100, name=None):
 

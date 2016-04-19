@@ -122,7 +122,7 @@ class POD(object):
             The probability level for which the defect size is computed.
         confidenceLevel : float
             The confidence level associated to the given probability level the
-            defect size is computed.
+            defect size is computed. Default is None.
 
         Returns
         -------
@@ -160,15 +160,16 @@ class POD(object):
         Parameters
         ----------
         probabilityLevel : float
-            The probability level for which the defect size is computed.
+            The probability level for which the defect size is computed. Default
+            is None.
         confidenceLevel : float
             The confidence level associated to the given probability level the
-            defect size is computed.
+            defect size is computed. Default is None.
         defectMin, defectMax : float
             Define the interval where the curve is plotted. Default : min and
             max values of the inputSample.
         nbPt : int
-            The number of points to draw the curves.
+            The number of points to draw the curves. Default is 100.
         name : string
             name of the figure to be saved with *transparent* option sets to True
             and *bbox_inches='tight'*. It can be only the file name or the 

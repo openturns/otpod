@@ -21,7 +21,7 @@
 
 
 \title{otpod Documentation}
-\date{April 15, 2016}
+\date{April 19, 2016}
 \release{0.0.1}
 \author{Antoine Dumas}
 \newcommand{\sphinxlogo}{}
@@ -1060,17 +1060,22 @@ built by bootstrap.
 \endlastfoot
 
 
-{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.computeDetectionSize]{\emph{\code{computeDetectionSize}}}}(probabilityLevel{[}, ...{]})
+{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.computeDetectionSize]{\emph{\code{computeDetectionSize}}}}(*args, **kwargs)
  & 
 Compute the detection size for a given probability level.
 \\
 \hline
-{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODCLModel]{\emph{\code{getPODCLModel}}}}({[}model, confidenceLevel{]})
+{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.drawPOD]{\emph{\code{drawPOD}}}}(*args, **kwargs)
+ & 
+Draw the POD curve.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODCLModel]{\emph{\code{getPODCLModel}}}}({[}confidenceLevel{]})
  & 
 Accessor to the POD model at a given confidence level.
 \\
 \hline
-{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODModel]{\emph{\code{getPODModel}}}}({[}model{]})
+{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODModel]{\emph{\code{getPODModel}}}}()
  & 
 Accessor to the POD model.
 \\
@@ -1094,7 +1099,7 @@ Accessor to the simulation size
 \index{computeDetectionSize() (UnivariateLinearModelPOD method)}
 
 \begin{fulllineitems}
-\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.computeDetectionSize}\pysiglinewithargsret{\bfcode{computeDetectionSize}}{\emph{probabilityLevel}, \emph{confidenceLevel=None}}{}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.computeDetectionSize}\pysiglinewithargsret{\bfcode{computeDetectionSize}}{\emph{*args}, \emph{**kwargs}}{}
 Compute the detection size for a given probability level.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode
@@ -1108,7 +1113,7 @@ The probability level for which the defect size is computed.
 \begin{quote}
 
 The confidence level associated to the given probability level the
-defect size is computed.
+defect size is computed. Default is None.
 \end{quote}
 
 \item[{Returns}] \leavevmode
@@ -1123,26 +1128,76 @@ computing for each case.
 
 \end{fulllineitems}
 
-\index{getPODCLModel() (UnivariateLinearModelPOD method)}
+\index{drawPOD() (UnivariateLinearModelPOD method)}
 
 \begin{fulllineitems}
-\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODCLModel}\pysiglinewithargsret{\bfcode{getPODCLModel}}{\emph{model='uncensored'}, \emph{confidenceLevel=0.95}}{}
-Accessor to the POD model at a given confidence level.
+\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.drawPOD}\pysiglinewithargsret{\bfcode{drawPOD}}{\emph{*args}, \emph{**kwargs}}{}
+Draw the POD curve.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode
-\textbf{model} : string
+\textbf{probabilityLevel} : float
 \begin{quote}
 
-The linear regression model to be used, either \emph{uncensored} or
-\emph{censored} if censored threshold were given. Default is \emph{uncensored}.
+The probability level for which the defect size is computed. Default
+is None.
 \end{quote}
 
 \textbf{confidenceLevel} : float
 \begin{quote}
 
-The confidence level the POD must be computed. Default is 0.95
+The confidence level associated to the given probability level the
+defect size is computed. Default is None.
 \end{quote}
 
+\textbf{defectMin, defectMax} : float
+\begin{quote}
+
+Define the interval where the curve is plotted. Default : min and
+max values of the inputSample.
+\end{quote}
+
+\textbf{nbPt} : int
+\begin{quote}
+
+The number of points to draw the curves. Default is 100.
+\end{quote}
+
+\textbf{name} : string
+\begin{quote}
+
+name of the figure to be saved with \emph{transparent} option sets to True
+and \emph{bbox\_inches='tight'}. It can be only the file name or the 
+full path name. Default is None.
+\end{quote}
+
+\item[{Returns}] \leavevmode
+\textbf{fig} : \href{http://matplotlib.org/api/figure\_api.html}{matplotlib.figure}
+\begin{quote}
+
+Matplotlib figure object.
+\end{quote}
+
+\textbf{ax} : \href{http://matplotlib.org/api/axes\_api.html}{matplotlib.axes}
+\begin{quote}
+
+Matplotlib axes object.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getPODCLModel() (UnivariateLinearModelPOD method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODCLModel}\pysiglinewithargsret{\bfcode{getPODCLModel}}{\emph{confidenceLevel=0.95}}{}
+Accessor to the POD model at a given confidence level.
+\begin{description}
+\item[{confidenceLevel}] \leavevmode{[}float{]}
+The confidence level the POD must be computed. Default is 0.95
+
+\end{description}
+\begin{quote}\begin{description}
 \item[{Returns}] \leavevmode
 \textbf{PODModelCl} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalMathFunction.html\#openturns.NumericalMathFunction}{\code{openturns.NumericalMathFunction}}
 \begin{quote}
@@ -1158,17 +1213,9 @@ defect value at the confidence level given as parameter.
 \index{getPODModel() (UnivariateLinearModelPOD method)}
 
 \begin{fulllineitems}
-\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODModel}\pysiglinewithargsret{\bfcode{getPODModel}}{\emph{model='uncensored'}}{}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODModel}\pysiglinewithargsret{\bfcode{getPODModel}}{}{}
 Accessor to the POD model.
 \begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\textbf{model} : string
-\begin{quote}
-
-The linear regression model to be used, either \emph{uncensored} or
-\emph{censored} if censored threshold were given. Default is \emph{uncensored}.
-\end{quote}
-
 \item[{Returns}] \leavevmode
 \textbf{PODModel} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalMathFunction.html\#openturns.NumericalMathFunction}{\code{openturns.NumericalMathFunction}}
 \begin{quote}
@@ -1196,9 +1243,9 @@ Accessor to the simulation size.
 Build the POD models.
 \paragraph{Notes}
 
-This method build the linear model for the uncensored and censored case
-if required. Then it builds the POD model following the given residuals
-distribution factory.
+This method build the linear model for the uncensored or censored case
+depending of the input parameters. Then it builds the POD model
+following the given residuals distribution factory.
 
 \end{fulllineitems}
 
@@ -1216,6 +1263,129 @@ The size of the simulation used to compute the confidence interval.
 \end{quote}
 
 \end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+
+
+\subsection{Tools}
+\label{user_manual:tools}
+\begin{longtable}{ll}
+\hline
+\endfirsthead
+
+\multicolumn{2}{c}%
+{{\textsf{\tablename\ \thetable{} -- continued from previous page}}} \\
+\hline
+\endhead
+
+\hline \multicolumn{2}{|r|}{{\textsf{Continued on next page}}} \\ \hline
+\endfoot
+
+\endlastfoot
+
+
+{\hyperref[_generated/otpod.DataHandling:otpod.DataHandling]{\emph{\code{DataHandling}}}}
+ & 
+Static methods for data handling.
+\\
+\hline\end{longtable}
+
+
+
+\subsubsection{DataHandling}
+\label{_generated/otpod.DataHandling::doc}\label{_generated/otpod.DataHandling:datahandling}\index{DataHandling (class in otpod)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.DataHandling:otpod.DataHandling}\pysigline{\strong{class }\bfcode{DataHandling}}
+Static methods for data handling.
+\paragraph{Methods}
+
+\begin{longtable}{ll}
+\hline
+\endfirsthead
+
+\multicolumn{2}{c}%
+{{\textsf{\tablename\ \thetable{} -- continued from previous page}}} \\
+\hline
+\endhead
+
+\hline \multicolumn{2}{|r|}{{\textsf{Continued on next page}}} \\ \hline
+\endfoot
+
+\endlastfoot
+
+
+{\hyperref[_generated/otpod.DataHandling:otpod.DataHandling.filterCensoredData]{\emph{\code{filterCensoredData}}}}(defects, signals, ...)
+ & 
+Sort defect sizes with respect to the censored signals.
+\\
+\hline\end{longtable}
+
+\index{filterCensoredData() (DataHandling static method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.DataHandling:otpod.DataHandling.filterCensoredData}\pysiglinewithargsret{\strong{static }\bfcode{filterCensoredData}}{\emph{defects}, \emph{signals}, \emph{noiseThres}, \emph{saturationThres}}{}
+Sort defect sizes with respect to the censored signals.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\textbf{defects} : 2-d sequence of float
+\begin{quote}
+
+Vector of the defect sizes.
+\end{quote}
+
+\textbf{signals} : 2-d sequence of float
+\begin{quote}
+
+Vector of the signals, of dimension 1.
+\end{quote}
+
+\textbf{noiseThres} : float
+\begin{quote}
+
+Value for low censored data. Default is None.
+\end{quote}
+
+\textbf{saturationThres} : float
+\begin{quote}
+
+Value for high censored data. Default is None
+\end{quote}
+
+\item[{Returns}] \leavevmode
+\textbf{defectsUnc} : 2-d sequence of float
+\begin{quote}
+
+Vector of the defect sizes in the uncensored area.
+\end{quote}
+
+\textbf{defectsNoise} : 2-d sequence of float
+\begin{quote}
+
+Vector of the defect sizes in the noisy area.
+\end{quote}
+
+\textbf{defectsSat} : 2-d sequence of float
+\begin{quote}
+
+Vector of the defect sizes in the saturation area.
+\end{quote}
+
+\textbf{signalsUnc} : 2-d sequence of float
+\begin{quote}
+
+Vector of the signals in the uncensored area.
+\end{quote}
+
+\end{description}\end{quote}
+\paragraph{Notes}
+
+The data are sorted in three different vectors whether they belong to
+the noisy area, the uncensored area or the saturation area.
 
 \end{fulllineitems}
 

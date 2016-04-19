@@ -5,6 +5,7 @@ __all__ = []
 
 """
 doc_inherit decorator
+code adapted from : http://code.activestate.com/recipes/576862/
 
 Usage:
 
@@ -15,7 +16,7 @@ class Foo(object):
         pass
 
 class Bar(Foo):
-    @doc_inherit
+    @DocInherit
     def foo(self):
         self._foo()
 
@@ -23,6 +24,7 @@ Now, Bar.foo.__doc__ == Bar().foo.__doc__ == Foo.foo.__doc__ == "Frobber"
 """
 
 from functools import wraps
+import decorator
 
 class DocInherit(object):
     """
@@ -69,4 +71,10 @@ class DocInherit(object):
         func.__doc__ = source.__doc__
         return func
 
-doc_inherit = DocInherit 
+def keepingArgs(target):
+    # the target function has been prepended to the list of arguments
+    def wrapper(target, *args, **kwargs): 
+        return target(*args, **kwargs)
+    # We are calling the returned value with the target function to get a 
+    # 'proper' wrapper function back
+    return decorator.decorator(wrapper)(target)

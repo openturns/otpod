@@ -6,13 +6,14 @@
 Welcome to otpod's documentation!
 =================================
 
+otpod is a module for `OpenTURNS <http://www.openturns.org>`_.
+
 Contents:
 ---------
     
 .. toctree::
     :maxdepth: 3
 
-    includeme
     user_manual
 
 .. toctree::

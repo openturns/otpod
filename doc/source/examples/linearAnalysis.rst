@@ -11,7 +11,7 @@ Linear model analysis
     %matplotlib inline
 
 Generate data
-~~~~~~~~~~~~~
+-------------
 
 .. code:: python
 
@@ -27,14 +27,14 @@ Generate data
     signals = invBoxCox(signalsInvBoxCox)
 
 Run analysis without Box Cox
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------------
 
 .. code:: python
 
     analysis = otpod.UnivariateLinearModelAnalysis(defects, signals)
 
 Get some particular results
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------
 
 .. code:: python
 
@@ -45,20 +45,13 @@ Get some particular results
 
 .. parsed-literal::
 
-    [Intercept for uncensored case : 4.02409]
-    [R2 for uncensored case : 0.894736]
-    [Kolmogorov p-value for uncensored case : 0.337199]
+    [Intercept for uncensored case : -604.758]
+    [R2 for uncensored case : 0.780469]
+    [Kolmogorov p-value for uncensored case : 0.803087]
 
-
-Save all results in a csv file
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code:: python
-
-    analysis.saveResults('results.csv')
 
 Print all results of the linear regression and all tests on the residuals
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------------------------------------------------
 
 A warning is printed because some residuals tests failed : the p-value
 is less than 0.5.
@@ -98,7 +91,7 @@ is less than 0.5.
     --------------------------------------------------------------------------------
              Residuals analysis results
     --------------------------------------------------------------------------------
-    Fitted distribution (uncensored) :            Normal(mu = 6.00267e-13, sigma = 289.998)              
+    Fitted distribution (uncensored) :            Normal(mu = 5.95719e-13, sigma = 289.998)              
                                                                              
                                                      Uncensored              
     Distribution fitting test                                                
@@ -121,15 +114,44 @@ is less than 0.5.
     
 
 
+Show graphs
+-----------
+
+The linear model is not correct
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: python
+
+    fig, ax = analysis.drawLinearModel()
+    fig.show()
+
+
+
+.. image:: linearAnalysis_files/linearAnalysis_11_0.png
+
+
+The residuals are not homoskedastic
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: python
+
+    fig, ax = analysis.drawResiduals()
+    fig.show()
+
+
+
+.. image:: linearAnalysis_files/linearAnalysis_13_0.png
+
+
 Run analysis with Box Cox
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 
 .. code:: python
 
     analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, boxCox=True)
 
 Print results of the linear regression and all tests on the residuals
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------------------------------------
 
 .. code:: python
 
@@ -184,37 +206,46 @@ Print results of the linear regression and all tests on the residuals
     
 
 
-Print graphs
-------------
-
-The linear regression model with data
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Save all results in a csv file
+------------------------------
 
 .. code:: python
 
-    fig, ax = analysis.drawLinearModel(name='figure/linearModel.png') # save figure as png file
+    analysis.saveResults('results.csv')
+
+Show graphs
+-----------
+
+The linear regression model with data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: python
+
+    fig, ax = analysis.drawLinearModel(name='figure/linearModel.png')
+    # The figure is saved as png file
     fig.show()
 
 
 
-.. image:: linearPOD_files/linearPOD_17_0.png
+.. image:: linearAnalysis_files/linearAnalysis_21_0.png
 
 
 The residuals with respect to the defects
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: python
 
-    fig, ax = analysis.drawResiduals(name='figure/residuals.eps') # save figure as eps file
+    fig, ax = analysis.drawResiduals(name='figure/residuals.eps')
+    # The figure is saved as eps file
     fig.show()
 
 
 
-.. image:: linearPOD_files/linearPOD_19_0.png
+.. image:: linearAnalysis_files/linearAnalysis_23_0.png
 
 
 The fitted residuals distribution with the histogram
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: python
 
@@ -226,34 +257,32 @@ The fitted residuals distribution with the histogram
 
 
 
-.. image:: linearPOD_files/linearPOD_21_0.png
+.. image:: linearAnalysis_files/linearAnalysis_25_0.png
 
 
 The residuals QQ plot
-^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: python
 
     fig, ax = analysis.drawResidualsQQplot()
-    fig.set_size_inches(8, 6)
     fig.show()
 
 
 
-.. image:: linearPOD_files/linearPOD_23_0.png
+.. image:: linearAnalysis_files/linearAnalysis_27_0.png
 
 
 The Box Cox likelihood with respect to the defect
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: python
 
     fig, ax = analysis.drawBoxCoxLikelihood(name='figure/BoxCoxlikelihood.png')
-    fig.set_size_inches(8, 6)
     fig.show()
 
 
 
-.. image:: linearPOD_files/linearPOD_25_0.png
+.. image:: linearAnalysis_files/linearAnalysis_29_0.png
 
 

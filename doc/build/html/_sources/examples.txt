@@ -6,5 +6,5 @@ Examples of the API
 .. toctree::
     :maxdepth: 1
 
-    examples/linearPOD
-    examples/linearPODCensoredData
+    examples/linearAnalysis
+    examples/linearAnalysisCensoredData

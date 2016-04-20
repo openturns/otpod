@@ -34,7 +34,7 @@ p-value (> 0.05):	1.0	0.83
 		
 Homoskedasticity test (constant variance)		
 Breush Pagan p-value (> 0.05):	0.69	0.71
-Harrison McCabe p-value (> 0.05):	0.59	0.52
+Harrison McCabe p-value (> 0.05):	0.6	0.51
 		
 Non autocorrelation test		
 Durbin Watson p-value (> 0.05):	0.43	0.48

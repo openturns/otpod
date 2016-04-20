@@ -11,7 +11,7 @@ Linear model analysis with censored data
     %matplotlib inline
 
 Generate data
-~~~~~~~~~~~~~
+-------------
 
 .. code:: python
 
@@ -27,7 +27,7 @@ Generate data
     signals = invBoxCox(signalsInvBoxCox)
 
 Run analysis with Box Cox
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 
 .. code:: python
 
@@ -37,7 +37,10 @@ Run analysis with Box Cox
                                                    saturationThres, boxCox=True)
 
 Get some particular results
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------
+
+Result values are given for both analysis performed on filtered data
+(uncensored case) and on censored data.
 
 .. code:: python
 
@@ -53,15 +56,8 @@ Get some particular results
     [Kolmogorov p-value for uncensored case : 0.477505, Kolmogorov p-value for censored case : 0.505919]
 
 
-Save all results in a csv file
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code:: python
-
-    analysis.saveResults('results.csv')
-
 Print all results of the linear regression and all tests on the residuals
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------------------------------------------------
 
 .. code:: python
 
@@ -110,7 +106,7 @@ Print all results of the linear regression and all tests on the residuals
                                                                              
     Homoskedasticity test (constant variance)                                
     Breush Pagan p-value (> 0.05):                         0.69          0.71
-    Harrison McCabe p-value (> 0.05):                      0.59          0.52
+    Harrison McCabe p-value (> 0.05):                       0.6          0.51
                                                                              
     Non autocorrelation test                                                 
     Durbin Watson p-value (> 0.05):                        0.43          0.48
@@ -118,11 +114,18 @@ Print all results of the linear regression and all tests on the residuals
     
 
 
-Print graphs
-~~~~~~~~~~~~
+Save all results in a csv file
+------------------------------
+
+.. code:: python
+
+    analysis.saveResults('results.csv')
+
+Show graphs
+-----------
 
 The linear regression model with data for the uncensored case (default case)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: python
 
@@ -132,11 +135,11 @@ The linear regression model with data for the uncensored case (default case)
 
 
 
-.. image:: linearPODCensoredData_files/linearPODCensoredData_13_0.png
+.. image:: linearAnalysisCensoredData_files/linearAnalysisCensoredData_13_0.png
 
 
-The linear regression model with data for the uncensored case (default case)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The linear regression model with data for the censored case
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: python
 
@@ -146,6 +149,6 @@ The linear regression model with data for the uncensored case (default case)
 
 
 
-.. image:: linearPODCensoredData_files/linearPODCensoredData_15_0.png
+.. image:: linearAnalysisCensoredData_files/linearAnalysisCensoredData_15_0.png
 
 

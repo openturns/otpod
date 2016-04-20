@@ -13,7 +13,7 @@ In terminal, type in :
 
     $ python setup.py install
 
-Documentation is available `here <http://adumasphi.github.io/otpod/>`_
+Documentation is available `here <http://adumasphi.github.io/otpod/>`_.
 
 Test are available in the 'test' directory. They can be launched with pytest and
 the following command in a terminal in the otpod directory:

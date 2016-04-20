@@ -154,7 +154,7 @@ def computeHarrisonMcCabeTest(residuals, breakRatio=0.5, simulationSize=1000):
                   xSampleNor.computeStandardDeviation()[0, 0])
         stat[i] = np.sum(xstand[:breakpoint]**2) / np.sum(xstand**2)
 
-    return np.mean(stat < hmc)
+    return np.mean(stat <= hmc)
 
 ######### computeDurbinWatsonTest #########
 # This function tests if the residuals have non autocorrelation
@@ -209,7 +209,7 @@ class DataHandling(object):
     @staticmethod
     def filterCensoredData(defects, signals, noiseThres, saturationThres):
         """
-        Sort defect sizes with respect to the censored signals.
+        Sort defects and signals with respect to the censore threholds.
 
         Parameters
         ----------
@@ -238,6 +238,12 @@ class DataHandling(object):
         The data are sorted in three different vectors whether they belong to
         the noisy area, the uncensored area or the saturation area.
         """
+        # check if one sided censoring
+        if noiseThres is None:
+            noiseThres = -ot.sys.float_info.max
+        if saturationThres is None:
+            saturationThres = ot.sys.float_info.max
+
         # transform in numpy.array
         defects = np.array(defects)
         signals = np.array(signals)

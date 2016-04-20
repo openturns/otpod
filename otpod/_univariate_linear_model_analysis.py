@@ -7,11 +7,12 @@ import openturns as ot
 from openturns.viewer import View
 from ._math_tools import computeBoxCox, computeZeroMeanTest, computeBreuschPaganTest, \
                          computeHarrisonMcCabeTest, computeDurbinWatsonTest, \
-                         computeR2, computeLinearParametersCensored
-from ._math_tools import DataHandling
+                         computeR2, DataHandling, computeLinearParametersCensored
 from statsmodels.regression.linear_model import OLS
 import numpy as np
 import matplotlib.pyplot as plt
+import logging
+
 
 class _Results():
     """
@@ -64,6 +65,45 @@ class UnivariateLinearModelAnalysis():
     - computes the linear regression parameters for censored data if needed,
     - computes the residuals,
     - runs all hypothesis tests.
+
+    Examples
+    --------
+    Generate data :
+
+    >>> import openturns as ot
+    >>> import otpod
+    >>> N = 100
+    >>> ot.RandomGenerator.SetSeed(0)
+    >>> defectDist = ot.Uniform(0.1, 0.6)
+    >>> epsilon = ot.Normal(0, 1.9)
+    >>> defects = defectDist.getSample(N)
+    >>> signalsInvBoxCox = defects * 43. + epsilon.getSample(N) + 2.5
+    >>> invBoxCox = ot.InverseBoxCoxTransform(0.3)
+    >>> signals = invBoxCox(signalsInvBoxCox)
+    
+    Run analysis with gaussian hypothesis on the residuals :
+
+    >>> analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, boxCox=True)
+    >>> print analysis.getIntercept() # get intercept value
+    [Intercept for uncensored case : 2.51037]
+    >>> print analysis.getKolmogorovPValue()
+    [Kolmogorov p-value for uncensored case : 0.835529]
+    
+    Run analysis with noise and saturation threshold :
+
+    >>> analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, 60., 1700., boxCox=True)
+    >>> print analysis.getIntercept() # get intercept value for uncensored and censored case
+    [Intercept for uncensored case : 4.28758, Intercept for censored case : 3.11243]
+    >>> print analysis.getKolmogorovPValue()
+    [Kolmogorov p-value for uncensored case : 0.346827, Kolmogorov p-value for censored case : 0.885006]
+
+    Run analysis with a Weibull distribution hypothesis on the residuals
+
+    >>> analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, 60., 1700., ot.WeibullFactory(), boxCox=True)
+    >>> print analysis.getIntercept() # get intercept value for uncensored and censored case
+    [Intercept for uncensored case : 4.28758, Intercept for censored case : 3.11243]
+    >>> print analysis.getKolmogorovPValue()
+    [Kolmogorov p-value for uncensored case : 0.476036, Kolmogorov p-value for censored case : 0.71764]
     """
 
     def __init__(self, inputSample, outputSample, noiseThres=None,
@@ -113,6 +153,10 @@ class UnivariateLinearModelAnalysis():
         # run the analysis
         self._run()
 
+        # initialize the logger to display warnings
+        logger = logging.getLogger()
+        logger.setLevel(logging.WARNING)
+
     def _run(self):
         """
         Run the analysis :
@@ -126,15 +170,6 @@ class UnivariateLinearModelAnalysis():
 
         #################### Filter censored data ##############################
         if self._censored:
-            # check if one sided censoring
-            if self._noiseThres is None:
-                noiseThres = -ot.sys.float_info.max
-            else:
-                noiseThres = self._noiseThres
-            if self._saturationThres is None:
-                saturationThres = ot.sys.float_info.max
-            else:
-                saturationThres = self._saturationThres
             # Filter censored data
             # Returns:
             # defects in the non censored area
@@ -144,7 +179,7 @@ class UnivariateLinearModelAnalysis():
             # check if one the threshold is None
             defects, defectsNoise, defectsSat, signals = \
                 DataHandling.filterCensoredData(self._inputSample, self._outputSample,
-                              noiseThres, saturationThres)
+                              self._noiseThres, self._saturationThres)
         else:
             defects, signals = self._inputSample, self._outputSample
         
@@ -162,8 +197,12 @@ class UnivariateLinearModelAnalysis():
             signals = boxCoxTransform(signals)
             if self._noiseThres is not None:
                 noiseThres = boxCoxTransform([self._noiseThres])[0]
+            else:
+                noiseThres = self._noiseThres
             if self._saturationThres is not None:
                 saturationThres = boxCoxTransform([self._saturationThres])[0]
+            else:
+                saturationThres = self._saturationThres
         else:
             noiseThres = self._noiseThres
             saturationThres = self._saturationThres
@@ -289,7 +328,7 @@ class UnivariateLinearModelAnalysis():
         print '-' * ndash
         print residualsResult
         print '-' * ndash
-
+        print ''
         # print warnings
         self._printWarnings()
 
@@ -308,20 +347,23 @@ class UnivariateLinearModelAnalysis():
         if testPValues and not self._boxCox:
             msg[0] = 'Some hypothesis tests failed : please consider to use '+\
                         'the Box Cox transformation.'
-            ot.Log.Warn(msg[0])
-            ot.Log.Flush()
+            logging.warn(msg[0])
+            # ot.Log.Warn(msg[0])
+            # ot.Log.Flush()
         elif testPValues and self._boxCox:
             msg[1] = 'Some hypothesis tests failed : please consider to use '+\
                         'quantile regression or polynomial chaos to build POD.'
-            ot.Log.Warn(msg[1])
-            ot.Log.Flush()
+            logging.warn(msg[1])
+            # ot.Log.Warn(msg[1])
+            # ot.Log.Flush()
 
         if self._resultsUnc.resDist.getClassName() != 'Normal':
             msg[2] = 'Confidence interval, Normality tests and zero ' + \
                         'residual mean test are given assuming the residuals ' +\
                         'follow a Normal distribution.'
-            ot.Log.Warn(msg[2])
-            ot.Log.Flush()
+            logging.warn(msg[2])
+            # ot.Log.Warn(msg[2])
+            # ot.Log.Flush()
         # return msg for the test with pytest
         return msg
 
@@ -463,22 +505,24 @@ class UnivariateLinearModelAnalysis():
 
         defects = self._algoLinear.model.exog[:, 1]
         signals = self._algoLinear.model.endog
-        if model =="censored":
-            fittedSignals = self._resultsCens.fittedSignals
-        else:
+        if model == "uncensored":
             # get the fitted values from the linear model of statsmodels
             fittedSignals = self._algoLinear.fittedvalues
+        elif model == "censored":
+            fittedSignals = self._resultsCens.fittedSignals
+        else:
+            raise NameError("model can be 'uncensored' or 'censored'.")
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 6))
         ax.plot(defects, signals, 'b.', label='Data', ms=9)
         ax.plot(defects, fittedSignals, 'r-', label='Linear model')
         ax.set_xlabel('Defects')
-        if model == "censored":
-            ax.set_ylabel('Box Cox (signals)')
-            ax.set_title('Linear regression model for censored data')
-        else:
+        if model == "uncensored":
             ax.set_ylabel('Signals')
             ax.set_title('Linear regression model')
+        elif model == "censored":
+            ax.set_ylabel('Box Cox (signals)')
+            ax.set_title('Linear regression model for censored data')
         ax.grid()
         ax.legend(loc='upper left')
 
@@ -515,21 +559,23 @@ class UnivariateLinearModelAnalysis():
             raise NameError('Residuals for censored data is not available.')
 
         defects = self._algoLinear.model.exog[:, 1]
-        if model =="censored":
+        if model == "uncensored":
+            residuals = self._resultsUnc.residuals
+        elif model =="censored":
             residuals = self._resultsCens.residuals
         else:
-            residuals = self._resultsUnc.residuals
+            raise NameError("model can be 'uncensored' or 'censored'.")
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 6))
         ax.grid()
         ax.plot(defects, residuals, 'b.', ms=9)
         ax.hlines(0, defects.min(), defects.max(), 'r', 'dashed')
         ax.set_xlabel('Defects')
         ax.set_ylabel('Residuals dispersion')
-        if model == "censored":
-            ax.set_title('Residuals for censored data')
-        else:
+        if model == "uncensored":
             ax.set_title('Residuals')
+        elif model == "censored":
+            ax.set_title('Residuals for censored data')
 
         if name is not None:
             fig.savefig(name, bbox_inches='tight', transparent=True)
@@ -562,14 +608,16 @@ class UnivariateLinearModelAnalysis():
         if model == "censored" and not self._censored:
             raise NameError('Residuals for censored data is not available.')
 
-        if model =="censored":
+        if model == "uncensored":
+            residuals = self._resultsUnc.residuals
+            distribution = self._resultsUnc.resDist
+        elif model == "censored":
             residuals = self._resultsCens.residuals
             distribution = self._resultsCens.resDist
         else:
-            residuals = self._resultsUnc.residuals
-            distribution = self._resultsUnc.resDist
+            raise NameError("model can be 'uncensored' or 'censored'.")
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 8))
         graph = ot.VisualTest.DrawQQplot(residuals, distribution)
         drawables = graph.getDrawables()
         drawables[1].setPointStyle('dot')
@@ -578,13 +626,14 @@ class UnivariateLinearModelAnalysis():
         graph = ot.Graph()
         graph.add(drawables)
 
-        graph.setXTitle('Defects empirical quantiles')
+        graph.setXTitle('Residuals empirical quantiles')
+        graph.setYTitle(distribution.__str__())
         graph.setGrid(True)
         View(graph, axes=[ax])
-        if model == "censored":
-            ax.set_title('QQ-plot of the residuals for censored data')
-        else:
+        if model == "uncensored":
             ax.set_title('QQ-plot of the residuals ')
+        elif model == "censored":
+            ax.set_title('QQ-plot of the residuals for censored data')
 
         if name is not None:
             fig.savefig(name, bbox_inches='tight', transparent=True)
@@ -618,24 +667,26 @@ class UnivariateLinearModelAnalysis():
         if model == "censored" and not self._censored:
             raise NameError('Residuals for censored data is not available.')
 
-        if model =="censored":
+        if model == "uncensored":
+            residuals = self._resultsUnc.residuals
+            distribution = self._resultsUnc.resDist
+        elif model =="censored":
             residuals = self._resultsCens.residuals
             distribution = self._resultsCens.resDist
         else:
-            residuals = self._resultsUnc.residuals
-            distribution = self._resultsUnc.resDist
+            raise NameError("model can be 'uncensored' or 'censored'.")
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 6))
         graphHist = ot.VisualTest.DrawHistogram(residuals)
         graphPDF = distribution.drawPDF()
         graphHist.setGrid(True)
         View(graphHist, axes=[ax], bar_kwargs={'color':'blue','alpha': 0.5, 'label':'Residuals histogram'})
         View(graphPDF, axes=[ax], plot_kwargs={'label':distribution.__str__()})
         ax.set_xlabel('Defect realizations')
-        if model == "censored":
-            ax.set_title('Residuals distribution for censored data')
-        else:
+        if model == "uncensored":
             ax.set_title('Residuals distribution')
+        elif model == "censored":
+            ax.set_title('Residuals distribution for censored data')
 
         if name is not None:
             fig.savefig(name, bbox_inches='tight', transparent=True)
@@ -668,9 +719,9 @@ class UnivariateLinearModelAnalysis():
 
         # Check is the censored model exists when asking for it 
         if not self._boxCox:
-            raise Exception('Box Cox transformation of the analysis not enabled.')
+            raise Exception('The Box Cox transformation is not enabled.')
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 6))
         # get the graph from the method 'computeBoxCox'
         View(self._graphBoxCox, axes=[ax])
         ax.set_xlabel('Box Cox parameter')

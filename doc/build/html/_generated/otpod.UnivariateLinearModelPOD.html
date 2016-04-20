@@ -45,9 +45,9 @@
   <a href="../index.html">
     <h1>
       <img src="../_static/logo-openturns-wo-bg.png" alt="" width=100px height=100px />
-      OpenTURNS
+      otpod
     </h1>
-    <h2> An Open source initiative for the Treatment of Uncertainties, Risks'N Statistics</h2>
+    <h2> A module to build Probability of Detection for Non Destructive Testing. </h2>
   </a>
 </div>
 
@@ -178,29 +178,32 @@ built by bootstrap.</li>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.computeDetectionSize" title="otpod.UnivariateLinearModelPOD.computeDetectionSize"><code class="xref py py-obj docutils literal"><span class="pre">computeDetectionSize</span></code></a>(probabilityLevel[,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.computeDetectionSize" title="otpod.UnivariateLinearModelPOD.computeDetectionSize"><code class="xref py py-obj docutils literal"><span class="pre">computeDetectionSize</span></code></a>(*args,&nbsp;**kwargs)</td>
 <td>Compute the detection size for a given probability level.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getPODCLModel" title="otpod.UnivariateLinearModelPOD.getPODCLModel"><code class="xref py py-obj docutils literal"><span class="pre">getPODCLModel</span></code></a>([model,&nbsp;confidenceLevel])</td>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.drawPOD" title="otpod.UnivariateLinearModelPOD.drawPOD"><code class="xref py py-obj docutils literal"><span class="pre">drawPOD</span></code></a>(*args,&nbsp;**kwargs)</td>
+<td>Draw the POD curve.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getPODCLModel" title="otpod.UnivariateLinearModelPOD.getPODCLModel"><code class="xref py py-obj docutils literal"><span class="pre">getPODCLModel</span></code></a>([confidenceLevel])</td>
 <td>Accessor to the POD model at a given confidence level.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getPODModel" title="otpod.UnivariateLinearModelPOD.getPODModel"><code class="xref py py-obj docutils literal"><span class="pre">getPODModel</span></code></a>([model])</td>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getPODModel" title="otpod.UnivariateLinearModelPOD.getPODModel"><code class="xref py py-obj docutils literal"><span class="pre">getPODModel</span></code></a>()</td>
 <td>Accessor to the POD model.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getSimulationSize" title="otpod.UnivariateLinearModelPOD.getSimulationSize"><code class="xref py py-obj docutils literal"><span class="pre">getSimulationSize</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.getSimulationSize" title="otpod.UnivariateLinearModelPOD.getSimulationSize"><code class="xref py py-obj docutils literal"><span class="pre">getSimulationSize</span></code></a>()</td>
 <td>Accessor to the simulation size.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.run" title="otpod.UnivariateLinearModelPOD.run"><code class="xref py py-obj docutils literal"><span class="pre">run</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.run" title="otpod.UnivariateLinearModelPOD.run"><code class="xref py py-obj docutils literal"><span class="pre">run</span></code></a>()</td>
 <td>Build the POD models.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.setSimulationSize" title="otpod.UnivariateLinearModelPOD.setSimulationSize"><code class="xref py py-obj docutils literal"><span class="pre">setSimulationSize</span></code></a>(size)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#otpod.UnivariateLinearModelPOD.setSimulationSize" title="otpod.UnivariateLinearModelPOD.setSimulationSize"><code class="xref py py-obj docutils literal"><span class="pre">setSimulationSize</span></code></a>(size)</td>
 <td>Accessor to the simulation size</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="otpod.UnivariateLinearModelPOD.computeDetectionSize">
-<code class="descname">computeDetectionSize</code><span class="sig-paren">(</span><em>probabilityLevel</em>, <em>confidenceLevel=None</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelPOD.computeDetectionSize" title="Permalink to this definition">¶</a></dt>
+<code class="descname">computeDetectionSize</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelPOD.computeDetectionSize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the detection size for a given probability level.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -213,7 +216,7 @@ built by bootstrap.</li>
 <p><strong>confidenceLevel</strong> : float</p>
 <blockquote>
 <div><p>The confidence level associated to the given probability level the
-defect size is computed.</p>
+defect size is computed. Default is None.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -229,25 +232,67 @@ computing for each case.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="otpod.UnivariateLinearModelPOD.getPODCLModel">
-<code class="descname">getPODCLModel</code><span class="sig-paren">(</span><em>model='uncensored'</em>, <em>confidenceLevel=0.95</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelPOD.getPODCLModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Accessor to the POD model at a given confidence level.</p>
+<dt id="otpod.UnivariateLinearModelPOD.drawPOD">
+<code class="descname">drawPOD</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelPOD.drawPOD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw the POD curve.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>model</strong> : string</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>probabilityLevel</strong> : float</p>
 <blockquote>
-<div><p>The linear regression model to be used, either <em>uncensored</em> or
-<em>censored</em> if censored threshold were given. Default is <em>uncensored</em>.</p>
+<div><p>The probability level for which the defect size is computed. Default
+is None.</p>
 </div></blockquote>
 <p><strong>confidenceLevel</strong> : float</p>
 <blockquote>
-<div><p>The confidence level the POD must be computed. Default is 0.95</p>
+<div><p>The confidence level associated to the given probability level the
+defect size is computed. Default is None.</p>
+</div></blockquote>
+<p><strong>defectMin, defectMax</strong> : float</p>
+<blockquote>
+<div><p>Define the interval where the curve is plotted. Default : min and
+max values of the inputSample.</p>
+</div></blockquote>
+<p><strong>nbPt</strong> : int</p>
+<blockquote>
+<div><p>The number of points to draw the curves. Default is 100.</p>
+</div></blockquote>
+<p><strong>name</strong> : string</p>
+<blockquote>
+<div><p>name of the figure to be saved with <em>transparent</em> option sets to True
+and <em>bbox_inches=&#8217;tight&#8217;</em>. It can be only the file name or the 
+full path name. Default is None.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>PODModelCl</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalMathFunction.html#openturns.NumericalMathFunction" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalMathFunction</span></code></a></p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fig</strong> : <a class="reference external" href="http://matplotlib.org/api/figure_api.html">matplotlib.figure</a></p>
+<blockquote>
+<div><p>Matplotlib figure object.</p>
+</div></blockquote>
+<p><strong>ax</strong> : <a class="reference external" href="http://matplotlib.org/api/axes_api.html">matplotlib.axes</a></p>
+<blockquote class="last">
+<div><p>Matplotlib axes object.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="otpod.UnivariateLinearModelPOD.getPODCLModel">
+<code class="descname">getPODCLModel</code><span class="sig-paren">(</span><em>confidenceLevel=0.95</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelPOD.getPODCLModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the POD model at a given confidence level.</p>
+<dl class="docutils">
+<dt>confidenceLevel <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>The confidence level the POD must be computed. Default is 0.95</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>PODModelCl</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalMathFunction.html#openturns.NumericalMathFunction" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalMathFunction</span></code></a></p>
 <blockquote class="last">
 <div><p>The function which computes the probability of detection for a given
 defect value at the confidence level given as parameter.</p>
@@ -260,20 +305,13 @@ defect value at the confidence level given as parameter.</p>
 
 <dl class="method">
 <dt id="otpod.UnivariateLinearModelPOD.getPODModel">
-<code class="descname">getPODModel</code><span class="sig-paren">(</span><em>model='uncensored'</em><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelPOD.getPODModel" title="Permalink to this definition">¶</a></dt>
+<code class="descname">getPODModel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelPOD.getPODModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the POD model.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>model</strong> : string</p>
-<blockquote>
-<div><p>The linear regression model to be used, either <em>uncensored</em> or
-<em>censored</em> if censored threshold were given. Default is <em>uncensored</em>.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>PODModel</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalMathFunction.html#openturns.NumericalMathFunction" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalMathFunction</span></code></a></p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>PODModel</strong> : <a class="reference external" href="http://doc.openturns.org/openturns-latest/sphinx/user_manual/_generated/openturns.NumericalMathFunction.html#openturns.NumericalMathFunction" title="(in OpenTURNS v.)"><code class="xref py py-class docutils literal"><span class="pre">openturns.NumericalMathFunction</span></code></a></p>
 <blockquote class="last">
 <div><p>The function which computes the probability of detection for a given
 defect value.</p>
@@ -295,9 +333,9 @@ defect value.</p>
 <code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#otpod.UnivariateLinearModelPOD.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build the POD models.</p>
 <p class="rubric">Notes</p>
-<p>This method build the linear model for the uncensored and censored case
-if required. Then it builds the POD model following the given residuals
-distribution factory.</p>
+<p>This method build the linear model for the uncensored or censored case
+depending of the input parameters. Then it builds the POD model
+following the given residuals distribution factory.</p>
 </dd></dl>
 
 <dl class="method">
@@ -346,7 +384,7 @@ distribution factory.</p>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, moi.
-      Last updated on Apr 18, 2016.
+      Last updated on Apr 19, 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.5.
     </div>
   </body>

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.2.23)  15 APR 2016 19:02
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.2.23)  19 APR 2016 18:12
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -977,12 +977,105 @@ LaTeX Font Info:    Try loading font information for TS1+ptm on input line 229.
 
  (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
-) [2] [3] [4]
-[5] [6] [7] [8]
-Chapter 2.
-(./otpoddoc.ind [9
+)
+LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <9> not available
+(Font)              Font shape `T1/pcr/b/n' tried instead on input line 253.
+LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <9> not available
+(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 269.
+ [2] [3] [4]
+[5] [6] [7] [8] [9] [10]
+LaTeX Font Info:    Try loading font information for TS1+pcr on input line 1498
+.
 
-] [10
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1pcr.fd
+File: ts1pcr.fd 2001/06/04 font definitions for TS1/pcr.
+) [11] [12]
+<linearPOD_17_0.png, id=273, 501.875pt x 394.47375pt>
+File: linearPOD_17_0.png Graphic file (type png)
+ <use linearPOD_17_0.png>
+Package pdftex.def Info: linearPOD_17_0.png used on input line 1632.
+(pdftex.def)             Requested size: 501.87376pt x 394.47278pt.
+File: linearPOD_17_0.png Graphic file (type png)
+
+<use linearPOD_17_0.png>
+Package pdftex.def Info: linearPOD_17_0.png used on input line 1632.
+(pdftex.def)             Requested size: 469.755pt x 369.2464pt.
+ [13]
+<linearPOD_19_0.png, id=281, 503.8825pt x 394.47375pt>
+File: linearPOD_19_0.png Graphic file (type png)
+
+<use linearPOD_19_0.png>
+Package pdftex.def Info: linearPOD_19_0.png used on input line 1642.
+(pdftex.def)             Requested size: 503.88127pt x 394.47278pt.
+File: linearPOD_19_0.png Graphic file (type png)
+ <use linearPOD_19_0.png>
+Package pdftex.def Info: linearPOD_19_0.png used on input line 1642.
+(pdftex.def)             Requested size: 469.755pt x 367.75966pt.
+ [14 <./linearPOD_17_0.png>]
+<linearPOD_21_0.png, id=288, 506.89375pt x 394.47375pt>
+File: linearPOD_21_0.png Graphic file (type png)
+
+<use linearPOD_21_0.png>
+Package pdftex.def Info: linearPOD_21_0.png used on input line 1655.
+(pdftex.def)             Requested size: 506.89252pt x 394.47278pt.
+File: linearPOD_21_0.png Graphic file (type png)
+ <use linearPOD_21_0.png>
+Package pdftex.def Info: linearPOD_21_0.png used on input line 1655.
+(pdftex.def)             Requested size: 469.755pt x 365.58072pt.
+ [15 <./linearPOD_19_0.png>]
+<linearPOD_23_0.png, id=296, 498.86375pt x 394.47375pt>
+File: linearPOD_23_0.png Graphic file (type png)
+
+<use linearPOD_23_0.png>
+Package pdftex.def Info: linearPOD_23_0.png used on input line 1666.
+(pdftex.def)             Requested size: 498.86253pt x 394.47278pt.
+File: linearPOD_23_0.png Graphic file (type png)
+ <use linearPOD_23_0.png>
+Package pdftex.def Info: linearPOD_23_0.png used on input line 1666.
+(pdftex.def)             Requested size: 469.755pt x 371.46748pt.
+ [16 <./linearPOD_21_0.png>]
+<linearPOD_25_0.png, id=303, 529.98pt x 394.47375pt>
+File: linearPOD_25_0.png Graphic file (type png)
+ <use linearPOD_25_0.png>
+Package pdftex.def Info: linearPOD_25_0.png used on input line 1677.
+(pdftex.def)             Requested size: 529.97868pt x 394.47278pt.
+File: linearPOD_25_0.png Graphic file (type png)
+
+<use linearPOD_25_0.png>
+Package pdftex.def Info: linearPOD_25_0.png used on input line 1677.
+(pdftex.def)             Requested size: 469.755pt x 349.64796pt.
+ [17 <./linearPOD_23_0.png>] [18 <./linearPOD_25_0.png>] [19] <linearPODCensore
+dData_13_0.png, id=324, 501.875pt x 394.47375pt>
+File: linearPODCensoredData_13_0.png Graphic file (type png)
+
+<use linearPODCensoredData_13_0.png>
+Package pdftex.def Info: linearPODCensoredData_13_0.png used on input line 1805
+.
+(pdftex.def)             Requested size: 501.87376pt x 394.47278pt.
+File: linearPODCensoredData_13_0.png Graphic file (type png)
+ <use linearPODCensoredData_13_0.png>
+Package pdftex.def Info: linearPODCensoredData_13_0.png used on input line 1805
+.
+(pdftex.def)             Requested size: 469.755pt x 369.2464pt.
+
+[20] <linearPODCensoredData_15_0.png, id=331, 501.875pt x 394.47375pt>
+File: linearPODCensoredData_15_0.png Graphic file (type png)
+
+<use linearPODCensoredData_15_0.png>
+Package pdftex.def Info: linearPODCensoredData_15_0.png used on input line 1816
+.
+(pdftex.def)             Requested size: 501.87376pt x 394.47278pt.
+File: linearPODCensoredData_15_0.png Graphic file (type png)
+ <use linearPODCensoredData_15_0.png>
+Package pdftex.def Info: linearPODCensoredData_15_0.png used on input line 1816
+.
+(pdftex.def)             Requested size: 469.755pt x 369.2464pt.
+
+[21 <./linearPODCensoredData_13_0.png>] [22 <./linearPODCensoredData_15_0.png>]
+Chapter 2.
+(./otpoddoc.ind [23
+
+] [24
 
 ]
 Underfull \hbox (badness 10000) in paragraph at lines 5--6
@@ -990,96 +1083,96 @@ Underfull \hbox (badness 10000) in paragraph at lines 5--6
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 10--11
+Underfull \hbox (badness 10000) in paragraph at lines 11--12
 []\T1/ptm/m/n/10 drawLinearModel() (Uni-vari-ate-Lin-ear-Mod-e-l-Anal-y-sis
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 11--12
+Underfull \hbox (badness 10000) in paragraph at lines 13--14
 []\T1/ptm/m/n/10 drawResiduals() (Uni-vari-ate-Lin-ear-Mod-e-l-Anal-y-sis
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 12--13
+Underfull \hbox (badness 10000) in paragraph at lines 14--15
 []\T1/ptm/m/n/10 drawResidualsDistribution() (Uni-vari-ate-Lin-ear-Mod-e-l-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 17--18
+Underfull \hbox (badness 10000) in paragraph at lines 23--24
 []\T1/ptm/m/n/10 getAndersonDarlingPValue() (Uni-vari-ate-Lin-ear-Mod-e-l-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 20--21
+Underfull \hbox (badness 10000) in paragraph at lines 26--27
 []\T1/ptm/m/n/10 getCramerVonMisesPValue() (Uni-vari-ate-Lin-ear-Mod-e-l-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 22--23
+Underfull \hbox (badness 10000) in paragraph at lines 28--29
 []\T1/ptm/m/n/10 getHarrisonMcCabePValue() (Uni-vari-ate-Lin-ear-Mod-e-l-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 23--24
+Underfull \hbox (badness 10000) in paragraph at lines 29--30
 []\T1/ptm/m/n/10 getInputSample() (Uni-vari-ate-Lin-ear-Mod-e-l-Anal-y-sis
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 26--27
+Underfull \hbox (badness 10000) in paragraph at lines 32--33
 []\T1/ptm/m/n/10 getNoiseThreshold() (Uni-vari-ate-Lin-ear-Mod-e-l-Anal-y-sis
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 27--28
+Underfull \hbox (badness 10000) in paragraph at lines 33--34
 []\T1/ptm/m/n/10 getOutputSample() (Uni-vari-ate-Lin-ear-Mod-e-l-Anal-y-sis
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 28--29
+Underfull \hbox (badness 10000) in paragraph at lines 34--35
 []\T1/ptm/m/n/10 getPODCLModel() (Uni-vari-ate-Lin-ear-Mod-el-POD
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 34--35
+Underfull \hbox (badness 10000) in paragraph at lines 40--41
 []\T1/ptm/m/n/10 getSimulationSize() (Uni-vari-ate-Lin-ear-Mod-el-POD
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 36--37
+Underfull \hbox (badness 10000) in paragraph at lines 42--43
 []\T1/ptm/m/n/10 getStandardError() (Uni-vari-ate-Lin-ear-Mod-e-l-Anal-y-sis
  []
 
 
-Underfull \hbox (badness 7291) in paragraph at lines 37--38
+Underfull \hbox (badness 7291) in paragraph at lines 43--44
 []\T1/ptm/m/n/10 getZeroMeanPValue() (Uni-vari-ate-Lin-ear-Mod-e-l-Anal-y-sis
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 50--51
+Underfull \hbox (badness 10000) in paragraph at lines 56--57
 []\T1/ptm/m/n/10 setSimulationSize() (Uni-vari-ate-Lin-ear-Mod-el-POD
  []
 
-[11
+[25
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1247.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1247.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1836.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1836.
  (./otpoddoc.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1247.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1247.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1836.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1836.
 
 Package rerunfilecheck Info: File `otpoddoc.out' has not changed.
-(rerunfilecheck)             Checksum: E97D7CD742E4022ED8AF86D721885DF0;391.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1247.
+(rerunfilecheck)             Checksum: AAC9A2252FDF7E40B288697496A1EFCF;628.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1836.
  ) 
 Here is how much of TeX's memory you used:
- 9477 strings out of 494999
- 135631 string characters out of 6180228
- 235941 words of memory out of 5000000
- 12344 multiletter control sequences out of 15000+600000
- 64805 words of font info for 69 fonts, out of 8000000 for 9000
+ 9638 strings out of 494999
+ 139531 string characters out of 6180228
+ 242097 words of memory out of 5000000
+ 12440 multiletter control sequences out of 15000+600000
+ 67077 words of font info for 76 fonts, out of 8000000 for 9000
  15 hyphenation exceptions out of 8191
- 36i,11n,45p,307b,675s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,11n,45p,752b,675s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/urw/courier/ucrb8a.pfb></usr/share/texlive/texmf-dist/
 fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/u
@@ -1089,10 +1182,10 @@ uhvb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvbo8a.pfb>
 texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-d
 ist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1
 /urw/times/utmri8a.pfb>
-Output written on otpoddoc.pdf (15 pages, 130210 bytes).
+Output written on otpoddoc.pdf (29 pages, 254428 bytes).
 PDF statistics:
- 315 PDF objects out of 1000 (max. 8388607)
- 281 compressed objects within 3 object streams
- 71 named destinations out of 1000 (max. 500000)
- 77 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 452 PDF objects out of 1000 (max. 8388607)
+ 389 compressed objects within 4 object streams
+ 118 named destinations out of 1000 (max. 500000)
+ 136 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -21,7 +21,7 @@
 
 
 \title{otpod Documentation}
-\date{April 15, 2016}
+\date{April 19, 2016}
 \release{0.0.1}
 \author{Antoine Dumas}
 \newcommand{\sphinxlogo}{}
@@ -245,6 +245,52 @@ computes the residuals,
 runs all hypothesis tests.
 
 \end{itemize}
+\paragraph{Examples}
+
+Generate data :
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{k+kn}{import} \PYG{n+nn}{openturns} \PYG{k+kn}{as} \PYG{n+nn}{ot}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{k+kn}{import} \PYG{n+nn}{otpod}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{N} \PYG{o}{=} \PYG{l+m+mi}{100}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{ot}\PYG{o}{.}\PYG{n}{RandomGenerator}\PYG{o}{.}\PYG{n}{SetSeed}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{defectDist} \PYG{o}{=} \PYG{n}{ot}\PYG{o}{.}\PYG{n}{Uniform}\PYG{p}{(}\PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mf}{0.6}\PYG{p}{)}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{epsilon} \PYG{o}{=} \PYG{n}{ot}\PYG{o}{.}\PYG{n}{Normal}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{1.9}\PYG{p}{)}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{defects} \PYG{o}{=} \PYG{n}{defectDist}\PYG{o}{.}\PYG{n}{getSample}\PYG{p}{(}\PYG{n}{N}\PYG{p}{)}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{signalsInvBoxCox} \PYG{o}{=} \PYG{n}{defects} \PYG{o}{*} \PYG{l+m+mf}{43.} \PYG{o}{+} \PYG{n}{epsilon}\PYG{o}{.}\PYG{n}{getSample}\PYG{p}{(}\PYG{n}{N}\PYG{p}{)} \PYG{o}{+} \PYG{l+m+mf}{2.5}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{invBoxCox} \PYG{o}{=} \PYG{n}{ot}\PYG{o}{.}\PYG{n}{InverseBoxCoxTransform}\PYG{p}{(}\PYG{l+m+mf}{0.3}\PYG{p}{)}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{signals} \PYG{o}{=} \PYG{n}{invBoxCox}\PYG{p}{(}\PYG{n}{signalsInvBoxCox}\PYG{p}{)}
+\end{Verbatim}
+
+Run analysis with gaussian hypothesis on the residuals :
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{analysis} \PYG{o}{=} \PYG{n}{otpod}\PYG{o}{.}\PYG{n}{UnivariateLinearModelAnalysis}\PYG{p}{(}\PYG{n}{defects}\PYG{p}{,} \PYG{n}{signals}\PYG{p}{,} \PYG{n}{boxCox}\PYG{o}{=}\PYG{n+nb+bp}{True}\PYG{p}{)}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{k}{print} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{getIntercept}\PYG{p}{(}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} get intercept value}
+\PYG{g+go}{[Intercept for uncensored case : 2.51037]}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{k}{print} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{getKolmogorovPValue}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+go}{[Kolmogorov p\PYGZhy{}value for uncensored case : 0.835529]}
+\end{Verbatim}
+
+Run analysis with noise and saturation threshold :
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{analysis} \PYG{o}{=} \PYG{n}{otpod}\PYG{o}{.}\PYG{n}{UnivariateLinearModelAnalysis}\PYG{p}{(}\PYG{n}{defects}\PYG{p}{,} \PYG{n}{signals}\PYG{p}{,} \PYG{l+m+mf}{60.}\PYG{p}{,} \PYG{l+m+mf}{1700.}\PYG{p}{,} \PYG{n}{boxCox}\PYG{o}{=}\PYG{n+nb+bp}{True}\PYG{p}{)}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{k}{print} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{getIntercept}\PYG{p}{(}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} get intercept value for uncensored and censored case}
+\PYG{g+go}{[Intercept for uncensored case : 4.28758, Intercept for censored case : 3.11243]}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{k}{print} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{getKolmogorovPValue}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+go}{[Kolmogorov p\PYGZhy{}value for uncensored case : 0.346827, Kolmogorov p\PYGZhy{}value for censored case : 0.885006]}
+\end{Verbatim}
+
+Run analysis with a Weibull distribution hypothesis on the residuals
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{analysis} \PYG{o}{=} \PYG{n}{otpod}\PYG{o}{.}\PYG{n}{UnivariateLinearModelAnalysis}\PYG{p}{(}\PYG{n}{defects}\PYG{p}{,} \PYG{n}{signals}\PYG{p}{,} \PYG{l+m+mf}{60.}\PYG{p}{,} \PYG{l+m+mf}{1700.}\PYG{p}{,} \PYG{n}{ot}\PYG{o}{.}\PYG{n}{WeibullFactory}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,} \PYG{n}{boxCox}\PYG{o}{=}\PYG{n+nb+bp}{True}\PYG{p}{)}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{k}{print} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{getIntercept}\PYG{p}{(}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} get intercept value for uncensored and censored case}
+\PYG{g+go}{[Intercept for uncensored case : 4.28758, Intercept for censored case : 3.11243]}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{k}{print} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{getKolmogorovPValue}\PYG{p}{(}\PYG{p}{)}
+\PYG{g+go}{[Kolmogorov p\PYGZhy{}value for uncensored case : 0.476036, Kolmogorov p\PYGZhy{}value for censored case : 0.71764]}
+\end{Verbatim}
 \paragraph{Methods}
 
 \begin{longtable}{ll}
@@ -1060,17 +1106,22 @@ built by bootstrap.
 \endlastfoot
 
 
-{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.computeDetectionSize]{\emph{\code{computeDetectionSize}}}}(probabilityLevel{[}, ...{]})
+{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.computeDetectionSize]{\emph{\code{computeDetectionSize}}}}(*args, **kwargs)
  & 
 Compute the detection size for a given probability level.
 \\
 \hline
-{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODCLModel]{\emph{\code{getPODCLModel}}}}({[}model, confidenceLevel{]})
+{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.drawPOD]{\emph{\code{drawPOD}}}}(*args, **kwargs)
+ & 
+Draw the POD curve.
+\\
+\hline
+{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODCLModel]{\emph{\code{getPODCLModel}}}}({[}confidenceLevel{]})
  & 
 Accessor to the POD model at a given confidence level.
 \\
 \hline
-{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODModel]{\emph{\code{getPODModel}}}}({[}model{]})
+{\hyperref[_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODModel]{\emph{\code{getPODModel}}}}()
  & 
 Accessor to the POD model.
 \\
@@ -1094,7 +1145,7 @@ Accessor to the simulation size
 \index{computeDetectionSize() (UnivariateLinearModelPOD method)}
 
 \begin{fulllineitems}
-\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.computeDetectionSize}\pysiglinewithargsret{\bfcode{computeDetectionSize}}{\emph{probabilityLevel}, \emph{confidenceLevel=None}}{}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.computeDetectionSize}\pysiglinewithargsret{\bfcode{computeDetectionSize}}{\emph{*args}, \emph{**kwargs}}{}
 Compute the detection size for a given probability level.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode
@@ -1108,7 +1159,7 @@ The probability level for which the defect size is computed.
 \begin{quote}
 
 The confidence level associated to the given probability level the
-defect size is computed.
+defect size is computed. Default is None.
 \end{quote}
 
 \item[{Returns}] \leavevmode
@@ -1123,26 +1174,76 @@ computing for each case.
 
 \end{fulllineitems}
 
-\index{getPODCLModel() (UnivariateLinearModelPOD method)}
+\index{drawPOD() (UnivariateLinearModelPOD method)}
 
 \begin{fulllineitems}
-\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODCLModel}\pysiglinewithargsret{\bfcode{getPODCLModel}}{\emph{model='uncensored'}, \emph{confidenceLevel=0.95}}{}
-Accessor to the POD model at a given confidence level.
+\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.drawPOD}\pysiglinewithargsret{\bfcode{drawPOD}}{\emph{*args}, \emph{**kwargs}}{}
+Draw the POD curve.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode
-\textbf{model} : string
+\textbf{probabilityLevel} : float
 \begin{quote}
 
-The linear regression model to be used, either \emph{uncensored} or
-\emph{censored} if censored threshold were given. Default is \emph{uncensored}.
+The probability level for which the defect size is computed. Default
+is None.
 \end{quote}
 
 \textbf{confidenceLevel} : float
 \begin{quote}
 
-The confidence level the POD must be computed. Default is 0.95
+The confidence level associated to the given probability level the
+defect size is computed. Default is None.
 \end{quote}
 
+\textbf{defectMin, defectMax} : float
+\begin{quote}
+
+Define the interval where the curve is plotted. Default : min and
+max values of the inputSample.
+\end{quote}
+
+\textbf{nbPt} : int
+\begin{quote}
+
+The number of points to draw the curves. Default is 100.
+\end{quote}
+
+\textbf{name} : string
+\begin{quote}
+
+name of the figure to be saved with \emph{transparent} option sets to True
+and \emph{bbox\_inches='tight'}. It can be only the file name or the 
+full path name. Default is None.
+\end{quote}
+
+\item[{Returns}] \leavevmode
+\textbf{fig} : \href{http://matplotlib.org/api/figure\_api.html}{matplotlib.figure}
+\begin{quote}
+
+Matplotlib figure object.
+\end{quote}
+
+\textbf{ax} : \href{http://matplotlib.org/api/axes\_api.html}{matplotlib.axes}
+\begin{quote}
+
+Matplotlib axes object.
+\end{quote}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getPODCLModel() (UnivariateLinearModelPOD method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODCLModel}\pysiglinewithargsret{\bfcode{getPODCLModel}}{\emph{confidenceLevel=0.95}}{}
+Accessor to the POD model at a given confidence level.
+\begin{description}
+\item[{confidenceLevel}] \leavevmode{[}float{]}
+The confidence level the POD must be computed. Default is 0.95
+
+\end{description}
+\begin{quote}\begin{description}
 \item[{Returns}] \leavevmode
 \textbf{PODModelCl} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalMathFunction.html\#openturns.NumericalMathFunction}{\code{openturns.NumericalMathFunction}}
 \begin{quote}
@@ -1158,17 +1259,9 @@ defect value at the confidence level given as parameter.
 \index{getPODModel() (UnivariateLinearModelPOD method)}
 
 \begin{fulllineitems}
-\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODModel}\pysiglinewithargsret{\bfcode{getPODModel}}{\emph{model='uncensored'}}{}
+\phantomsection\label{_generated/otpod.UnivariateLinearModelPOD:otpod.UnivariateLinearModelPOD.getPODModel}\pysiglinewithargsret{\bfcode{getPODModel}}{}{}
 Accessor to the POD model.
 \begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\textbf{model} : string
-\begin{quote}
-
-The linear regression model to be used, either \emph{uncensored} or
-\emph{censored} if censored threshold were given. Default is \emph{uncensored}.
-\end{quote}
-
 \item[{Returns}] \leavevmode
 \textbf{PODModel} : \href{http://doc.openturns.org/openturns-latest/sphinx/user\_manual/\_generated/openturns.NumericalMathFunction.html\#openturns.NumericalMathFunction}{\code{openturns.NumericalMathFunction}}
 \begin{quote}
@@ -1196,9 +1289,9 @@ Accessor to the simulation size.
 Build the POD models.
 \paragraph{Notes}
 
-This method build the linear model for the uncensored and censored case
-if required. Then it builds the POD model following the given residuals
-distribution factory.
+This method build the linear model for the uncensored or censored case
+depending of the input parameters. Then it builds the POD model
+following the given residuals distribution factory.
 
 \end{fulllineitems}
 
@@ -1224,8 +1317,504 @@ The size of the simulation used to compute the confidence interval.
 
 
 
-\section{Examples}
-\label{examples::doc}\label{examples:examples}
+\subsection{Tools}
+\label{user_manual:tools}
+\begin{longtable}{ll}
+\hline
+\endfirsthead
+
+\multicolumn{2}{c}%
+{{\textsf{\tablename\ \thetable{} -- continued from previous page}}} \\
+\hline
+\endhead
+
+\hline \multicolumn{2}{|r|}{{\textsf{Continued on next page}}} \\ \hline
+\endfoot
+
+\endlastfoot
+
+
+{\hyperref[_generated/otpod.DataHandling:otpod.DataHandling]{\emph{\code{DataHandling}}}}
+ & 
+Static methods for data handling.
+\\
+\hline\end{longtable}
+
+
+
+\subsubsection{DataHandling}
+\label{_generated/otpod.DataHandling::doc}\label{_generated/otpod.DataHandling:datahandling}\index{DataHandling (class in otpod)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.DataHandling:otpod.DataHandling}\pysigline{\strong{class }\bfcode{DataHandling}}
+Static methods for data handling.
+\paragraph{Methods}
+
+\begin{longtable}{ll}
+\hline
+\endfirsthead
+
+\multicolumn{2}{c}%
+{{\textsf{\tablename\ \thetable{} -- continued from previous page}}} \\
+\hline
+\endhead
+
+\hline \multicolumn{2}{|r|}{{\textsf{Continued on next page}}} \\ \hline
+\endfoot
+
+\endlastfoot
+
+
+{\hyperref[_generated/otpod.DataHandling:otpod.DataHandling.filterCensoredData]{\emph{\code{filterCensoredData}}}}(defects, signals, ...)
+ & 
+Sort defect sizes with respect to the censored signals.
+\\
+\hline\end{longtable}
+
+\index{filterCensoredData() (DataHandling static method)}
+
+\begin{fulllineitems}
+\phantomsection\label{_generated/otpod.DataHandling:otpod.DataHandling.filterCensoredData}\pysiglinewithargsret{\strong{static }\bfcode{filterCensoredData}}{\emph{defects}, \emph{signals}, \emph{noiseThres}, \emph{saturationThres}}{}
+Sort defect sizes with respect to the censored signals.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\textbf{defects} : 2-d sequence of float
+\begin{quote}
+
+Vector of the defect sizes.
+\end{quote}
+
+\textbf{signals} : 2-d sequence of float
+\begin{quote}
+
+Vector of the signals, of dimension 1.
+\end{quote}
+
+\textbf{noiseThres} : float
+\begin{quote}
+
+Value for low censored data. Default is None.
+\end{quote}
+
+\textbf{saturationThres} : float
+\begin{quote}
+
+Value for high censored data. Default is None
+\end{quote}
+
+\item[{Returns}] \leavevmode
+\textbf{defectsUnc} : 2-d sequence of float
+\begin{quote}
+
+Vector of the defect sizes in the uncensored area.
+\end{quote}
+
+\textbf{defectsNoise} : 2-d sequence of float
+\begin{quote}
+
+Vector of the defect sizes in the noisy area.
+\end{quote}
+
+\textbf{defectsSat} : 2-d sequence of float
+\begin{quote}
+
+Vector of the defect sizes in the saturation area.
+\end{quote}
+
+\textbf{signalsUnc} : 2-d sequence of float
+\begin{quote}
+
+Vector of the signals in the uncensored area.
+\end{quote}
+
+\end{description}\end{quote}
+\paragraph{Notes}
+
+The data are sorted in three different vectors whether they belong to
+the noisy area, the uncensored area or the saturation area.
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+
+
+\section{Examples of the API}
+\label{examples:examples-of-the-api}\label{examples::doc}
+
+\subsection{Linear model analysis}
+\label{examples/linearPOD::doc}\label{examples/linearPOD:linear-model-analysis}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYGZsh{} import relevant module
+import openturns as ot
+import otpod
+\PYGZsh{} enable display figure in notebook
+\PYGZpc{}matplotlib inline
+\end{Verbatim}
+
+
+\subsubsection{Generate data}
+\label{examples/linearPOD:generate-data}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{N} \PYG{o}{=} \PYG{l+m+mi}{100}
+\PYG{n}{ot}\PYG{o}{.}\PYG{n}{RandomGenerator}\PYG{o}{.}\PYG{n}{SetSeed}\PYG{p}{(}\PYG{l+m+mi}{123456}\PYG{p}{)}
+\PYG{n}{defectDist} \PYG{o}{=} \PYG{n}{ot}\PYG{o}{.}\PYG{n}{Uniform}\PYG{p}{(}\PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mf}{0.6}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} normal epsilon distribution}
+\PYG{n}{epsilon} \PYG{o}{=} \PYG{n}{ot}\PYG{o}{.}\PYG{n}{Normal}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{1.9}\PYG{p}{)}
+\PYG{n}{defects} \PYG{o}{=} \PYG{n}{defectDist}\PYG{o}{.}\PYG{n}{getSample}\PYG{p}{(}\PYG{n}{N}\PYG{p}{)}
+\PYG{n}{signalsInvBoxCox} \PYG{o}{=} \PYG{n}{defects} \PYG{o}{*} \PYG{l+m+mf}{43.} \PYG{o}{+} \PYG{n}{epsilon}\PYG{o}{.}\PYG{n}{getSample}\PYG{p}{(}\PYG{n}{N}\PYG{p}{)} \PYG{o}{+} \PYG{l+m+mf}{2.5}
+\PYG{c+c1}{\PYGZsh{} Inverse Box Cox transformation}
+\PYG{n}{invBoxCox} \PYG{o}{=} \PYG{n}{ot}\PYG{o}{.}\PYG{n}{InverseBoxCoxTransform}\PYG{p}{(}\PYG{l+m+mf}{0.3}\PYG{p}{)}
+\PYG{n}{signals} \PYG{o}{=} \PYG{n}{invBoxCox}\PYG{p}{(}\PYG{n}{signalsInvBoxCox}\PYG{p}{)}
+\end{Verbatim}
+
+
+\subsubsection{Run analysis without Box Cox}
+\label{examples/linearPOD:run-analysis-without-box-cox}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{analysis} \PYG{o}{=} \PYG{n}{otpod}\PYG{o}{.}\PYG{n}{UnivariateLinearModelAnalysis}\PYG{p}{(}\PYG{n}{defects}\PYG{p}{,} \PYG{n}{signals}\PYG{p}{)}
+\end{Verbatim}
+
+
+\subsubsection{Get some particular results}
+\label{examples/linearPOD:get-some-particular-results}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{print} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{getIntercept}\PYG{p}{(}\PYG{p}{)}
+\PYG{k}{print} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{getR2}\PYG{p}{(}\PYG{p}{)}
+\PYG{k}{print} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{getKolmogorovPValue}\PYG{p}{(}\PYG{p}{)}
+\end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+[Intercept for uncensored case : 4.02409]
+[R2 for uncensored case : 0.894736]
+[Kolmogorov p\PYGZhy{}value for uncensored case : 0.337199]
+\end{Verbatim}
+
+
+\subsubsection{Save all results in a csv file}
+\label{examples/linearPOD:save-all-results-in-a-csv-file}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{analysis}\PYG{o}{.}\PYG{n}{saveResults}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{results.csv}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}
+\end{Verbatim}
+
+
+\subsubsection{Print all results of the linear regression and all tests on the residuals}
+\label{examples/linearPOD:print-all-results-of-the-linear-regression-and-all-tests-on-the-residuals}
+A warning is printed because some residuals tests failed : the p-value
+is less than 0.5.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{analysis}\PYG{o}{.}\PYG{n}{printResults}\PYG{p}{(}\PYG{p}{)}
+\end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+WARNING:root:Some hypothesis tests failed : please consider to use the Box Cox transformation.
+\end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+         Linear model analysis results
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+Box Cox parameter :                             Not enabled
+
+                                                 Uncensored
+
+Intercept coefficient :                             \PYGZhy{}604.76
+Slope coefficient :                                 3606.04
+Standard error of the estimate :                     291.47
+
+Confidence interval on coefficients
+Intercept coefficient :                       [\PYGZhy{}755.60, \PYGZhy{}453.91]
+Slope coefficient :                           [3222.66, 3989.43]
+Level :                                                0.95
+
+Quality of regression
+R2 (\PYGZgt{} 0.8):                                            0.78
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+         Residuals analysis results
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+Fitted distribution (uncensored) :            Normal(mu = 6.00267e\PYGZhy{}13, sigma = 289.998)
+
+                                                 Uncensored
+Distribution fitting test
+Kolmogorov p\PYGZhy{}value (\PYGZgt{} 0.05):                            0.8
+
+Normality test
+Anderson Darling p\PYGZhy{}value (\PYGZgt{} 0.05):                     0.07
+Cramer Von Mises p\PYGZhy{}value (\PYGZgt{} 0.05):                     0.09
+
+Zero residual mean test
+p\PYGZhy{}value (\PYGZgt{} 0.05):                                       1.0
+
+Homoskedasticity test (constant variance)
+Breush Pagan p\PYGZhy{}value (\PYGZgt{} 0.05):                          0.0
+Harrison McCabe p\PYGZhy{}value (\PYGZgt{} 0.05):                       0.2
+
+Non autocorrelation test
+Durbin Watson p\PYGZhy{}value (\PYGZgt{} 0.05):                        0.99
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+\end{Verbatim}
+
+
+\subsubsection{Run analysis with Box Cox}
+\label{examples/linearPOD:run-analysis-with-box-cox}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{analysis} \PYG{o}{=} \PYG{n}{otpod}\PYG{o}{.}\PYG{n}{UnivariateLinearModelAnalysis}\PYG{p}{(}\PYG{n}{defects}\PYG{p}{,} \PYG{n}{signals}\PYG{p}{,} \PYG{n}{boxCox}\PYG{o}{=}\PYG{n+nb+bp}{True}\PYG{p}{)}
+\end{Verbatim}
+
+
+\subsubsection{Print results of the linear regression and all tests on the residuals}
+\label{examples/linearPOD:print-results-of-the-linear-regression-and-all-tests-on-the-residuals}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{analysis}\PYG{o}{.}\PYG{n}{printResults}\PYG{p}{(}\PYG{p}{)}
+\end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+         Linear model analysis results
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+Box Cox parameter :                                    0.22
+
+                                                 Uncensored
+
+Intercept coefficient :                                4.02
+Slope coefficient :                                   25.55
+Standard error of the estimate :                       1.34
+
+Confidence interval on coefficients
+Intercept coefficient :                        [3.33, 4.72]
+Slope coefficient :                           [23.80, 27.31]
+Level :                                                0.95
+
+Quality of regression
+R2 (\PYGZgt{} 0.8):                                            0.89
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+         Residuals analysis results
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+Fitted distribution (uncensored) :            Normal(mu = 1.47438e\PYGZhy{}15, sigma = 1.32901)
+
+                                                 Uncensored
+Distribution fitting test
+Kolmogorov p\PYGZhy{}value (\PYGZgt{} 0.05):                           0.34
+
+Normality test
+Anderson Darling p\PYGZhy{}value (\PYGZgt{} 0.05):                     0.06
+Cramer Von Mises p\PYGZhy{}value (\PYGZgt{} 0.05):                     0.07
+
+Zero residual mean test
+p\PYGZhy{}value (\PYGZgt{} 0.05):                                       1.0
+
+Homoskedasticity test (constant variance)
+Breush Pagan p\PYGZhy{}value (\PYGZgt{} 0.05):                         0.65
+Harrison McCabe p\PYGZhy{}value (\PYGZgt{} 0.05):                      0.51
+
+Non autocorrelation test
+Durbin Watson p\PYGZhy{}value (\PYGZgt{} 0.05):                        0.97
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+\end{Verbatim}
+
+
+\paragraph{Print graphs}
+\label{examples/linearPOD:print-graphs}
+
+\subparagraph{The linear regression model with data}
+\label{examples/linearPOD:the-linear-regression-model-with-data}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{fig}\PYG{p}{,} \PYG{n}{ax} \PYG{o}{=} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{drawLinearModel}\PYG{p}{(}\PYG{n}{name}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{figure/linearModel.png}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} save figure as png file}
+\PYG{n}{fig}\PYG{o}{.}\PYG{n}{show}\PYG{p}{(}\PYG{p}{)}
+\end{Verbatim}
+
+\includegraphics{{linearPOD_17_0}.png}
+
+
+\subparagraph{The residuals with respect to the defects}
+\label{examples/linearPOD:the-residuals-with-respect-to-the-defects}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{fig}\PYG{p}{,} \PYG{n}{ax} \PYG{o}{=} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{drawResiduals}\PYG{p}{(}\PYG{n}{name}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{figure/residuals.eps}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} save figure as eps file}
+\PYG{n}{fig}\PYG{o}{.}\PYG{n}{show}\PYG{p}{(}\PYG{p}{)}
+\end{Verbatim}
+
+\includegraphics{{linearPOD_19_0}.png}
+
+
+\subparagraph{The fitted residuals distribution with the histogram}
+\label{examples/linearPOD:the-fitted-residuals-distribution-with-the-histogram}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{fig}\PYG{p}{,} \PYG{n}{ax} \PYG{o}{=} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{drawResidualsDistribution}\PYG{p}{(}\PYG{p}{)}
+\PYG{n}{ax}\PYG{o}{.}\PYG{n}{set\PYGZus{}ylim}\PYG{p}{(}\PYG{n}{ymax}\PYG{o}{=}\PYG{l+m+mf}{0.45}\PYG{p}{)}
+\PYG{n}{fig}\PYG{o}{.}\PYG{n}{show}\PYG{p}{(}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} The figure is saved after the changes}
+\PYG{n}{fig}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{figure/residualsDistribution.png}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{n}{bbox\PYGZus{}inches}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{tight}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}
+\end{Verbatim}
+
+\includegraphics{{linearPOD_21_0}.png}
+
+
+\subparagraph{The residuals QQ plot}
+\label{examples/linearPOD:the-residuals-qq-plot}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{fig}\PYG{p}{,} \PYG{n}{ax} \PYG{o}{=} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{drawResidualsQQplot}\PYG{p}{(}\PYG{p}{)}
+\PYG{n}{fig}\PYG{o}{.}\PYG{n}{set\PYGZus{}size\PYGZus{}inches}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{,} \PYG{l+m+mi}{6}\PYG{p}{)}
+\PYG{n}{fig}\PYG{o}{.}\PYG{n}{show}\PYG{p}{(}\PYG{p}{)}
+\end{Verbatim}
+
+\includegraphics{{linearPOD_23_0}.png}
+
+
+\subparagraph{The Box Cox likelihood with respect to the defect}
+\label{examples/linearPOD:the-box-cox-likelihood-with-respect-to-the-defect}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{fig}\PYG{p}{,} \PYG{n}{ax} \PYG{o}{=} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{drawBoxCoxLikelihood}\PYG{p}{(}\PYG{n}{name}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{figure/BoxCoxlikelihood.png}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}
+\PYG{n}{fig}\PYG{o}{.}\PYG{n}{set\PYGZus{}size\PYGZus{}inches}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{,} \PYG{l+m+mi}{6}\PYG{p}{)}
+\PYG{n}{fig}\PYG{o}{.}\PYG{n}{show}\PYG{p}{(}\PYG{p}{)}
+\end{Verbatim}
+
+\includegraphics{{linearPOD_25_0}.png}
+
+
+\subsection{Linear model analysis with censored data}
+\label{examples/linearPODCensoredData:linear-model-analysis-with-censored-data}\label{examples/linearPODCensoredData::doc}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYGZsh{} import relevant module
+import openturns as ot
+import otpod
+\PYGZsh{} enable display figure in notebook
+\PYGZpc{}matplotlib inline
+\end{Verbatim}
+
+
+\subsubsection{Generate data}
+\label{examples/linearPODCensoredData:generate-data}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{N} \PYG{o}{=} \PYG{l+m+mi}{100}
+\PYG{n}{ot}\PYG{o}{.}\PYG{n}{RandomGenerator}\PYG{o}{.}\PYG{n}{SetSeed}\PYG{p}{(}\PYG{l+m+mi}{123456}\PYG{p}{)}
+\PYG{n}{defectDist} \PYG{o}{=} \PYG{n}{ot}\PYG{o}{.}\PYG{n}{Uniform}\PYG{p}{(}\PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mf}{0.6}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} normal epsilon distribution}
+\PYG{n}{epsilon} \PYG{o}{=} \PYG{n}{ot}\PYG{o}{.}\PYG{n}{Normal}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{1.9}\PYG{p}{)}
+\PYG{n}{defects} \PYG{o}{=} \PYG{n}{defectDist}\PYG{o}{.}\PYG{n}{getSample}\PYG{p}{(}\PYG{n}{N}\PYG{p}{)}
+\PYG{n}{signalsInvBoxCox} \PYG{o}{=} \PYG{n}{defects} \PYG{o}{*} \PYG{l+m+mf}{43.} \PYG{o}{+} \PYG{n}{epsilon}\PYG{o}{.}\PYG{n}{getSample}\PYG{p}{(}\PYG{n}{N}\PYG{p}{)} \PYG{o}{+} \PYG{l+m+mf}{2.5}
+\PYG{c+c1}{\PYGZsh{} Inverse Box Cox transformation}
+\PYG{n}{invBoxCox} \PYG{o}{=} \PYG{n}{ot}\PYG{o}{.}\PYG{n}{InverseBoxCoxTransform}\PYG{p}{(}\PYG{l+m+mf}{0.3}\PYG{p}{)}
+\PYG{n}{signals} \PYG{o}{=} \PYG{n}{invBoxCox}\PYG{p}{(}\PYG{n}{signalsInvBoxCox}\PYG{p}{)}
+\end{Verbatim}
+
+
+\subsubsection{Run analysis with Box Cox}
+\label{examples/linearPODCensoredData:run-analysis-with-box-cox}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{noiseThres} \PYG{o}{=} \PYG{l+m+mf}{60.}
+\PYG{n}{saturationThres} \PYG{o}{=} \PYG{l+m+mf}{1700.}
+\PYG{n}{analysis} \PYG{o}{=} \PYG{n}{otpod}\PYG{o}{.}\PYG{n}{UnivariateLinearModelAnalysis}\PYG{p}{(}\PYG{n}{defects}\PYG{p}{,} \PYG{n}{signals}\PYG{p}{,} \PYG{n}{noiseThres}\PYG{p}{,}
+                                               \PYG{n}{saturationThres}\PYG{p}{,} \PYG{n}{boxCox}\PYG{o}{=}\PYG{n+nb+bp}{True}\PYG{p}{)}
+\end{Verbatim}
+
+
+\subsubsection{Get some particular results}
+\label{examples/linearPODCensoredData:get-some-particular-results}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{print} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{getIntercept}\PYG{p}{(}\PYG{p}{)}
+\PYG{k}{print} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{getR2}\PYG{p}{(}\PYG{p}{)}
+\PYG{k}{print} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{getKolmogorovPValue}\PYG{p}{(}\PYG{p}{)}
+\end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+[Intercept for uncensored case : 4.777, Intercept for censored case : 4.1614]
+[R2 for uncensored case : 0.869115, R2 for censored case : 0.860722]
+[Kolmogorov p\PYGZhy{}value for uncensored case : 0.477505, Kolmogorov p\PYGZhy{}value for censored case : 0.505919]
+\end{Verbatim}
+
+
+\subsubsection{Save all results in a csv file}
+\label{examples/linearPODCensoredData:save-all-results-in-a-csv-file}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{analysis}\PYG{o}{.}\PYG{n}{saveResults}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{results.csv}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}
+\end{Verbatim}
+
+
+\subsubsection{Print all results of the linear regression and all tests on the residuals}
+\label{examples/linearPODCensoredData:print-all-results-of-the-linear-regression-and-all-tests-on-the-residuals}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} Results are displayed for both case}
+\PYG{n}{analysis}\PYG{o}{.}\PYG{n}{printResults}\PYG{p}{(}\PYG{p}{)}
+\end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+         Linear model analysis results
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+Box Cox parameter :                                    0.18
+
+                                                 Uncensored      Censored
+
+Intercept coefficient :                                4.78          4.16
+Slope coefficient :                                   18.15         19.94
+Standard error of the estimate :                       0.97          1.03
+
+Confidence interval on coefficients
+Intercept coefficient :                        [4.19, 5.36]
+Slope coefficient :                           [16.63, 19.67]
+Level :                                                0.95
+
+Quality of regression
+R2 (\PYGZgt{} 0.8):                                            0.87          0.86
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+         Residuals analysis results
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+Fitted distribution (uncensored) :            Normal(mu = \PYGZhy{}4.31838e\PYGZhy{}15, sigma = 0.968046)
+Fitted distribution (censored) :              Normal(mu = \PYGZhy{}0.0237409, sigma = 0.998599)
+
+                                                 Uncensored      Censored
+Distribution fitting test
+Kolmogorov p\PYGZhy{}value (\PYGZgt{} 0.05):                           0.48          0.51
+
+Normality test
+Anderson Darling p\PYGZhy{}value (\PYGZgt{} 0.05):                     0.06          0.08
+Cramer Von Mises p\PYGZhy{}value (\PYGZgt{} 0.05):                     0.07          0.09
+
+Zero residual mean test
+p\PYGZhy{}value (\PYGZgt{} 0.05):                                       1.0          0.83
+
+Homoskedasticity test (constant variance)
+Breush Pagan p\PYGZhy{}value (\PYGZgt{} 0.05):                         0.69          0.71
+Harrison McCabe p\PYGZhy{}value (\PYGZgt{} 0.05):                      0.59          0.52
+
+Non autocorrelation test
+Durbin Watson p\PYGZhy{}value (\PYGZgt{} 0.05):                        0.43          0.48
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+\end{Verbatim}
+
+
+\subsubsection{Print graphs}
+\label{examples/linearPODCensoredData:print-graphs}
+
+\paragraph{The linear regression model with data for the uncensored case (default case)}
+\label{examples/linearPODCensoredData:the-linear-regression-model-with-data-for-the-uncensored-case-default-case}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} draw the figure for the uncensored case and save it as png file}
+\PYG{n}{fig}\PYG{p}{,} \PYG{n}{ax} \PYG{o}{=} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{drawLinearModel}\PYG{p}{(}\PYG{n}{name}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{figure/linearModelUncensored.png}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}
+\PYG{n}{fig}\PYG{o}{.}\PYG{n}{show}\PYG{p}{(}\PYG{p}{)}
+\end{Verbatim}
+
+\includegraphics{{linearPODCensoredData_13_0}.png}
+
+
+\paragraph{The linear regression model with data for the uncensored case (default case)}
+\label{examples/linearPODCensoredData:id1}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} draw the figure for the censored case and save it as png file}
+\PYG{n}{fig}\PYG{p}{,} \PYG{n}{ax} \PYG{o}{=} \PYG{n}{analysis}\PYG{o}{.}\PYG{n}{drawLinearModel}\PYG{p}{(}\PYG{n}{model}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{censored}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{n}{name}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{figure/linearModelCensored.png}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}
+\PYG{n}{fig}\PYG{o}{.}\PYG{n}{show}\PYG{p}{(}\PYG{p}{)}
+\end{Verbatim}
+
+\includegraphics{{linearPODCensoredData_15_0}.png}
+
 
 \chapter{Indices and tables}
 \label{index:indices-and-tables}\begin{itemize}

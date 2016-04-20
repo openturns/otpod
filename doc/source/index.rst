@@ -13,6 +13,10 @@ Contents:
     :maxdepth: 3
 
     user_manual
+
+.. toctree::
+    :maxdepth: 2
+
     examples
 
 Indices and tables

@@ -1,0 +1,40 @@
+Linear model analysis results
+
+Box Cox parameter :	0.18	
+		
+	Uncensored	Censored
+		
+Intercept coefficient :	4.78	4.16
+Slope coefficient :	18.15	19.94
+Standard error of the estimate :	0.97	1.03
+		
+Confidence interval on coefficients		
+Intercept coefficient :	[4.19, 5.36]	
+Slope coefficient :	[16.63, 19.67]	
+Level :	0.95	
+		
+Quality of regression		
+R2 (> 0.8):	0.87	0.86
+
+Residuals analysis results
+
+Fitted distribution (uncensored) :	Normal(mu = -4.31838e-15, sigma = 0.968046)	
+Fitted distribution (censored) :	Normal(mu = -0.0237409, sigma = 0.998599)	
+		
+	Uncensored	Censored
+Distribution fitting test		
+Kolmogorov p-value (> 0.05):	0.48	0.51
+		
+Normality test		
+Anderson Darling p-value (> 0.05):	0.06	0.08
+Cramer Von Mises p-value (> 0.05):	0.07	0.09
+		
+Zero residual mean test		
+p-value (> 0.05):	1.0	0.83
+		
+Homoskedasticity test (constant variance)		
+Breush Pagan p-value (> 0.05):	0.69	0.71
+Harrison McCabe p-value (> 0.05):	0.6	0.51
+		
+Non autocorrelation test		
+Durbin Watson p-value (> 0.05):	0.43	0.48

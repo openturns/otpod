@@ -6,19 +6,11 @@ __all__ = ['UnivariateLinearModelPOD']
 import openturns as ot
 import math as m
 from ._pod import POD
-from ._math_tools import computeBoxCox, computeLinearParametersCensored
-from ._math_tools import DataHandling
+from ._math_tools import computeBoxCox, DataHandling, computeLinearParametersCensored
 from statsmodels.regression.linear_model import OLS
 import numpy as np
+from _decorator import DocInherit, keepingArgs
 
-
-class _Results():
-    """
-    This class contains the result of the run. Instances are created
-    for uncensored data or if needed for censored data.
-    """
-    def __init__(self):
-        pass
 
 class UnivariateLinearModelPOD(POD):
 
@@ -124,8 +116,6 @@ class UnivariateLinearModelPOD(POD):
         # self._size
         # self._dim
         # self._censored
-        # self._resultsUnc
-        # self._resultsCens
         
         # assertion input dimension is 1
         assert (self._dim == 1), "InputSample must be of dimension 1."
@@ -137,9 +127,9 @@ class UnivariateLinearModelPOD(POD):
 
         Notes
         -----
-        This method build the linear model for the uncensored and censored case
-        if required. Then it builds the POD model following the given residuals
-        distribution factory.
+        This method build the linear model for the uncensored or censored case
+        depending of the input parameters. Then it builds the POD model
+        following the given residuals distribution factory.
         """
 
         # as it is required to build several time the linear model for the case
@@ -148,10 +138,12 @@ class UnivariateLinearModelPOD(POD):
                                       self._detection, self._noiseThres,
                                       self._saturationThres, self._boxCox,
                                       self._censored)
-        defects = results['defects']
-        # contains intercept, slope, stderr, residuals
-        self._resultsUnc = results['uncensored']
-        self._resultsCens = results['censored']
+        # get results
+        self._defects = results['defects']
+        self._intercept = results['intercept']
+        self._slope = results['slope']
+        self._stderr = results['stderr']
+        self._residuals = results['residuals']
         # return the box cox detection even if box cox was not enabled. In this
         # case detection = detectionBoxCox
         self._detectionBoxCox = results['detection']
@@ -159,47 +151,25 @@ class UnivariateLinearModelPOD(POD):
         ######################### build linear model ###########################
         # define the linear model
         def LinModel(x):
-            return self._resultsUnc.intercept + self._resultsUnc.slope * x
-        self._resultsUnc.linearModel = LinModel
+            return self._intercept + self._slope * x
+        self._linearModel = LinModel
 
-        if self._censored:
-             # define the linear model
-            def LinModelCensored(x):
-                return self._resultsCens.intercept + self._resultsCens.slope * x
-            self._resultsCens.linearModel = LinModelCensored
 
         ######################## build PODModel function #######################
         if self._resDistFact is None:
             # Berens Binomial
-            PODfunction = self._PODbinomialModel(self._resultsUnc.residuals,
-                                                 self._resultsUnc.linearModel)
+            PODfunction = self._PODbinomialModel(self._residuals,
+                                                 self._linearModel)
         elif self._resDistFact.getClassName() == 'NormalFactory':
-            PODfunction = self._PODgaussModel(defects,
-                                              self._resultsUnc.stderr,
-                                              self._resultsUnc.linearModel)
+            PODfunction = self._PODgaussModel(self._defects,
+                                              self._stderr,
+                                              self._linearModel)
         else:
             # Linear regression model + bootstrap
-            PODfunction = self._PODbootstrapModel(self._resultsUnc.residuals,
-                                                  self._resultsUnc.linearModel)
+            PODfunction = self._PODbootstrapModel(self._residuals,
+                                                  self._linearModel)
 
-        self._resultsUnc.PODmodel = ot.PythonFunction(1, 1, PODfunction)
-
-        # Create POD model for the censored case
-        if self._censored:
-            if self._resDistFact is None:
-                # Berens Binomial
-                PODfunction = self._PODbinomialModel(self._resultsCens.residuals,
-                                                     self._resultsCens.linearModel)
-            elif self._resDistFact.getClassName() == 'NormalFactory':
-                PODfunction = self._PODgaussModel(defects,
-                                                  self._resultsCens.stderr,
-                                                  self._resultsCens.linearModel)
-            else:
-                # Linear regression model + bootstrap
-                PODfunction = self._PODbootstrapModel(self._resultsCens.residuals,
-                                                      self._resultsCens.linearModel)
-
-            self._resultsCens.PODmodel = ot.PythonFunction(1, 1, PODfunction)
+        self._PODmodel = ot.PythonFunction(1, 1, PODfunction)
 
 
         ############## build PODModel function with conf interval ##############
@@ -207,32 +177,20 @@ class UnivariateLinearModelPOD(POD):
         if self._resDistFact is not None:
             if self._resDistFact.getClassName() == 'NormalFactory':
                 # Linear regression with gaussian residuals hypothesis : build POD 
-                # collection function for uncensored and censore if required.
+                # collection function.
                 # The final PODmodelCl is built in the get method.
-                self._PODcollDict= {'uncensored': self._PODgaussModelCl(defects,
-                                    self._resultsUnc.intercept, self._resultsUnc.slope,
-                                    self._resultsUnc.stderr, self._detectionBoxCox)}
-                if self._censored:
-                    self._PODcollDict['censored'] = self._PODgaussModelCl(defects,
-                                    self._resultsCens.intercept, self._resultsCens.slope,
-                                    self._resultsCens.stderr, self._detectionBoxCox)
+                self._PODcollDict= self._PODgaussModelCl(self._defects,
+                                    self._intercept, self._slope,
+                                    self._stderr, self._detectionBoxCox)
             else:
-                # Linear regression model + bootstrap : build the collection of function
-                # for uncensored and censored case which is time consuming.
+                # Linear regression model + bootstrap : build the collection of 
+                # functions which is time consuming.
                 # The final PODmodelCl is built in the get method.
                 self._PODcollDict = self._PODbootstrapModelCl()
 
-
-
-    def getPODModel(self, model='uncensored'):
+    def getPODModel(self):
         """
         Accessor to the POD model.
-
-        Parameters
-        ----------
-        model : string
-            The linear regression model to be used, either *uncensored* or
-            *censored* if censored threshold were given. Default is *uncensored*.
 
         Returns
         -------
@@ -240,29 +198,13 @@ class UnivariateLinearModelPOD(POD):
             The function which computes the probability of detection for a given
             defect value.
         """
+        return self._PODmodel
 
-        # Check if the censored model exists when asking for it 
-        if model == "censored" and not self._censored:
-            raise NameError('POD model for censored data is not available.')
 
-        if model == "uncensored":
-            PODmodel = self._resultsUnc.PODmodel
-        elif model == "censored":
-            PODmodel = self._resultsCens.PODmodel
-        else:
-            raise NameError("model can be 'uncensored' or 'censored'.")
-
-        return PODmodel
-
-    def getPODCLModel(self, model='uncensored', confidenceLevel=0.95):
+    def getPODCLModel(self, confidenceLevel=0.95):
         """
         Accessor to the POD model at a given confidence level.
 
-        Parameters
-        ----------
-        model : string
-            The linear regression model to be used, either *uncensored* or
-            *censored* if censored threshold were given. Default is *uncensored*.
         confidenceLevel : float
             The confidence level the POD must be computed. Default is 0.95
 
@@ -273,104 +215,54 @@ class UnivariateLinearModelPOD(POD):
             defect value at the confidence level given as parameter.
         """
 
-        # Check is the censored model exists when asking for it 
-        if model == "censored" and not self._censored:
-            raise NameError('Linear model for censored data is not available.')
-
-        if model == "uncensored":
-            if self._resDistFact is None:
-                # Berens Binomial
-                PODfunction = self._PODbinomialModelCl(self._resultsUnc.residuals,
-                                                       self._resultsUnc.linearModel,
-                                                       confidenceLevel)
-            else:
-                # Linear regression model + gaussian residuals or + bootstrap
-                def PODfunction(x):
-                    samplePODDef = ot.NumericalSample(self._simulationSize, 1)
-                    for i in range(self._simulationSize):
-                        samplePODDef[i] = [self._PODcollDict['uncensored'][i](x[0])]
-                    return samplePODDef.computeQuantilePerComponent(1. - confidenceLevel)
-
-            PODmodelCl = ot.PythonFunction(1, 1, PODfunction)
-
-        elif model == "censored":
-        # Create model conf interval for the censored case
-            if self._resDistFact is None:
-                # Berens Binomial
-                PODfunction = self._PODbinomialModelCl(self._resultsCens.residuals,
-                                                       self._resultsCens.linearModel,
-                                                       confidenceLevel)
-            else:
-                # Linear regression model + gaussian residuals or + bootstrap
-                def PODfunction(x):
-                    samplePODDef = ot.NumericalSample(self._simulationSize, 1)
-                    for i in range(self._simulationSize):
-                        samplePODDef[i] = [self._PODcollDict['censored'][i](x[0])]
-                    return samplePODDef.computeQuantilePerComponent(1. - confidenceLevel)
-
-            PODmodelCl = ot.PythonFunction(1, 1, PODfunction)
+        if self._resDistFact is None:
+            # Berens Binomial
+            PODfunction = self._PODbinomialModelCl(self._residuals,
+                                                   self._linearModel,
+                                                   confidenceLevel)
         else:
-            raise NameError("model can be 'uncensored' or 'censored'.")
+            # Linear regression model + gaussian residuals or + bootstrap
+            def PODfunction(x):
+                samplePODDef = ot.NumericalSample(self._simulationSize, 1)
+                for i in range(self._simulationSize):
+                    samplePODDef[i] = [self._PODcollDict[i](x[0])]
+                return samplePODDef.computeQuantilePerComponent(1. - confidenceLevel)
+
+        PODmodelCl = ot.PythonFunction(1, 1, PODfunction)
 
         return PODmodelCl
 
+    @DocInherit # decorator to inherit the docstring from POD class
+    @keepingArgs # decorator to keep the real signature
     def computeDetectionSize(self, probabilityLevel, confidenceLevel=None):
-        """
-        Compute the detection size for a given probability level.
+        return self._computeDetectionSize(self.getPODModel(),
+                                          self.getPODCLModel(),
+                                          probabilityLevel,
+                                          confidenceLevel)
 
-        Parameters
-        ----------
-        probabilityLevel : float
-            The probability level for which the defect size is computed.
-        confidenceLevel : float
-            The confidence level associated to the given probability level the
-            defect size is computed.
+    @DocInherit # decorator to inherit the docstring from POD class
+    @keepingArgs # decorator to keep the real signature
+    def drawPOD(self, probabilityLevel=None, confidenceLevel=None, defectMin=None,
+                defectMax=None, nbPt=100, name=None):
 
-        Returns
-        -------
-        result : collection of :py:class:`openturns.NumericalPointWithDescription`
-            A list of NumericalPointWithDescription containing the detection size
-            computing for each case.
-        """
+        fig, ax = self._drawPOD(self.getPODModel(), self.getPODCLModel(),
+                                probabilityLevel, confidenceLevel, defectMin,
+                                defectMax, nbPt, name)
 
-        defectMin = self._inputSample.getMin()[0]
-        defectMax = self._inputSample.getMax()[0]
-        result = ot.NumericalPointWithDescriptionCollection()
+        if self._resDistFact is None:
+            ax.set_title('POD - Linear regression model - Binomial')
+        else:
+            if self._resDistFact.getClassName() =='NormalFactory':
+                ax.set_title('POD - Linear regression model - Gauss')
+            else:
+                ax.set_title('POD - Linear regression model - ' + \
+                              str(self._resDistFact.getClassName()))
 
-        # compute 'a90' for uncensored model
-        model = self.getPODModel()
-        aProbLevel = ot.NumericalPointWithDescription(1, ot.Brent().solve(model,
-                                        probabilityLevel, defectMin, defectMax))
-        aProbLevel.setDescription(['a'+str(probabilityLevel*100)])
-        result.add(aProbLevel)
+        if name is not None:
+            fig.savefig(name, bbox_inches='tight', transparent=True)
 
-        # compute 'a90_95' for uncensored model
-        if confidenceLevel is not None:
-            model = self.getPODCLModel(confidenceLevel=confidenceLevel)
-            aProbLevelConfLevel = ot.NumericalPointWithDescription(1, ot.Brent().solve(model,
-                                        probabilityLevel, defectMin, defectMax))
-            aProbLevelConfLevel.setDescription(['a'+str(probabilityLevel*100)+'/'\
-                                                +str(confidenceLevel*100)])
-            result.add(aProbLevelConfLevel)
+        return fig, ax
 
-        if self._censored:
-            # compute 'a90' for censored model
-            model = self.getPODModel('censored')
-            aProbLevel = ot.NumericalPointWithDescription(1, ot.Brent().solve(model,
-                                            probabilityLevel, defectMin, defectMax))
-            aProbLevel.setDescription(['a'+str(probabilityLevel*100)+' (censored)'])
-            result.add(aProbLevel)
-
-            # compute 'a90_95' for censored model
-            if confidenceLevel is not None:
-                model = self.getPODCLModel('censored', confidenceLevel)
-                aProbLevelConfLevel = ot.NumericalPointWithDescription(1, ot.Brent().solve(model,
-                                            probabilityLevel, defectMin, defectMax))
-                aProbLevelConfLevel.setDescription(['a'+str(probabilityLevel*100)+'/'\
-                                                    +str(confidenceLevel*100)+' (censored)'])
-                result.add(aProbLevelConfLevel)
-        
-        return result
 
 ################################################################################
 ####################### Linear regression Binomial #############################
@@ -436,7 +328,6 @@ class UnivariateLinearModelPOD(POD):
                               self.slope * x)) / self.sigmaEpsilon
                 return ot.DistFunc.pNormal(t,True)
 
-
         N = defects.getSize()
         X = ot.NumericalSample(N, [1, 0])
         X[:, 1] = defects
@@ -459,7 +350,6 @@ class UnivariateLinearModelPOD(POD):
 ####################### Linear regression bootstrap ############################
 ################################################################################
 
-
     def _PODbootstrapModel(self, residuals, linearModel):
         empiricalDist = self._resDistFact.build(residuals)
         # function to compute the POD(defects)
@@ -478,30 +368,24 @@ class UnivariateLinearModelPOD(POD):
                 results = _computeLinearModel(inputSample, outputSample, detection,
                                         noiseThres, saturationThres, boxCox, censored)
 
-                self.detection = results['detection']
-                self.resultsUnc = results['uncensored']
-                self.resultsCens = results['censored']
-                self.resultsUnc.resDist = resDistFact.build(self.resultsUnc.residuals)
-                if censored:
-                    self.resultsCens.resDist = resDistFact.build(self.resultsCens.residuals)
+                self.intercept = results['intercept']
+                self.slope = results['slope']
+                self.residuals = results['residuals']
+                self.detectionBoxCox = results['detection']
+                self.resDist = resDistFact.build(self.residuals)
 
             def PODmodel(self, x):
-                defectThres = self.detection - (self.resultsUnc.intercept + 
-                              self.resultsUnc.slope * x)
-                return self.resultsUnc.resDist.computeComplementaryCDF(defectThres)
+                defectThres = self.detectionBoxCox - (self.intercept + 
+                              self.slope * x)
+                return self.resDist.computeComplementaryCDF(defectThres)
 
-            def PODmodelCens(self, x):
-                defectThres = self.detection - (self.resultsCens.intercept +
-                              self.resultsCens.slope * x)
-                return self.resultsCens.resDist.computeComplementaryCDF(defectThres)
 
         data = ot.NumericalSample(self._size, 2)
         data[:, 0] = self._inputSample
         data[:, 1] = self._outputSample
         # bootstrap of the data
         bootstrapExp = ot.BootstrapExperiment(data)
-        PODcollUnc = []
-        PODcollCens = []
+        PODcoll = []
         for i in range(self._simulationSize):
         # generate a sample with replacement within data of the same size
             bootstrapData = bootstrapExp.generate()
@@ -511,14 +395,9 @@ class UnivariateLinearModelPOD(POD):
                                   self._saturationThres, self._resDistFact,
                                   self._boxCox, self._censored)
 
-            PODcollUnc.append(model.PODmodel)
+            PODcoll.append(model.PODmodel)
 
-            # computing in the censored case
-            if self._censored:
-                PODcollCens.append(model.PODmodelCens)
-
-        return {'uncensored':PODcollUnc, 'censored':PODcollCens}
-
+        return PODcoll
 
 ################################################################################
 ####################### Compute linear regression  #############################
@@ -527,21 +406,13 @@ class UnivariateLinearModelPOD(POD):
 def _computeLinearModel(inputSample, outputSample, detection, noiseThres,
                         saturationThres, boxCox, censored):
     """
-    run the same code as in the linear analysis class but without the test
-    this is much faster doing it.
-    It is also needed for the POD bootstrap method.
+    Run filerCensoredData and build the linear regression model.
+    It is defined as a simple function because it is also needed in a loop for
+    the bootstrap based POD.
     """
 
-    ## create result container
-    resultsUnc = _Results()
-    resultsCens = _Results()
     #################### Filter censored data ##############################
     if censored:
-        # check if one sided censoring
-        if noiseThres is None:
-            noiseThres = -ot.sys.float_info.max
-        if saturationThres is None:
-            saturationThres = ot.sys.float_info.max
         # Filter censored data
         defects, defectsNoise, defectsSat, signals = \
             DataHandling.filterCensoredData(inputSample, outputSample,
@@ -561,14 +432,12 @@ def _computeLinearModel(inputSample, outputSample, detection, noiseThres,
         boxCoxTransform = ot.BoxCoxTransform([lambdaBoxCox])
         signals = boxCoxTransform(signals)
         if censored:
-            if noiseThres != -ot.sys.float_info.max:
+            if noiseThres is not None:
                 noiseThres = boxCoxTransform([noiseThres])[0]
-            if saturationThres != ot.sys.float_info.max:
+            if saturationThres is not None:
                 saturationThres = boxCoxTransform([saturationThres])[0]
         detectionBoxCox = boxCoxTransform([detection])[0]
     else:
-        noiseThres = noiseThres
-        saturationThres = saturationThres
         detectionBoxCox = detection
 
     ######################### Linear Regression model ######################
@@ -578,24 +447,24 @@ def _computeLinearModel(inputSample, outputSample, detection, noiseThres,
     X[:, 1] = defects
     algoLinear = OLS(np.array(signals), np.array(X)).fit()
 
-    resultsUnc.intercept = algoLinear.params[0]
-    resultsUnc.slope = algoLinear.params[1]
+    intercept = algoLinear.params[0]
+    slope = algoLinear.params[1]
     # get standard error estimates (residuals standard deviation)
-    resultsUnc.stderr = np.sqrt(algoLinear.scale)
+    stderr = np.sqrt(algoLinear.scale)
     # get residuals from algoLinear
-    resultsUnc.residuals = ot.NumericalSample(np.vstack(algoLinear.resid))
+    residuals = ot.NumericalSample(np.vstack(algoLinear.resid))
 
     if censored:
         # define initial starting point for MLE optimization
-        initialStartMLE = [resultsUnc.intercept, resultsUnc.slope,
-                           resultsUnc.stderr]
+        initialStartMLE = [intercept, slope, stderr]
         # MLE optimization
         res = computeLinearParametersCensored(initialStartMLE, defects,
             defectsNoise, defectsSat, signals, noiseThres, saturationThres)
-        resultsCens.intercept = res[0]
-        resultsCens.slope = res[1]
-        resultsCens.stderr = res[2]
-        resultsCens.residuals = signals - (resultsCens.intercept + resultsCens.slope * defects)
+        intercept = res[0]
+        slope = res[1]
+        stderr = res[2]
+        residuals = signals - (intercept + slope * defects)
 
-    return {'defects':defects, 'signals':signals, 'uncensored':resultsUnc,
-            'censored':resultsCens, 'detection':detectionBoxCox}
+    return {'defects':defects, 'signals':signals, 'intercept':intercept,
+            'slope':slope, 'stderr':stderr, 'residuals':residuals,
+            'detection':detectionBoxCox}

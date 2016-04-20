@@ -1,23 +1,23 @@
+otpod module
+============
 
-otpod Module
-=================
-
-otpod is a module for OpenTURNS
-
-More information can found at http://www.openturns.org
+otpod is a module for `OpenTURNS <http://www.openturns.org>`_.
 
 
 Installation
 ============
 
 In terminal, type in :
-$ python setup.py install
 
-Documentation is available in html at ./doc/build/html/index.html and in pdf at
-./doc/build/latex/otpoddoc.pdf
+.. code-block:: shell
+
+    python setup.py install
+
+Documentation is available `here <http://adumasphi.github.io/otpod/>`_
 
 Test are available in the 'test' directory. They can be launched with pytest and
 the following command in a terminal :
-$ py.test 
 
--- The OpenTURNS team
+.. code-block:: shell
+    
+    py.test

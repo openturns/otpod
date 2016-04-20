@@ -29,7 +29,7 @@ setup(
     long_description=open('README.rst').read(),
  
     # List of dependancies
-    # install_requires= ["openturns==1.6"]
+    # install_requires= []
  
     # Enable to take into account MANIFEST.in
     # include_package_data=True,

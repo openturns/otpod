@@ -7,7 +7,7 @@ otpod is a module for `OpenTURNS <http://www.openturns.org>`_.
 Installation
 ============
 
-In terminal, type in :
+In a terminal, type in :
 
 .. code-block:: shell
 

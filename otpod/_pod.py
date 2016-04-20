@@ -188,7 +188,7 @@ class POD(object):
         if defectMax is None:
             defectMax = self._inputSample.getMax()[0]
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 6))
         # POD model graph
         View(PODmodel.draw(defectMin, defectMax, nbPt), axes=[ax],
             plot_kwargs={'color':'red', 'label':'POD'})
@@ -212,7 +212,7 @@ class POD(object):
                       'a'+str(int(probabilityLevel*100))+'/'+str(int(confidenceLevel*100))+\
                       ' : '+str(round(detectionSize[1], 3)))
 
-        ax.legend(loc='lower right', fontsize='small')
+        ax.legend(loc='lower right')
         ax.set_xlabel('Defects')
         ax.set_ylabel('POD')
         return fig, ax

@@ -1,4 +1,6 @@
 
+`ipynb source code <../../../source/examples/linearAnalysis.ipynb>`_
+
 Linear model analysis
 =====================
 
@@ -127,7 +129,7 @@ The linear model is not correct
 
 
 
-.. image:: linearAnalysis_files/linearAnalysis_11_0.png
+.. image:: linearAnalysis_files/linearAnalysis_12_0.png
 
 
 The residuals are not homoskedastic
@@ -140,7 +142,7 @@ The residuals are not homoskedastic
 
 
 
-.. image:: linearAnalysis_files/linearAnalysis_13_0.png
+.. image:: linearAnalysis_files/linearAnalysis_14_0.png
 
 
 Run analysis with Box Cox
@@ -227,7 +229,7 @@ The linear regression model with data
 
 
 
-.. image:: linearAnalysis_files/linearAnalysis_21_0.png
+.. image:: linearAnalysis_files/linearAnalysis_22_0.png
 
 
 The residuals with respect to the defects
@@ -241,7 +243,7 @@ The residuals with respect to the defects
 
 
 
-.. image:: linearAnalysis_files/linearAnalysis_23_0.png
+.. image:: linearAnalysis_files/linearAnalysis_24_0.png
 
 
 The fitted residuals distribution with the histogram
@@ -257,7 +259,7 @@ The fitted residuals distribution with the histogram
 
 
 
-.. image:: linearAnalysis_files/linearAnalysis_25_0.png
+.. image:: linearAnalysis_files/linearAnalysis_26_0.png
 
 
 The residuals QQ plot
@@ -270,7 +272,7 @@ The residuals QQ plot
 
 
 
-.. image:: linearAnalysis_files/linearAnalysis_27_0.png
+.. image:: linearAnalysis_files/linearAnalysis_28_0.png
 
 
 The Box Cox likelihood with respect to the defect
@@ -283,6 +285,6 @@ The Box Cox likelihood with respect to the defect
 
 
 
-.. image:: linearAnalysis_files/linearAnalysis_29_0.png
+.. image:: linearAnalysis_files/linearAnalysis_30_0.png
 
 

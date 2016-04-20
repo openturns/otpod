@@ -4,7 +4,7 @@
 __all__ = []
 
 """
-doc_inherit decorator
+decorator to inherit docstring and keep the signature
 code adapted from : http://code.activestate.com/recipes/576862/
 
 Usage:
@@ -17,7 +17,8 @@ class Foo(object):
 
 class Bar(Foo):
     @DocInherit
-    def foo(self):
+    @keepingArgs
+    def foo(self, a, b):
         self._foo()
 
 Now, Bar.foo.__doc__ == Bar().foo.__doc__ == Foo.foo.__doc__ == "Frobber"

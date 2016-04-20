@@ -1,4 +1,6 @@
 
+`ipynb source code <../../../source/examples/linearAnalysisCensoredData.ipynb>`_
+
 Linear model analysis with censored data
 ========================================
 
@@ -135,7 +137,7 @@ The linear regression model with data for the uncensored case (default case)
 
 
 
-.. image:: linearAnalysisCensoredData_files/linearAnalysisCensoredData_13_0.png
+.. image:: linearAnalysisCensoredData_files/linearAnalysisCensoredData_14_0.png
 
 
 The linear regression model with data for the censored case
@@ -149,6 +151,6 @@ The linear regression model with data for the censored case
 
 
 
-.. image:: linearAnalysisCensoredData_files/linearAnalysisCensoredData_15_0.png
+.. image:: linearAnalysisCensoredData_files/linearAnalysisCensoredData_16_0.png
 
 

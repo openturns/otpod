@@ -209,7 +209,7 @@ class DataHandling(object):
     @staticmethod
     def filterCensoredData(defects, signals, noiseThres, saturationThres):
         """
-        Sort defect sizes with respect to the censored signals.
+        Sort defects and signals with respect to the censore threholds.
 
         Parameters
         ----------

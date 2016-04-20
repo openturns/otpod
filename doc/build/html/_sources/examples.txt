@@ -8,3 +8,5 @@ Examples of the API
 
     examples/linearAnalysis
     examples/linearAnalysisCensoredData
+    examples/linearPOD
+    examples/linearPODCensoredData

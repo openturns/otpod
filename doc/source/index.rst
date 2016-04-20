@@ -6,6 +6,11 @@
 Welcome to otpod's documentation!
 =================================
 
+.. toctree::
+    :maxdepth: 1
+
+    includeme
+
 Contents:
 ---------
     

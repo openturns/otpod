@@ -505,22 +505,24 @@ class UnivariateLinearModelAnalysis():
 
         defects = self._algoLinear.model.exog[:, 1]
         signals = self._algoLinear.model.endog
-        if model =="censored":
-            fittedSignals = self._resultsCens.fittedSignals
-        else:
+        if model == "uncensored":
             # get the fitted values from the linear model of statsmodels
             fittedSignals = self._algoLinear.fittedvalues
+        elif model == "censored":
+            fittedSignals = self._resultsCens.fittedSignals
+        else:
+            raise NameError("model can be 'uncensored' or 'censored'.")
 
         fig, ax = plt.subplots(figsize=(8, 6))
         ax.plot(defects, signals, 'b.', label='Data', ms=9)
         ax.plot(defects, fittedSignals, 'r-', label='Linear model')
         ax.set_xlabel('Defects')
-        if model == "censored":
-            ax.set_ylabel('Box Cox (signals)')
-            ax.set_title('Linear regression model for censored data')
-        else:
+        if model == "uncensored":
             ax.set_ylabel('Signals')
             ax.set_title('Linear regression model')
+        elif model == "censored":
+            ax.set_ylabel('Box Cox (signals)')
+            ax.set_title('Linear regression model for censored data')
         ax.grid()
         ax.legend(loc='upper left')
 
@@ -557,10 +559,12 @@ class UnivariateLinearModelAnalysis():
             raise NameError('Residuals for censored data is not available.')
 
         defects = self._algoLinear.model.exog[:, 1]
-        if model =="censored":
+        if model == "uncensored":
+            residuals = self._resultsUnc.residuals
+        elif model =="censored":
             residuals = self._resultsCens.residuals
         else:
-            residuals = self._resultsUnc.residuals
+            raise NameError("model can be 'uncensored' or 'censored'.")
 
         fig, ax = plt.subplots(figsize=(8, 6))
         ax.grid()
@@ -568,10 +572,10 @@ class UnivariateLinearModelAnalysis():
         ax.hlines(0, defects.min(), defects.max(), 'r', 'dashed')
         ax.set_xlabel('Defects')
         ax.set_ylabel('Residuals dispersion')
-        if model == "censored":
-            ax.set_title('Residuals for censored data')
-        else:
+        if model == "uncensored":
             ax.set_title('Residuals')
+        elif model == "censored":
+            ax.set_title('Residuals for censored data')
 
         if name is not None:
             fig.savefig(name, bbox_inches='tight', transparent=True)
@@ -604,12 +608,14 @@ class UnivariateLinearModelAnalysis():
         if model == "censored" and not self._censored:
             raise NameError('Residuals for censored data is not available.')
 
-        if model =="censored":
+        if model == "uncensored":
+            residuals = self._resultsUnc.residuals
+            distribution = self._resultsUnc.resDist
+        elif model == "censored":
             residuals = self._resultsCens.residuals
             distribution = self._resultsCens.resDist
         else:
-            residuals = self._resultsUnc.residuals
-            distribution = self._resultsUnc.resDist
+            raise NameError("model can be 'uncensored' or 'censored'.")
 
         fig, ax = plt.subplots(figsize=(8, 8))
         graph = ot.VisualTest.DrawQQplot(residuals, distribution)
@@ -621,13 +627,13 @@ class UnivariateLinearModelAnalysis():
         graph.add(drawables)
 
         graph.setXTitle('Residuals empirical quantiles')
-        graph.setYTitle('Fitted residuals distribution')
+        graph.setYTitle(distribution.__str__())
         graph.setGrid(True)
         View(graph, axes=[ax])
-        if model == "censored":
-            ax.set_title('QQ-plot of the residuals for censored data')
-        else:
+        if model == "uncensored":
             ax.set_title('QQ-plot of the residuals ')
+        elif model == "censored":
+            ax.set_title('QQ-plot of the residuals for censored data')
 
         if name is not None:
             fig.savefig(name, bbox_inches='tight', transparent=True)
@@ -661,12 +667,14 @@ class UnivariateLinearModelAnalysis():
         if model == "censored" and not self._censored:
             raise NameError('Residuals for censored data is not available.')
 
-        if model =="censored":
+        if model == "uncensored":
+            residuals = self._resultsUnc.residuals
+            distribution = self._resultsUnc.resDist
+        elif model =="censored":
             residuals = self._resultsCens.residuals
             distribution = self._resultsCens.resDist
         else:
-            residuals = self._resultsUnc.residuals
-            distribution = self._resultsUnc.resDist
+            raise NameError("model can be 'uncensored' or 'censored'.")
 
         fig, ax = plt.subplots(figsize=(8, 6))
         graphHist = ot.VisualTest.DrawHistogram(residuals)
@@ -675,10 +683,10 @@ class UnivariateLinearModelAnalysis():
         View(graphHist, axes=[ax], bar_kwargs={'color':'blue','alpha': 0.5, 'label':'Residuals histogram'})
         View(graphPDF, axes=[ax], plot_kwargs={'label':distribution.__str__()})
         ax.set_xlabel('Defect realizations')
-        if model == "censored":
-            ax.set_title('Residuals distribution for censored data')
-        else:
+        if model == "uncensored":
             ax.set_title('Residuals distribution')
+        elif model == "censored":
+            ax.set_title('Residuals distribution for censored data')
 
         if name is not None:
             fig.savefig(name, bbox_inches='tight', transparent=True)
@@ -711,7 +719,7 @@ class UnivariateLinearModelAnalysis():
 
         # Check is the censored model exists when asking for it 
         if not self._boxCox:
-            raise Exception('Box Cox transformation of the analysis not enabled.')
+            raise Exception('The Box Cox transformation is not enabled.')
 
         fig, ax = plt.subplots(figsize=(8, 6))
         # get the graph from the method 'computeBoxCox'

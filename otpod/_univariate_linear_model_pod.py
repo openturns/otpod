@@ -64,7 +64,6 @@ class UnivariateLinearModelPOD(POD):
     - if *resDistFact* = {:py:class:`openturns.KernelSmoothing`,
       :py:class:`openturns.WeibullFactory`, ...}, the confidence interval is
       built by bootstrap.
-
     """
 
     def __init__(self, inputSample=None, outputSample=None, detection=None, noiseThres=None,

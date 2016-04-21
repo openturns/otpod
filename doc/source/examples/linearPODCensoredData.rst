@@ -1,5 +1,5 @@
 
-`ipynb source code <../../../source/examples/linearPODCensoredData.ipynb>`_
+`ipynb source code <linearPODCensoredData.ipynb>`_
 
 Linear model POD with censored data
 ===================================

@@ -1,5 +1,5 @@
 
-`ipynb source code <../../../source/examples/linearAnalysisCensoredData.ipynb>`_
+`ipynb source code <linearAnalysisCensoredData.ipynb>`_
 
 Linear model analysis with censored data
 ========================================

@@ -1,5 +1,5 @@
 
-`ipynb source code <../../../source/examples/linearPOD.ipynb>`_
+`ipynb source code <linearPOD.ipynb>`_
 
 Linear model POD
 ================

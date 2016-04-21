@@ -1,5 +1,5 @@
 
-`ipynb source code <../../../source/examples/linearAnalysis.ipynb>`_
+`ipynb source code <linearAnalysis.ipynb>`_
 
 Linear model analysis
 =====================

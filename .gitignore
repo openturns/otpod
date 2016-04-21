@@ -6,7 +6,7 @@ doc/build/doctrees/*
 doc/build/html/.doctrees/*
 !doc/build/latex/*.pdf
 
-*.directory
+.directory
 *.pyc
 *.cache
 doc/source/examples/.ipynb_checkpoints/*

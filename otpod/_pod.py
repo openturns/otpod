@@ -52,44 +52,6 @@ class POD(object):
                 "InputSample and outputSample must have the same size."
         assert (self._outputSample.getDimension() == 1), "OutputSample must be of dimension 1."
 
-    def _run(self):
-        """
-        Run common preliminary analysis to all methods to build POD. 
-        """
-        #################### Filter censored data ##############################
-        if self._censored:
-            # Filter censored data
-            defects, defectsNoise, defectsSat, signals = \
-                DataHandling.filterCensoredData(self._inputSample, self._outputSample,
-                              self._noiseThres, self._saturationThres)
-        else:
-            defects, signals = self._inputSample, self._outputSample
-            defectsNoise = None
-            defectsSat = None
-
-        ###################### Box Cox transformation ##########################
-        # Compute Box Cox if enabled
-        if self._boxCox:
-            # optimization required, get optimal lambda without graph
-            self._lambdaBoxCox, graph = computeBoxCox(defects, signals)
-
-            # Transformation of data
-            boxCoxTransform = ot.BoxCoxTransform([self._lambdaBoxCox])
-            signals = boxCoxTransform(signals)
-            if self._censored:
-                if self._noiseThres is not None:
-                    noiseThres = boxCoxTransform([self._noiseThres])[0]
-                if self._saturationThres is not None:
-                    saturationThres = boxCoxTransform([self._saturationThres])[0]
-            detection = boxCoxTransform([self._detection])[0]
-        else:
-            signals = signals
-            noiseThres = self._noiseThres
-            saturationThres = self._saturationThres
-            detection = self._detection
-
-        return defects, defectsNoise, defectsSat, signals, detection, \
-               noiseThres, saturationThres
 
     def getSimulationSize(self):
         """
@@ -135,15 +97,13 @@ class POD(object):
         defectMax = self._inputSample.getMax()[0]
 
         # compute 'a90'
-        model = self.getPODModel()
         detectionSize = ot.NumericalPointWithDescription(1, ot.Brent().solve(model,
                                         probabilityLevel, defectMin, defectMax))
         description = ['a'+str(int(probabilityLevel*100))]
 
         # compute 'a90_95'
         if confidenceLevel is not None:
-            model = self.getPODCLModel(confidenceLevel=confidenceLevel)
-            detectionSize.add(ot.Brent().solve(model, probabilityLevel,
+            detectionSize.add(ot.Brent().solve(modelCl, probabilityLevel,
                                                defectMin, defectMax))
             description.append('a'+str(int(probabilityLevel*100))+'/'\
                                                 +str(int(confidenceLevel*100)))
@@ -151,7 +111,7 @@ class POD(object):
         detectionSize.setDescription(description)
         return detectionSize
 
-    def _drawPOD(self, PODmodel, PODmodelCl, probabilityLevel=None,
+    def _drawPOD(self, PODmodel, PODmodelCl=None, probabilityLevel=None,
                  confidenceLevel=None, defectMin=None, defectMax=None,
                  nbPt=100, name=None):
         """
@@ -216,3 +176,43 @@ class POD(object):
         ax.set_xlabel('Defects')
         ax.set_ylabel('POD')
         return fig, ax
+
+
+    def _run(self, inputSample, outputSample, detection, noiseThres,
+             saturationThres, boxCox, censored):
+        """
+        Run common preliminary analysis to all methods to build POD. 
+        """
+         #################### Filter censored data ##############################
+        if censored:
+            # Filter censored data
+            defects, defectsNoise, defectsSat, signals = \
+                DataHandling.filterCensoredData(inputSample, outputSample,
+                              noiseThres, saturationThres)
+        else:
+            defects, signals = inputSample, outputSample
+            defectsNoise, defectsSat = None, None
+
+        ###################### Box Cox transformation ##########################
+        # Compute Box Cox if enabled
+        if boxCox:
+            # optimization required, get optimal lambda without graph
+            lambdaBoxCox, graph = computeBoxCox(defects, signals)
+
+            # Transformation of data
+            boxCoxTransform = ot.BoxCoxTransform([lambdaBoxCox])
+            signals = boxCoxTransform(signals)
+            if censored:
+                if noiseThres is not None:
+                    noiseThres = boxCoxTransform([noiseThres])[0]
+                if saturationThres is not None:
+                    saturationThres = boxCoxTransform([saturationThres])[0]
+            detectionBoxCox = boxCoxTransform([detection])[0]
+        else:
+            detectionBoxCox = detection
+            lambdaBoxCox = None
+
+        return {'defects':defects, 'signals':signals, 'defectsNoise':defectsNoise,
+                'defectsSat':defectsSat, 'noiseThres':noiseThres,
+                'saturationThres':saturationThres, 'lambdaBoxCox':lambdaBoxCox,
+                'detectionBoxCox':detectionBoxCox}

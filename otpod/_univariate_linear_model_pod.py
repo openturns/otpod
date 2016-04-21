@@ -235,7 +235,7 @@ class UnivariateLinearModelPOD(POD):
     @keepingArgs # decorator to keep the real signature
     def computeDetectionSize(self, probabilityLevel, confidenceLevel=None):
         return self._computeDetectionSize(self.getPODModel(),
-                                          self.getPODCLModel(),
+                                          self.getPODCLModel(confidenceLevel),
                                           probabilityLevel,
                                           confidenceLevel)
 
@@ -244,9 +244,14 @@ class UnivariateLinearModelPOD(POD):
     def drawPOD(self, probabilityLevel=None, confidenceLevel=None, defectMin=None,
                 defectMax=None, nbPt=100, name=None):
 
-        fig, ax = self._drawPOD(self.getPODModel(), self.getPODCLModel(),
+        if confidenceLevel is None:
+            fig, ax = self._drawPOD(self.getPODModel(), None,
                                 probabilityLevel, confidenceLevel, defectMin,
                                 defectMax, nbPt, name)
+        elif confidenceLevel is not None:
+            fig, ax = self._drawPOD(self.getPODModel(), self.getPODCLModel(confidenceLevel),
+                    probabilityLevel, confidenceLevel, defectMin,
+                    defectMax, nbPt, name)
 
         if self._resDistFact is None:
             ax.set_title('POD - Linear regression model - Binomial')

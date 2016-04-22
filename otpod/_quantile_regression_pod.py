@@ -89,6 +89,17 @@ class QuantileRegressionPOD(POD):
 
 
     def run(self):
+        """
+        Build the POD models.
+
+        Notes
+        -----
+        This method build the quantile regression model. First the censored data
+        are filtered if needed. The Box Cox transformation is performed if it is
+        enabled. Then it builds the POD model for given data and computes using
+        bootstrap all the defects quantile needed to build the POD model at the
+        confidence level.
+        """
         
         # Run the preliminary run of the POD class
         result = self._run(self._inputSample, self._outputSample, self._detection,
@@ -268,7 +279,7 @@ class QuantileRegressionPOD(POD):
 
     def drawLinearModel(self, probabilityLevel, name=None):
         """
-        Draw the linear regression prediction versus the true data.
+        Draw the quantile regression prediction versus the true data.
 
         Parameters
         ----------

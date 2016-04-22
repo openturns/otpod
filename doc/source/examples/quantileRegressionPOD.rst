@@ -64,15 +64,16 @@ Build POD with quantile regression technique
     Computing time : 151.43 s
 
 
-The computing can be reduced by setting the simulation size attribute to
-another value. However the confidence interval is less accurate.
+The computing time can be reduced by setting the simulation size
+attribute to another value. However the confidence interval is less
+accurate.
 
 .. code:: python
 
     t0 = time()
     PODsimulSize100 = otpod.QuantileRegressionPOD(defects, signals, detection,
                                       boxCox=True)
-    PODsimulSize100.setSimulationSize(100)
+    PODsimulSize100.setSimulationSize(100) # default is 1000
     PODsimulSize100.run()
     print 'Computing time : {:0.2f} s'.format(time()-t0) 
 

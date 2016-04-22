@@ -70,7 +70,7 @@ detectionSize3 = POD3.computeDetectionSize(0.9, 0.95)
 def test_3_a90():
     np.testing.assert_almost_equal(detectionSize3[0], 0.314034473666)
 def test_3_a95():
-    np.testing.assert_almost_equal(detectionSize3[1], 0.332230195739)
+    np.testing.assert_almost_equal(detectionSize3[1], 0.332226916607, decimal=5)
 def test_3_R2_90():
     np.testing.assert_almost_equal(POD3.getR2(0.9), 0.628868102499)
 

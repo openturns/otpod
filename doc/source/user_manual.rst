@@ -25,6 +25,7 @@ POD model
     :nosignatures:
 
     UnivariateLinearModelPOD
+    QuantileRegressionPOD
 
 Tools
 =========

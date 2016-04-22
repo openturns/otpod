@@ -6,7 +6,8 @@ __all__ = ['UnivariateLinearModelPOD']
 import openturns as ot
 import math as m
 from ._pod import POD
-from ._math_tools import computeBoxCox, DataHandling, computeLinearParametersCensored
+from ._math_tools import computeBoxCox, DataHandling, computeLinearParametersCensored, \
+                         computeR2
 from statsmodels.regression.linear_model import OLS
 import numpy as np
 from _decorator import DocInherit, keepingArgs
@@ -139,6 +140,7 @@ class UnivariateLinearModelPOD(POD):
                                       self._censored)
         # get results
         self._defects = results['defects']
+        self._signals = results['signals']
         self._intercept = results['intercept']
         self._slope = results['slope']
         self._stderr = results['stderr']
@@ -146,6 +148,8 @@ class UnivariateLinearModelPOD(POD):
         # return the box cox detection even if box cox was not enabled. In this
         # case detection = detectionBoxCox
         self._detectionBoxCox = results['detection']
+
+        self._R2 = computeR2(self._signals, self._residuals)
 
         ######################### build linear model ###########################
         # define the linear model
@@ -230,6 +234,17 @@ class UnivariateLinearModelPOD(POD):
         PODmodelCl = ot.PythonFunction(1, 1, PODfunction)
 
         return PODmodelCl
+
+    def getR2(self):
+        """
+        Accessor to the R2 value. 
+
+        Returns
+        -------
+        R2 : float
+            The R2 value.
+        """
+        return self._R2
 
     @DocInherit # decorator to inherit the docstring from POD class
     @keepingArgs # decorator to keep the real signature

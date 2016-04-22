@@ -56,6 +56,19 @@ Build POD with Gaussian hypothesis
                                          boxCox=True)
     PODGauss.run()
 
+Get the R2 value of the regression
+----------------------------------
+
+.. code:: python
+
+    print 'R2 : {:0.3f}'.format(PODGauss.getR2())
+
+
+.. parsed-literal::
+
+    R2 : 0.895
+
+
 Compute detection size
 ----------------------
 
@@ -109,7 +122,7 @@ Only the mean POD
 
 
 
-.. image:: linearPOD_files/linearPOD_15_0.png
+.. image:: linearPOD_files/linearPOD_17_0.png
 
 
 Mean POD with the detection size for a given probability level
@@ -122,7 +135,7 @@ Mean POD with the detection size for a given probability level
 
 
 
-.. image:: linearPOD_files/linearPOD_17_0.png
+.. image:: linearPOD_files/linearPOD_19_0.png
 
 
 Mean POD with POD at confidence level
@@ -135,7 +148,7 @@ Mean POD with POD at confidence level
 
 
 
-.. image:: linearPOD_files/linearPOD_19_0.png
+.. image:: linearPOD_files/linearPOD_21_0.png
 
 
 Mean POD and POD at confidence level with the detection size for a given probability level
@@ -150,7 +163,7 @@ Mean POD and POD at confidence level with the detection size for a given probabi
 
 
 
-.. image:: linearPOD_files/linearPOD_21_0.png
+.. image:: linearPOD_files/linearPOD_23_0.png
 
 
 Build POD with no hypothesis on the residuals
@@ -182,7 +195,7 @@ This corresponds with the Berens Binomial method.
 
 
 
-.. image:: linearPOD_files/linearPOD_25_0.png
+.. image:: linearPOD_files/linearPOD_27_0.png
 
 
 Build POD with kernel smoothing on the residuals
@@ -217,6 +230,6 @@ take few seconds.
 
 
 
-.. image:: linearPOD_files/linearPOD_29_0.png
+.. image:: linearPOD_files/linearPOD_31_0.png
 
 

@@ -10,3 +10,4 @@ Examples of the API
     examples/linearAnalysisCensoredData
     examples/linearPOD
     examples/linearPODCensoredData
+    examples/quantileRegressionPOD

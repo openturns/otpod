@@ -61,6 +61,19 @@ Build POD with Gaussian hypothesis
                                               boxCox=True)
     PODGauss.run()
 
+Get the R2 value of the regression
+----------------------------------
+
+.. code:: python
+
+    print 'R2 : {:0.3f}'.format(PODGauss.getR2())
+
+
+.. parsed-literal::
+
+    R2 : 0.861
+
+
 Compute detection size
 ----------------------
 
@@ -112,7 +125,7 @@ Mean POD and POD at confidence level with the detection size for a given probabi
 
 
 
-.. image:: linearPODCensoredData_files/linearPODCensoredData_16_0.png
+.. image:: linearPODCensoredData_files/linearPODCensoredData_18_0.png
 
 
 Build POD only with the filtered data
@@ -196,6 +209,6 @@ uncensored area.
 
 
 
-.. image:: linearPODCensoredData_files/linearPODCensoredData_22_0.png
+.. image:: linearPODCensoredData_files/linearPODCensoredData_24_0.png
 
 

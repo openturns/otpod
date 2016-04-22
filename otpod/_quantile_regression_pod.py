@@ -10,6 +10,7 @@ from statsmodels.regression.quantile_regression import QuantReg
 from scipy.interpolate import interp1d
 from _decorator import DocInherit, keepingArgs
 import matplotlib.pyplot as plt
+import logging
 
 
 class QuantileRegressionPOD(POD):
@@ -78,6 +79,13 @@ class QuantileRegressionPOD(POD):
         
         # assertion input dimension is 1
         assert (self._dim == 1), "InputSample must be of dimension 1."
+
+        # initialize the logger to display informations when censored data is used
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
+        if self._censored:
+            logging.info('Censored data are not taken into account : the quantile ' + \
+                         'regression model is only performed on filtered data.')
 
 
     def run(self):
@@ -199,6 +207,22 @@ class QuantileRegressionPOD(POD):
         PODmodelCl = ot.PythonFunction(1, 1, interpModel)
 
         return PODmodelCl
+
+    def getR2(self, quantile):
+        """
+        Accessor to the pseudo R2 value.
+        
+        Parameters
+        ----------
+        quantile : float
+            The quantile value for which the regression is performed.       
+
+        Returns
+        -------
+        R2 : float
+            The pseudo R2 value.
+        """
+        return self._algoQuantReg.fit(quantile).prsquared
 
     @DocInherit # decorator to inherit the docstring from POD class
     @keepingArgs # decorator to keep the real signature

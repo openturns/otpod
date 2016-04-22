@@ -80,9 +80,6 @@ class QuantileRegressionPOD(POD):
         # assertion input dimension is 1
         assert (self._dim == 1), "InputSample must be of dimension 1."
 
-        # initialize the logger to display informations when censored data is used
-        logger = logging.getLogger()
-        logger.setLevel(logging.INFO)
         if self._censored:
             logging.info('Censored data are not taken into account : the quantile ' + \
                          'regression model is only performed on filtered data.')
@@ -100,7 +97,7 @@ class QuantileRegressionPOD(POD):
         bootstrap all the defects quantile needed to build the POD model at the
         confidence level.
         """
-        
+
         # Run the preliminary run of the POD class
         result = self._run(self._inputSample, self._outputSample, self._detection,
                            self._noiseThres, self._saturationThres, self._boxCox,

@@ -39,3 +39,9 @@ check_version('matplotlib', '1.5.1')
 check_version('scipy', '0.17.0')
 check_version('logging', '0.5.1.2')
 check_version('decorator', '4.0.9')
+
+
+# initialize the logger to display informations and warnings
+import logging
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)

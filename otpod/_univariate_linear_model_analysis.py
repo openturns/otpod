@@ -153,10 +153,6 @@ class UnivariateLinearModelAnalysis():
         # run the analysis
         self._run()
 
-        # initialize the logger to display warnings
-        logger = logging.getLogger()
-        logger.setLevel(logging.WARNING)
-
     def _run(self):
         """
         Run the analysis :

@@ -6,9 +6,7 @@ __all__ = ['QuantileRegressionPOD']
 import openturns as ot
 import numpy as np
 from ._pod import POD
-# from _quantile_regression import QuantReg
 from statsmodels.regression.quantile_regression import QuantReg
-from statsmodels.regression.linear_model import OLS
 from scipy.interpolate import interp1d
 from _decorator import DocInherit, keepingArgs
 import matplotlib.pyplot as plt
@@ -40,13 +38,14 @@ class QuantileRegressionPOD(POD):
         Cox transformation is enabled with the given value. Default is False.
     quantile : list of float
         List of quantile value to perform the regression. Default is a list
-        from 0.05 to 0.95 with a step of 0.05.
+        of 21 values from 0.05 to 0.98.
 
     Notes
     -----
     This class aims at building the POD based on a quantile regression
-    model. The POD model corresponds with interpolate function built whose POD
-    values are computed using the quantile values given as parameters.
+    model. The return POD model corresponds with an interpolate function built
+    with the defect values computed for the given quantile as parameters.
+    The confidence level is computed by bootstrap.
 
     However, the computeDetectionSize method calls the real quantile regression
     at the given probability level.
@@ -65,7 +64,7 @@ class QuantileRegressionPOD(POD):
         super(QuantileRegressionPOD, self).__init__(inputSample, outputSample,
                                  detection, noiseThres, saturationThres, boxCox)
         # inherited attributes
-        self._simulationSize = 100
+        # self._simulationSize
         # self._detection
         # self._inputSample
         # self._outputSample
@@ -95,21 +94,23 @@ class QuantileRegressionPOD(POD):
 
         defectsSize = self._defects.getSize()
 
+        # create the quantile regression object
         X = ot.NumericalSample(defectsSize, [1, 0])
         X[:, 1] = self._defects
         self._algoQuantReg = QuantReg(np.array(self._signals), np.array(X))
-        # self._initialBeta = OLS(np.array(self._signals), np.array(X)).fit().params
 
+        # Compute the defect quantile
         defectMax = self._defects.getMax()[0]
         defectList = []
         for probLevel in self._quantile:
+            # fit the quantile regression and return the NMF
             model = self._buildModel(1. - probLevel)
             # Solve the model == detectionBoxCox with defects 
             # boundaries = [0, defectMax]
             defectList.append(ot.Brent().solve(model, self._detectionBoxCox,
                                                0, defectMax))
-        # create support of the interpolating function including zero
-        # add point (0, 0) and point (defectMax, max(quantile))
+        # create support of the interpolating function including
+        # point (0, 0) and point (defectMax, max(quantile))
         xvalue = np.hstack([0, defectList, defectMax])
         yvalue = np.hstack([0., self._quantile, self._quantile.max()])
         interpModel = interp1d(xvalue, yvalue, kind='linear')
@@ -123,10 +124,14 @@ class QuantileRegressionPOD(POD):
         data[:, 1] = self._outputSample
         # bootstrap of the data
         bootstrapExp = ot.BootstrapExperiment(data)
+        # create a numerical sample which contains for all simulations the 
+        # defect quantile value. The goal is to compute the QuantilePerComponent
+        # of the simulation for each defect quantile (columns)
         self._defectsPerQuantile = ot.NumericalSample(self._simulationSize, self._quantile.size)
         for i in range(self._simulationSize):
             # generate a sample with replacement within data of the same size
             bootstrapData = bootstrapExp.generate()
+            # run the preliminary analysis : censore checking and box cox
             result = self._run(bootstrapData[:,0], bootstrapData[:,1], self._detection,
                                self._noiseThres, self._saturationThres,
                                self._boxCox, self._censored)
@@ -183,6 +188,8 @@ class QuantileRegressionPOD(POD):
             The function which computes the probability of detection for a given
             defect value at the confidence level given as parameter.
         """
+        # Compute the quantile at the given confidence level for each
+        # defect quantile and build the interpolate function.
         defectsQuantile = self._defectsPerQuantile.computeQuantilePerComponent(
                                                                 confidenceLevel)
 
@@ -235,20 +242,6 @@ class QuantileRegressionPOD(POD):
 
         return fig, ax
 
-
-    def _buildModel(self, probabilityLevel):
-        """
-        Build the NumericalMathFunction at the given probabilityLevel. It is
-        used in the run and in computeDetectionSize in order to do not use the
-        interpolate function.
-        """
-        fit = self._algoQuantReg.fit(probabilityLevel, max_iter=300, p_tol=1e-2)
-        def model(x):
-            X = ot.NumericalPoint([1, x[0]])
-            return ot.NumericalPoint(fit.predict(X))
-        return ot.PythonFunction(1, 1, model)
-
-
     def drawLinearModel(self, probabilityLevel, name=None):
         """
         Draw the linear regression prediction versus the true data.
@@ -290,3 +283,15 @@ class QuantileRegressionPOD(POD):
             fig.savefig(name, bbox_inches='tight', transparent=True)
 
         return fig, ax
+
+    def _buildModel(self, probabilityLevel):
+        """
+        Build the NumericalMathFunction at the given probabilityLevel. It is
+        used in the run and in computeDetectionSize in order to do not use the
+        interpolate function.
+        """
+        fit = self._algoQuantReg.fit(probabilityLevel, max_iter=300, p_tol=1e-2)
+        def model(x):
+            X = ot.NumericalPoint([1, x[0]])
+            return ot.NumericalPoint(fit.predict(X))
+        return ot.PythonFunction(1, 1, model)

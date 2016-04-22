@@ -200,21 +200,21 @@ def computeDurbinWatsonTest(x, residuals, hypothesis="Equal"):
     return pValue
 
 ######### filterCensoredData #########
-# This function filters the defects and signals in case where low and/or high
+# This function filters the input sample and signals in case where low and/or high
 # threshold are given.
 class DataHandling(object):
     """
     Static methods for data handling.
     """
     @staticmethod
-    def filterCensoredData(defects, signals, noiseThres, saturationThres):
+    def filterCensoredData(inputSample, signals, noiseThres, saturationThres):
         """
-        Sort defects and signals with respect to the censore thresholds.
+        Sort inputSample and signals with respect to the censore thresholds.
 
         Parameters
         ----------
-        defects : 2-d sequence of float
-            Vector of the defect sizes.
+        inputSample : 2-d sequence of float
+            Vector of the input sample.
         signals : 2-d sequence of float
             Vector of the signals, of dimension 1.
         noiseThres : float
@@ -224,11 +224,11 @@ class DataHandling(object):
 
         Returns
         -------
-        defectsUnc : 2-d sequence of float
+        inputSampleUnc : 2-d sequence of float
             Vector of the defect sizes in the uncensored area.
-        defectsNoise : 2-d sequence of float
+        inputSampleNoise : 2-d sequence of float
             Vector of the defect sizes in the noisy area.
-        defectsSat : 2-d sequence of float
+        inputSampleSat : 2-d sequence of float
             Vector of the defect sizes in the saturation area.
         signalsUnc : 2-d sequence of float
             Vector of the signals in the uncensored area.
@@ -245,26 +245,26 @@ class DataHandling(object):
             saturationThres = ot.sys.float_info.max
 
         # transform in numpy.array
-        defects = np.array(defects)
+        inputSample = np.array(inputSample)
         signals = np.array(signals)
-        # defects in the uncensored area
-        defectsUnc = defects[np.logical_and(signals > noiseThres, 
-                                            signals < saturationThres)]
-        # defects in the noisy area
-        defectsNoise = defects[signals <= noiseThres]
-        # defects in the saturation area
-        defectsSat = defects[signals >= saturationThres]
+        # inputSample in the uncensored area
+        inputSampleUnc = inputSample[np.hstack(np.logical_and(signals > noiseThres, 
+                                            signals < saturationThres))]
+        # inputSample in the noisy area
+        inputSampleNoise = inputSample[np.hstack(signals <= noiseThres)]
+        # inputSample in the saturation area
+        inputSampleSat = inputSample[np.hstack(signals >= saturationThres)]
         # signals in the uncensored area
-        signalsUnc = signals[np.logical_and(signals > noiseThres,
-                                            signals < saturationThres)]
+        signalsUnc = signals[np.hstack(np.logical_and(signals > noiseThres,
+                                            signals < saturationThres))]
 
         # transform in numericalSample
-        defectsUnc = ot.NumericalSample(np.atleast_2d(defectsUnc).T)
-        defectsNoise = ot.NumericalSample(np.atleast_2d(defectsNoise).T)
-        defectsSat = ot.NumericalSample(np.atleast_2d(defectsSat).T)
-        signalsUnc = ot.NumericalSample(np.atleast_2d(signalsUnc).T)
+        inputSampleUnc = ot.NumericalSample(inputSampleUnc)
+        inputSampleNoise = ot.NumericalSample(inputSampleNoise)
+        inputSampleSat = ot.NumericalSample(inputSampleSat)
+        signalsUnc = ot.NumericalSample(signalsUnc)
 
-        return defectsUnc, defectsNoise, defectsSat, signalsUnc
+        return inputSampleUnc, inputSampleNoise, inputSampleSat, signalsUnc
 
 
 

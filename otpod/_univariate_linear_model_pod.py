@@ -206,6 +206,8 @@ class UnivariateLinearModelPOD(POD):
         """
         Accessor to the POD model at a given confidence level.
 
+        Parameters
+        ----------
         confidenceLevel : float
             The confidence level the POD must be computed. Default is 0.95
 

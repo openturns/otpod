@@ -116,11 +116,12 @@ class PolynomialChaosPOD(POD):
 
         Notes
         -----
-        This method build the quantile regression model. First the censored data
+        This method build the polynomial chaos model. First the censored data
         are filtered if needed. The Box Cox transformation is performed if it is
-        enabled. Then it builds the POD model for given data and computes using
-        bootstrap all the defects quantile needed to build the POD model at the
-        confidence level.
+        enabled. Then it builds the POD models, the Monte Carlo simulation is
+        performed for each given defect sizes. The confidence interval is 
+        computed by simulating new coefficients of the polynomial chaos, then
+        Monte Carlo simulations are performed.
         """
 
         # run the chaos algorithm and get result if not given
@@ -179,6 +180,8 @@ class PolynomialChaosPOD(POD):
         """
         Accessor to the POD model at a given confidence level.
 
+        Parameters
+        ----------
         confidenceLevel : float
             The confidence level the POD must be computed. Default is 0.95
 
@@ -252,8 +255,6 @@ class PolynomialChaosPOD(POD):
 
         Parameters
         ----------
-        probabilityLevel : float
-            The probability level for which the quantile regression is performed
         name : string
             name of the figure to be saved with *transparent* option sets to True
             and *bbox_inches='tight'*. It can be only the file name or the 
@@ -328,6 +329,12 @@ class PolynomialChaosPOD(POD):
     def getSamplingSize(self):
         """
         Accessor to the Monte Carlo sampling size.
+
+        Returns
+        -------
+        size : int
+            The size of the Monte Carlo simulation used to compute the POD for
+            each defect size.
         """
         return self._samplingSize
 
@@ -346,6 +353,12 @@ class PolynomialChaosPOD(POD):
     def getDefectSizes(self):
         """
         Accessor to the defect size where POD is computed.
+
+        Returns
+        -------
+        defectSize : sequence of float
+            The defect sizes where the Monte Carlo simulation is performed to
+            compute the POD.
         """
         return self._defectSizes
 
@@ -375,7 +388,7 @@ class PolynomialChaosPOD(POD):
         Accessor to the parameters distribution. 
 
         Parameters
-        -------
+        ----------
         distribution : :py:class:`openturns.ComposedDistribution`
             The input parameters distribution.
         """
@@ -405,7 +418,7 @@ class PolynomialChaosPOD(POD):
         Accessor to the adaptive strategy. 
 
         Parameters
-        -------
+        ----------
         strategy : :py:class:`openturns.AdaptiveStrategy`
             The adaptive strategy for the polynomial chaos.
         """
@@ -434,7 +447,7 @@ class PolynomialChaosPOD(POD):
         Accessor to the projection strategy. 
 
         Parameters
-        -------
+        ----------
         strategy : :py:class:`openturns.ProjectionStrategy`
             The projection strategy for the polynomial chaos.
         """

@@ -56,6 +56,11 @@ class POD(object):
     def getSimulationSize(self):
         """
         Accessor to the simulation size.
+
+        Returns
+        ----------
+        size : int
+            The size of the simulation used to compute the confidence interval.
         """
         return self._simulationSize
 

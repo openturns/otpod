@@ -48,6 +48,33 @@ Build POD with quantile regression technique
     INFO:root:Censored data are not taken into account : the quantile regression model is only performed on filtered data.
 
 
+Quantile user-defined
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: python
+
+    # Default quantile values
+    print 'Default quantile : '
+    print POD.getQuantile()
+    # Defining user quantile, they must range between 0 and 1.
+    POD.setQuantile([0.1, 0.3, 0.5, 0.7, 0.8, 0.85, 0.9, 0.95])
+    print 'User-defined quantile : '
+    print POD.getQuantile()
+
+
+.. parsed-literal::
+
+    Default quantile : 
+    [ 0.05    0.0965  0.143   0.1895  0.236   0.2825  0.329   0.3755  0.422
+      0.4685  0.515   0.5615  0.608   0.6545  0.701   0.7475  0.794   0.8405
+      0.887   0.9335  0.98  ]
+    User-defined quantile : 
+    [ 0.1   0.3   0.5   0.7   0.8   0.85  0.9   0.95]
+
+
+Running quantile regression POD
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. code:: python
 
     # Due to the bootstrap technique used to compute the confidence
@@ -61,12 +88,14 @@ Build POD with quantile regression technique
 
 .. parsed-literal::
 
-    Computing time : 151.43 s
+    Computing time : 151.68 s
 
 
 The computing time can be reduced by setting the simulation size
 attribute to another value. However the confidence interval is less
 accurate.
+
+The number of quantile values can also be reduced to save time.
 
 .. code:: python
 
@@ -80,7 +109,7 @@ accurate.
 
 .. parsed-literal::
 
-    Computing time : 16.23 s
+    Computing time : 15.95 s
 
 
 Compute detection size
@@ -98,7 +127,7 @@ Compute detection size
 
 .. parsed-literal::
 
-    [a90 : 0.298115, a90/95 : 0.328775]
+    [a90 : 0.298115, a90/95 : 0.328774]
     [a95 : 0.331931, a95/99 : 0.372112]
 
 
@@ -148,12 +177,12 @@ Mean POD and POD at confidence level with the detection size for a given probabi
 
     fig, ax = POD.drawPOD(probabilityLevel=0.9, confidenceLevel=0.95,
                           name='figure/PODQuantReg.png')
-    # The figure is saved in PODGauss.png
+    # The figure is saved in PODQuantReg.png
     fig.show()
 
 
 
-.. image:: quantileRegressionPOD_files/quantileRegressionPOD_17_0.png
+.. image:: quantileRegressionPOD_files/quantileRegressionPOD_20_0.png
 
 
 Show the linear regression model at the given quantile
@@ -166,6 +195,6 @@ Show the linear regression model at the given quantile
 
 
 
-.. image:: quantileRegressionPOD_files/quantileRegressionPOD_19_0.png
+.. image:: quantileRegressionPOD_files/quantileRegressionPOD_22_0.png
 
 

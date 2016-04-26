@@ -38,7 +38,6 @@ class QuantileRegressionPOD(POD):
         Enable or not the Box Cox transformation. If boxCox is a float, the Box
         Cox transformation is enabled with the given value. Default is False.
 
-
     Notes
     -----
     This class aims at building the POD based on a quantile regression

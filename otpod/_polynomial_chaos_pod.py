@@ -16,15 +16,16 @@ class PolynomialChaosPOD(POD):
     """
     Polynomial chaos based POD.
 
-    **Available constructors:**
+    **Available constructor:**
 
     PolynomialChaosPOD(*inputSample, outputSample, detection, noiseThres,
-    saturationThres, boxCox, PCresult*)
+    saturationThres, boxCox*)
 
     Parameters
     ----------
     inputSample : 2-d sequence of float
-        Vector of the defect sizes, of dimension 1.
+        Vector of the input values. The first column must correspond with the
+        defect sizes.
     outputSample : 2-d sequence of float
         Vector of the signals, of dimension 1.
     detection : float
@@ -36,22 +37,32 @@ class PolynomialChaosPOD(POD):
     boxCox : bool or float
         Enable or not the Box Cox transformation. If boxCox is a float, the Box
         Cox transformation is enabled with the given value. Default is False.
-    PCresult : :py:class:`openturns:FunctionalChaosResult`
-        The result object of the polynomial chaos algorithm.
+
+    Warning
+    -------
+    The first column of the input sample must corresponds with the defects sample.
 
     Notes
     -----
-    This class aims at building the POD based on a quantile regression
-    model. The return POD model corresponds with an interpolate function built
-    with the defect values computed for the given quantile as parameters.
-    The confidence level is computed by bootstrap.
+    This class aims at building the POD based on a polynomial chaos model. The
+    return POD model corresponds with an interpolate function built
+    with the POD values computed for the given defect sizes. The default values
+    are 20 defect sizes between the minimum and maximum value of the defect sample.
+    The defect sizes can be changed using the method *setDefectSizes*.
 
-    However, the computeDetectionSize method calls the real quantile regression
-    at the given probability level.
+    The default polynomial chaos model is built with uniform distributions for
+    each parameters. Coefficients are computed using the LAR algorithm combined
+    with the KFold. The AdaptiveStrategy is chosen fixed with a linear enumerate
+    function of maximum degree 5.
+
+    For advanced use, all parameters can be defined thanks to dedicated set 
+    methods. Moreover, if the user has already built a polynomial chaos result, 
+    it can be given as parameter using the method *setPolynomialChaosResult*,
+    then the POD are computed based on this polynomial chaos result.
     """
 
     def __init__(self, inputSample=None, outputSample=None, detection=None, noiseThres=None,
-                 saturationThres=None, boxCox=False, PCresult=None):
+                 saturationThres=None, boxCox=False):
 
         # initialize the POD class
         super(PolynomialChaosPOD, self).__init__(inputSample, outputSample,
@@ -69,8 +80,7 @@ class PolynomialChaosPOD(POD):
         # self._dim
         # self._censored
 
-
-        self._PCresult = PCresult
+        self._chaosResult = None
         self._samplingSize = 1000
         self._distribution = None
         self._adaptiveStrategy = None
@@ -111,16 +121,18 @@ class PolynomialChaosPOD(POD):
         self._detectionBoxCox = result['detectionBoxCox']
         inputSize = self._inputSample.getSize()
 
-        # run the chaos algorithm and get result
-        self._algoChaos = self._buildChaosModel(self._inputSample, self._signals)
-        self._algoChaos.run()
-        chaosResult = self._algoChaos.getResult()
+        # run the chaos algorithm and get result if not given
+        if self._chaosResult is None:
+            self._algoChaos = self._buildChaosModel(self._inputSample, self._signals)
+            self._algoChaos.run()
+            self._chaosResult = self._algoChaos.getResult()
+
         # get the metamodel
-        self._chaosPred = chaosResult.getMetaModel()
+        self._chaosPred = self._chaosResult.getMetaModel()
         # get the basis, coef and transformation, needed for the confidence interval
-        self._chaosCoefs = chaosResult.getCoefficients()
-        self._reducedBasis = chaosResult.getReducedBasis()
-        self._transformation = chaosResult.getTransformation()
+        self._chaosCoefs = self._chaosResult.getCoefficients()
+        self._reducedBasis = self._chaosResult.getReducedBasis()
+        self._transformation = self._chaosResult.getTransformation()
 
         # compute the residuals and stderr
         basisSize = self._reducedBasis.getSize()
@@ -128,9 +140,9 @@ class PolynomialChaosPOD(POD):
         self._stderr = np.sqrt(np.sum(np.array(self._residuals)**2) / (inputSize - basisSize - 1))
 
         # Compute the POD values for each defect sizes
-        avgPOD = self._computePOD(self._defectSizes, self._chaosCoefs)
+        POD = self._computePOD(self._defectSizes, self._chaosCoefs)
         # create the interpolate function
-        interpModel = interp1d(self._defectSizes, avgPOD, kind='linear')
+        interpModel = interp1d(self._defectSizes, POD, kind='linear')
         self._PODmodel = ot.PythonFunction(1, 1, interpModel)
 
         ####################### confidence interval ############################
@@ -146,8 +158,6 @@ class PolynomialChaosPOD(POD):
         self._PODPerDefect = ot.NumericalSample(self._simulationSize, self._defectNumber)
         for i, coefs in enumerate(coefsRandom):
             self._PODPerDefect[i, :] = self._computePOD(self._defectSizes, coefs)
-
-        return avgPOD
 
 
     def getPODModel(self):
@@ -342,7 +352,7 @@ class PolynomialChaosPOD(POD):
             The defect sizes where the Monte Carlo simulation is performed to
             compute the POD.
         """
-        size = np.array(size)
+        size = np.hstack(np.array(size))
         size.sort()
         self._defectSizes = size.copy()
         self._defectNumber = self._defectSizes.shape[0]
@@ -356,10 +366,11 @@ class PolynomialChaosPOD(POD):
         distribution : :py:class:`openturns.ComposedDistribution`
             The input parameters distribution.
         """
-        if distribution.getClassName != 'ComposedDistribution':
-            raise Exception('The given parameter is not a ComposedDistribution')
-        else:
-            self._distribution = distribution
+        try:
+            ot.ComposedDistribution(distribution)
+        except NotImplementedError:
+            raise Exception('The given parameter is not a ComposedDistribution.')
+        self._distribution = distribution
 
     def getDistribution(self):
         """
@@ -388,7 +399,7 @@ class PolynomialChaosPOD(POD):
         try:
             ot.AdaptiveStrategy(strategy)
         except NotImplementedError:
-            raise Exception('The given parameter is not an AdaptiveStrategy')
+            raise Exception('The given parameter is not an AdaptiveStrategy.')
         self._adaptiveStrategy = strategy
 
     def getAdaptiveStrategy(self):
@@ -417,7 +428,7 @@ class PolynomialChaosPOD(POD):
         try:
             ot.ProjectionStrategy(strategy)
         except NotImplementedError:
-            raise Exception('The given parameter is not an ProjectionStrategy')
+            raise Exception('The given parameter is not an ProjectionStrategy.')
         self._projectionStrategy = strategy
 
     def getProjectionStrategy(self):
@@ -433,6 +444,35 @@ class PolynomialChaosPOD(POD):
             print 'The run method must be launched first.'
         else:
             return self._projectionStrategy
+
+    def setPolynomialChaosResult(self, chaosResult):
+        """
+        Accessor to the polynomial chaos result.
+
+        Parameters
+        -------
+        chaosResult : :py:class:`openturns.FunctionalChaosResult`
+            The polynomial chaos result.
+        """
+        try:
+            ot.FunctionalChaosResult(chaosResult)
+        except NotImplementedError:
+            raise Exception('The given parameter is not an FunctionalChaosResult.')
+        self._chaosResult = chaosResult
+
+    def getPolynomialChaosResult(self):
+        """
+        Accessor to the polynomial chaos result.
+
+        Returns
+        -------
+        result : :py:class:`openturns.FunctionalChaosResult`
+            The polynomial chaos result.
+        """
+        if self._chaosResult is None:
+            print 'The run method must be launched first.'
+        else:
+            return self._chaosResult
 
 
     def _buildChaosModel(self, inputSample, outputSample):

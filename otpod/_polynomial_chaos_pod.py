@@ -574,9 +574,10 @@ class PolynomialChaosPOD(POD):
         """
         # create the input sample that must be computed by the metamodels
         samplePred = self._distribution.getSample(self._samplingSize)[:,1:]
-        fullSamplePred = ot.NumericalSample(self._samplingSize * self._defectNumber, 1)
+        fullSamplePred = ot.NumericalSample(self._samplingSize * self._defectNumber,
+                                                                    self._dim)
         for i, defect in enumerate(defectSizes):
-            fullSamplePred[self._samplingSize*i:self._samplingSize*(i+1)] = \
+            fullSamplePred[self._samplingSize*i:self._samplingSize*(i+1), :] = \
                                     self._mergeDefectInX(defect, samplePred)
 
         # create the chaos function for user defined coefs

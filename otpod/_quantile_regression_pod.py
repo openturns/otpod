@@ -17,10 +17,10 @@ class QuantileRegressionPOD(POD):
     """
     Quantile regression based POD.
 
-    **Available constructors:**
+    **Available constructor:**
 
     QuantileRegressionPOD(*inputSample, outputSample, detection, noiseThres,
-    saturationThres, boxCox, quantile*)
+    saturationThres, boxCox*)
 
     Parameters
     ----------
@@ -37,25 +37,28 @@ class QuantileRegressionPOD(POD):
     boxCox : bool or float
         Enable or not the Box Cox transformation. If boxCox is a float, the Box
         Cox transformation is enabled with the given value. Default is False.
-    quantile : list of float
-        List of quantile value to perform the regression. Default is a list
-        of 21 values from 0.05 to 0.98.
+
 
     Notes
     -----
     This class aims at building the POD based on a quantile regression
     model. The return POD model corresponds with an interpolate function built
-    with the defect values computed for the given quantile as parameters.
-    The confidence level is computed by bootstrap.
+    with the defect values computed for the given quantile as parameters. The
+    default is 21 quantile values from 0.05 to 0.98. They can be user-defined
+    using the method *setQuantile*.
 
-    However, the computeDetectionSize method calls the real quantile regression
+    The confidence level is computed by bootstrap. The POD model at the given
+    confidence level is also an interpolate function based on the defect quantile
+    value computed at the given confidence level.
+
+    The computeDetectionSize method calls the real quantile regression
     at the given probability level.
     """
 
     def __init__(self, inputSample=None, outputSample=None, detection=None, noiseThres=None,
-                 saturationThres=None, boxCox=False, quantile=np.linspace(0.05, 0.98, 21)):
+                 saturationThres=None, boxCox=False):
 
-        self._quantile = np.hstack(quantile)
+        self._quantile = np.linspace(0.05, 0.98, 21)
 
         # initialize the POD class
         super(QuantileRegressionPOD, self).__init__(inputSample, outputSample,
@@ -227,6 +230,28 @@ class QuantileRegressionPOD(POD):
             The pseudo R2 value.
         """
         return self._algoQuantReg.fit(quantile).prsquared
+
+    def getQuantile(self):
+        """
+        Accessor to the quantile list for the regression.
+        """
+        return self._quantile
+
+    def setQuantile(self, quantile):
+        """
+        Accessor to the quantile list for the regression.
+
+        Parameters
+        ----------
+        quantile : sequence of float
+            The quantile value for which the regression is performed and the 
+            corresponding defect size is computed.
+        """
+        quantile = np.hstack(np.array(quantile))
+        quantile.sort()
+        if quantile.max() >= 1 or quantile.min() <= 0:
+            raise ValueError('Quantile values must range between ]0, 1[.')
+        self._quantile = quantile
 
     @DocInherit # decorator to inherit the docstring from POD class
     @keepingArgs # decorator to keep the real signature

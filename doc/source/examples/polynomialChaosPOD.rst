@@ -52,8 +52,8 @@ User-defined defect sizes
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The user-defined defect sizes must range between the minimum and maximum
-of the defect values after filtering. An error is raised if if not the
-case. The available range is then returned to the user.
+of the defect values after filtering. An error is raised if it is not
+the case. The available range is then returned to the user.
 
 .. code:: python
 

@@ -57,10 +57,6 @@ class QuantileRegressionPOD(POD):
 
         self._quantile = np.hstack(quantile)
 
-        # if self._resDistFact is not None:
-        #     if self._resDistFact.getClassName() == 'NormalFactory':
-        #         raise Exception('Not yet implemented.')
-
         # initialize the POD class
         super(QuantileRegressionPOD, self).__init__(inputSample, outputSample,
                                  detection, noiseThres, saturationThres, boxCox)
@@ -104,7 +100,7 @@ class QuantileRegressionPOD(POD):
                            self._censored)
 
         # get some results
-        self._defects = result['defects']
+        self._defects = result['inputSample']
         self._signals = result['signals']
         self._detectionBoxCox = result['detectionBoxCox']
 
@@ -153,7 +149,7 @@ class QuantileRegressionPOD(POD):
                                self._boxCox, self._censored)
 
             # get some results
-            defects = result['defects']
+            defects = result['inputSample']
             signals = result['signals']
             detectionBoxCox = result['detectionBoxCox']
             defectsSize = defects.getSize()

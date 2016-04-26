@@ -61,7 +61,7 @@ class POD(object):
 
     def setSimulationSize(self, size):
         """
-        Accessor to the simulation size
+        Accessor to the simulation size.
 
         Parameters
         ----------
@@ -74,7 +74,8 @@ class POD(object):
 ################ Common methods called inside subclass #########################
 ################################################################################
 
-    def _computeDetectionSize(self, model, modelCl, probabilityLevel, confidenceLevel=None):
+    def _computeDetectionSize(self, model, modelCl, probabilityLevel,
+                              confidenceLevel=None, defectMin=None, defectMax=None):
         """
         Compute the detection size for a given probability level.
 
@@ -93,16 +94,25 @@ class POD(object):
             computing for each case.
         """
 
-        defectMin = self._inputSample.getMin()[0]
-        defectMax = self._inputSample.getMax()[0]
+        if defectMin is None:
+            defectMin = self._inputSample.getMin()[0]
+        if defectMax is None:
+            defectMax = self._inputSample.getMax()[0]
 
         # compute 'a90'
+        if not (model([defectMin])[0] <= probabilityLevel <= model([defectMax])[0]):
+            raise Exception('The POD model does not contain, for the given ' + \
+                             'defect interval, the wanted probability level.')
         detectionSize = ot.NumericalPointWithDescription(1, ot.Brent().solve(model,
                                         probabilityLevel, defectMin, defectMax))
         description = ['a'+str(int(probabilityLevel*100))]
 
         # compute 'a90_95'
         if confidenceLevel is not None:
+            if not (modelCl([defectMin])[0] <= probabilityLevel <= modelCl([defectMax])[0]):
+                raise Exception('The POD model at the confidence level does not '+\
+                                'contain, for the given defect interval, the '+\
+                                'wanted probability level.')
             detectionSize.add(ot.Brent().solve(modelCl, probabilityLevel,
                                                defectMin, defectMax))
             description.append('a'+str(int(probabilityLevel*100))+'/'\
@@ -177,7 +187,6 @@ class POD(object):
         ax.set_ylabel('POD')
         return fig, ax
 
-
     def _run(self, inputSample, outputSample, detection, noiseThres,
              saturationThres, boxCox, censored):
         """
@@ -186,18 +195,18 @@ class POD(object):
          #################### Filter censored data ##############################
         if censored:
             # Filter censored data
-            defects, defectsNoise, defectsSat, signals = \
+            inputSample, inputSampleNoise, inputSampleSat, signals = \
                 DataHandling.filterCensoredData(inputSample, outputSample,
                               noiseThres, saturationThres)
         else:
-            defects, signals = inputSample, outputSample
-            defectsNoise, defectsSat = None, None
+            inputSample, signals = inputSample, outputSample
+            inputSampleNoise, inputSampleSat = None, None
 
         ###################### Box Cox transformation ##########################
         # Compute Box Cox if enabled
         if boxCox:
             # optimization required, get optimal lambda without graph
-            lambdaBoxCox, graph = computeBoxCox(defects, signals)
+            lambdaBoxCox, graph = computeBoxCox(inputSample, signals)
 
             # Transformation of data
             boxCoxTransform = ot.BoxCoxTransform([lambdaBoxCox])
@@ -212,7 +221,6 @@ class POD(object):
             detectionBoxCox = detection
             lambdaBoxCox = None
 
-        return {'defects':defects, 'signals':signals, 'defectsNoise':defectsNoise,
-                'defectsSat':defectsSat, 'noiseThres':noiseThres,
-                'saturationThres':saturationThres, 'lambdaBoxCox':lambdaBoxCox,
+        return {'inputSample':inputSample, 'signals':signals,
+                'lambdaBoxCox':lambdaBoxCox,
                 'detectionBoxCox':detectionBoxCox}

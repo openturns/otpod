@@ -149,8 +149,6 @@ class UnivariateLinearModelPOD(POD):
         # case detection = detectionBoxCox
         self._detectionBoxCox = results['detection']
 
-        self._R2 = computeR2(self._signals, self._residuals)
-
         ######################### build linear model ###########################
         # define the linear model
         def LinModel(x):
@@ -244,7 +242,7 @@ class UnivariateLinearModelPOD(POD):
         R2 : float
             The R2 value.
         """
-        return self._R2
+        return computeR2(self._signals, self._residuals)
 
     @DocInherit # decorator to inherit the docstring from POD class
     @keepingArgs # decorator to keep the real signature
@@ -354,7 +352,8 @@ class UnivariateLinearModelPOD(POD):
         covMatrix = X.computeGram(True).solveLinearSystem(ot.IdentityMatrix(2))
         sampleNormal = ot.Normal([0,0], ot.CovarianceMatrix(
                     covMatrix.getImplementation())).getSample(self._simulationSize)
-        sampleSigmaEpsilon = (ot.Chi(N-2).inverse()*np.sqrt(N-2)*stderr).getSample(self._simulationSize)
+        sampleSigmaEpsilon = (ot.Chi(N-2).inverse()*np.sqrt(N-2)*stderr).getSample(
+                                                            self._simulationSize)
 
         PODcoll = []
         for i in range(self._simulationSize):

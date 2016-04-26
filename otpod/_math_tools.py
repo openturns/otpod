@@ -89,7 +89,8 @@ def computeBoxCox(factors, valuesInit):
     myModelTransform = myBoxCoxFactory.build(valuesInit, [shift], graph)
     lambdaBoxCox = myModelTransform.getLambda()[0]
 
-    # if an affine trend is considered (more computing required)
+    # if an affine trend is considered (more computing time required)
+    # works only in 1D
     # myBoxCoxFactory = LinearBoxCoxFactory()
     # myModelTransform, graph = myBoxCoxFactory.build(factors, valuesInit)
     # lambdaBoxCox = myModelTransform.getLambda()[0]
@@ -225,11 +226,11 @@ class DataHandling(object):
         Returns
         -------
         inputSampleUnc : 2-d sequence of float
-            Vector of the defect sizes in the uncensored area.
+            Vector of the input sample in the uncensored area.
         inputSampleNoise : 2-d sequence of float
-            Vector of the defect sizes in the noisy area.
+            Vector of the input sample in the noisy area.
         inputSampleSat : 2-d sequence of float
-            Vector of the defect sizes in the saturation area.
+            Vector of the input sample in the saturation area.
         signalsUnc : 2-d sequence of float
             Vector of the signals in the uncensored area.
 

@@ -80,22 +80,35 @@ class PolynomialChaosPOD(POD):
         # self._dim
         # self._censored
 
-        self._chaosResult = None
+        self._userChaos = False
         self._samplingSize = 1000
         self._distribution = None
         self._adaptiveStrategy = None
         self._projectionStrategy = None
-        # define the defect sizes for the interpolation function
-        self._defectNumber = 20
-        self._defectSizes = np.linspace(self._inputSample[:,0].getMin()[0], 
-                                  self._inputSample[:,0].getMax()[0],
-                                  self._defectNumber)
+        self._defectSizes = None
 
         self._normalDist = ot.Normal()
 
         if self._censored:
-            logging.info('Censored data are not taken into account : the quantile ' + \
-                         'regression model is only performed on filtered data.')
+            logging.info('Censored data are not taken into account : the ' + \
+                         'polynomial chaos model is only built on filtered data.')
+
+        # Run the preliminary run of the POD class
+        result = self._run(self._inputSample, self._outputSample, self._detection,
+                           self._noiseThres, self._saturationThres, self._boxCox,
+                           self._censored)
+
+        # get some results
+        self._input = result['inputSample']
+        self._signals = result['signals']
+        self._detectionBoxCox = result['detectionBoxCox']
+
+        # define the defect sizes for the interpolation function if not defined
+        if self._defectSizes is None:
+            self._defectNumber = 20
+            self._defectSizes = np.linspace(self._input[:,0].getMin()[0], 
+                                      self._input[:,0].getMax()[0],
+                                      self._defectNumber)
 
     def run(self):
         """
@@ -110,20 +123,9 @@ class PolynomialChaosPOD(POD):
         confidence level.
         """
 
-        # Run the preliminary run of the POD class
-        result = self._run(self._inputSample, self._outputSample, self._detection,
-                           self._noiseThres, self._saturationThres, self._boxCox,
-                           self._censored)
-
-        # get some results
-        self._inputSample = result['inputSample']
-        self._signals = result['signals']
-        self._detectionBoxCox = result['detectionBoxCox']
-        inputSize = self._inputSample.getSize()
-
         # run the chaos algorithm and get result if not given
-        if self._chaosResult is None:
-            self._algoChaos = self._buildChaosModel(self._inputSample, self._signals)
+        if not self._userChaos:
+            self._algoChaos = self._buildChaosModel(self._input, self._signals)
             self._algoChaos.run()
             self._chaosResult = self._algoChaos.getResult()
 
@@ -135,8 +137,9 @@ class PolynomialChaosPOD(POD):
         self._transformation = self._chaosResult.getTransformation()
 
         # compute the residuals and stderr
+        inputSize = self._input.getSize()
         basisSize = self._reducedBasis.getSize()
-        self._residuals = self._signals - self._chaosPred(self._inputSample) # residuals
+        self._residuals = self._signals - self._chaosPred(self._input) # residuals
         self._stderr = np.sqrt(np.sum(np.array(self._residuals)**2) / (inputSize - basisSize - 1))
 
         # Compute the POD values for each defect sizes
@@ -150,7 +153,7 @@ class PolynomialChaosPOD(POD):
                                 self._reducedBasis), self._transformation)
         dof = inputSize - basisSize - 1
         varEpsilon = (ot.ChiSquare(dof).inverse() * dof * self._stderr**2).getRealization()[0]
-        gramBasis = ot.Matrix(self._basisFunction(self._inputSample)).computeGram()
+        gramBasis = ot.Matrix(self._basisFunction(self._input)).computeGram()
         covMatrix = gramBasis.solveLinearSystem(ot.IdentityMatrix(basisSize)) * varEpsilon
         coefsDist = ot.Normal(np.hstack(self._chaosCoefs), ot.CovarianceMatrix(covMatrix.getImplementation()))
         coefsRandom = coefsDist.getSample(self._simulationSize)
@@ -268,9 +271,13 @@ class PolynomialChaosPOD(POD):
         This method only works if the dimension of the input sample is 1.
         """
 
+        if self._dim != 1:
+            raise Exception('drawPolynomialChaosModel is available only if '+ \
+                            'the input sample dimension is 1.')
+
         model = self._chaosPred
 
-        defects = self._inputSample
+        defects = self._input
         signals = self._signals
         defectsSorted = defects.sort()
         fittedSignals = model(defectsSorted)
@@ -309,11 +316,11 @@ class PolynomialChaosPOD(POD):
         Q2 : float
             The Q2 value computed analytically.
         """
-        basisMatrix = ot.Matrix(self._basisFunction(self._inputSample))
+        basisMatrix = ot.Matrix(self._basisFunction(self._input))
         gramBasis = basisMatrix.computeGram()
         H = basisMatrix * gramBasis.solveLinearSystem(basisMatrix.transpose())
         Hdiag = np.vstack(np.array(H).diagonal())
-        fittedSignals = np.array(self._chaosPred(self._inputSample))
+        fittedSignals = np.array(self._chaosPred(self._input))
         delta = (self._signals - fittedSignals) / (1. - Hdiag)
 
         return 1 - np.mean(delta**2)/ self._signals.computeVariance()[0]
@@ -355,6 +362,12 @@ class PolynomialChaosPOD(POD):
         size = np.hstack(np.array(size))
         size.sort()
         self._defectSizes = size.copy()
+        minMin = self._input[:, 0].getMin()[0]
+        maxMax = self._input[:, 0].getMax()[0]
+        if size.max() > maxMax or size.min() < minMin:
+            raise ValueError('Defect sizes must range between ' + \
+                             '{:0.4f} '.format(np.ceil(minMin*10000)/10000) + \
+                             'and {:0.4f}.'.format(np.floor(maxMax*10000)/10000))
         self._defectNumber = self._defectSizes.shape[0]
 
     def setDistribution(self, distribution):
@@ -459,6 +472,7 @@ class PolynomialChaosPOD(POD):
         except NotImplementedError:
             raise Exception('The given parameter is not an FunctionalChaosResult.')
         self._chaosResult = chaosResult
+        self._userChaos = True
 
     def getPolynomialChaosResult(self):
         """

@@ -122,6 +122,9 @@ accurate.
 The sampling size is the number of the samples used to compute the POD
 with the Monte Carlo simulation for each defect sizes.
 
+A progress is displayed, which can be disabled with the method
+*setVerbose*.
+
 .. code:: python
 
     # Computing the confidence interval in the run takes few minutes.

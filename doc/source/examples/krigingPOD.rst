@@ -144,6 +144,9 @@ accurate.
 The sampling size is the number of the samples used to compute the POD
 with the Monte Carlo simulation for each defect sizes.
 
+A progress is displayed, which can be disabled with the method
+*setVerbose*.
+
 .. code:: python
 
     # Computing the confidence interval in the run takes few minutes.
@@ -280,7 +283,7 @@ The user can set the KrigingResult object if it built from other data.
 
 .. code:: python
 
-    # set the covariance Model as a GeneralizedExponential with degre 3
+    # set the covariance Model as an absolute exponential model
     covColl = ot.CovarianceModelCollection(4)
     for i in xrange(4):
         covColl[i]  = ot.AbsoluteExponential(1, 1.)

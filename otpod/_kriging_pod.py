@@ -59,7 +59,7 @@ class KrigingPOD(POD):
     size and constant otherwise. The covariance model is an anisotropic squared
     exponential model. Parameters are estimated using the TNC algorithm, the
     initial starting point of the TNC is found thanks to a quasi random search 
-    of the best loglikelihood value among 2000 computations.
+    of the best loglikelihood value among 1000 computations.
 
     For advanced use, all parameters can be defined thanks to dedicated set 
     methods. Moreover, if the user has already built a kriging result, 

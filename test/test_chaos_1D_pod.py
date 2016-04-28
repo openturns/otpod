@@ -34,7 +34,7 @@ noiseThres = 60.
 saturationThres = 1700.
 
 ####### Test on the POD models ###################
-# Test quantile regression without Box Cox
+# Test polynomial chaos without Box Cox
 ot.RandomGenerator.SetSeed(0)
 POD1 = otpod.PolynomialChaosPOD(defects, signals, detection, boxCox=False)
 POD1.setSamplingSize(300)
@@ -50,7 +50,7 @@ def test_1_R2_90():
 def test_1_Q2_90():
     np.testing.assert_almost_equal(POD1.getQ2(), 0.84004097148)
 
-# Test quantile regression with censored data without Box Cox
+# Test polynomial chaos with censored data without Box Cox
 ot.RandomGenerator.SetSeed(0)
 POD2 = otpod.PolynomialChaosPOD(defects, signals, detection, noiseThres, saturationThres, boxCox=False)
 POD2.setSamplingSize(300)
@@ -67,7 +67,7 @@ def test_2_Q2_90():
     np.testing.assert_almost_equal(POD2.getQ2(), 0.847884860997)
 
 
-# Test quantile regression with Box Cox
+# Test polynomial chaos with Box Cox
 ot.RandomGenerator.SetSeed(0)
 POD3 = otpod.PolynomialChaosPOD(defects, signals, detection, boxCox=True)
 POD3.setSamplingSize(300)
@@ -84,7 +84,7 @@ def test_3_Q2_90():
     np.testing.assert_almost_equal(POD3.getQ2(), 0.886608537592)
 
 
-# Test quantile regression with censored data with Box Cox
+# Test polynomial chaos with censored data with Box Cox
 ot.RandomGenerator.SetSeed(0)
 POD4 = otpod.PolynomialChaosPOD(defects, signals, detection, noiseThres, saturationThres, boxCox=True)
 POD4.setSamplingSize(300)

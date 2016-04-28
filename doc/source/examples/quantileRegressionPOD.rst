@@ -78,7 +78,8 @@ Running quantile regression POD
 .. code:: python
 
     # Due to the bootstrap technique used to compute the confidence
-    # interval, the run take few minutes.
+    # interval, the run takes few minutes.
+    # A progress bar is displayed (can be removed using setVerbose(False))
     t0 = time()
     POD = otpod.QuantileRegressionPOD(defects, signals, detection,
                                       boxCox=True)
@@ -88,7 +89,8 @@ Running quantile regression POD
 
 .. parsed-literal::
 
-    Computing time : 151.68 s
+    Computing defect quantile: [==================================================] 100% Done
+    Computing time : 160.07 s
 
 
 The computing time can be reduced by setting the simulation size
@@ -109,7 +111,8 @@ The number of quantile values can also be reduced to save time.
 
 .. parsed-literal::
 
-    Computing time : 15.95 s
+    Computing defect quantile: [==================================================] 100% Done
+    Computing time : 16.44 s
 
 
 Compute detection size
@@ -127,7 +130,7 @@ Compute detection size
 
 .. parsed-literal::
 
-    [a90 : 0.298115, a90/95 : 0.328774]
+    [a90 : 0.298115, a90/95 : 0.328775]
     [a95 : 0.331931, a95/99 : 0.372112]
 
 

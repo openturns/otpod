@@ -202,7 +202,8 @@ Build POD with kernel smoothing on the residuals
 ------------------------------------------------
 
 The POD at the given confidence level is built using bootstrap. It may
-take few seconds.
+take few seconds. A progress bar if displayed is in this case. It can be
+remove using setVerbose(False)
 
 .. code:: python
 
@@ -210,6 +211,12 @@ take few seconds.
                                                  resDistFact=ot.KernelSmoothing(),
                                                  boxCox=True)
     PODks.run()
+
+
+.. parsed-literal::
+
+    Computing POD (bootstrap): [==================================================] 100% Done
+
 
 .. code:: python
 

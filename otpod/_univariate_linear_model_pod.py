@@ -11,6 +11,7 @@ from ._math_tools import computeBoxCox, DataHandling, computeLinearParametersCen
 from statsmodels.regression.linear_model import OLS
 import numpy as np
 from _decorator import DocInherit, keepingArgs
+from _progress_bar import updateProgress
 
 
 class UnivariateLinearModelPOD(POD):
@@ -65,6 +66,9 @@ class UnivariateLinearModelPOD(POD):
     - if *resDistFact* = {:py:class:`openturns.KernelSmoothing`,
       :py:class:`openturns.WeibullFactory`, ...}, the confidence interval is
       built by bootstrap.
+
+    If bootstrap is used, a progress bar is shown if the verbosity is enabled.
+    It can be disabled using the method *setVerbose*.
     """
 
     def __init__(self, inputSample=None, outputSample=None, detection=None, noiseThres=None,
@@ -97,9 +101,7 @@ class UnivariateLinearModelPOD(POD):
             # residuals distribution factory attributes
             self._resDistFact = resDistFact
 
-        # if self._resDistFact is not None:
-        #     if self._resDistFact.getClassName() == 'NormalFactory':
-        #         raise Exception('Not yet implemented.')
+        self._verbose = True
 
         # initialize the POD class
         super(UnivariateLinearModelPOD, self).__init__(inputSample, outputSample,
@@ -118,7 +120,7 @@ class UnivariateLinearModelPOD(POD):
         # self._censored
         
         # assertion input dimension is 1
-        assert (self._dim == 1), "InputSample must be of dimension 1."
+        assert (self._dim == 1), "Dimension inputSample must be 1."
 
 
     def run(self):
@@ -145,6 +147,8 @@ class UnivariateLinearModelPOD(POD):
         self._slope = results['slope']
         self._stderr = results['stderr']
         self._residuals = results['residuals']
+        self._lambdaBoxCox = results['lambdaBoxCox']
+        self._graphBoxCox = results['graphBoxCox']
         # return the box cox detection even if box cox was not enabled. In this
         # case detection = detectionBoxCox
         self._detectionBoxCox = results['detection']
@@ -282,6 +286,31 @@ class UnivariateLinearModelPOD(POD):
 
         return fig, ax
 
+    def getVerbose(self):
+        """
+        Accessor to the verbosity.
+
+        Returns
+        -------
+        verbose : bool
+            Enable or disable the verbosity. Default is True. 
+        """
+        return self._verbose
+
+    def setVerbose(self, verbose):
+        """
+        Accessor to the verbosity.
+
+        Parameters
+        ----------
+        verbose : bool
+            Enable or disable the verbosity.
+        """
+        if type(verbose) is not bool:
+            raise TypeError('The parameter is not a bool.')
+        else:
+            self._verbose = verbose
+
 
 ################################################################################
 ####################### Linear regression Binomial #############################
@@ -416,6 +445,8 @@ class UnivariateLinearModelPOD(POD):
                                   self._boxCox, self._censored)
 
             PODcoll.append(model.PODmodel)
+            if self._verbose:
+                updateProgress((i+1)/float(self._simulationSize), 'Computing POD (bootstrap)')
 
         return PODcoll
 
@@ -446,7 +477,7 @@ def _computeLinearModel(inputSample, outputSample, detection, noiseThres,
     # Compute Box Cox if enabled
     if boxCox:
         # optimization required, get optimal lambda without graph
-        lambdaBoxCox, graph = computeBoxCox(defects, signals)
+        lambdaBoxCox, graphBoxCox = computeBoxCox(defects, signals)
 
         # Transformation of data
         boxCoxTransform = ot.BoxCoxTransform([lambdaBoxCox])
@@ -459,6 +490,8 @@ def _computeLinearModel(inputSample, outputSample, detection, noiseThres,
         detectionBoxCox = boxCoxTransform([detection])[0]
     else:
         detectionBoxCox = detection
+        lambdaBoxCox = None
+        graphBoxCox = None
 
     ######################### Linear Regression model ######################
     # Linear regression with statsmodels module
@@ -487,4 +520,5 @@ def _computeLinearModel(inputSample, outputSample, detection, noiseThres,
 
     return {'defects':defects, 'signals':signals, 'intercept':intercept,
             'slope':slope, 'stderr':stderr, 'residuals':residuals,
-            'detection':detectionBoxCox}
+            'detection':detectionBoxCox, 'lambdaBoxCox':lambdaBoxCox,
+            'graphBoxCox':graphBoxCox}

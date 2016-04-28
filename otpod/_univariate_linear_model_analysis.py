@@ -147,8 +147,8 @@ class UnivariateLinearModelAnalysis():
         assert (self._size >=3), "Not enough observations."
         assert (self._size == self._outputSample.getSize()), \
                 "InputSample and outputSample must have the same size."
-        assert (self._dim == 1), "InputSample must be of dimension 1."
-        assert (self._outputSample.getDimension() == 1), "OutputSample must be of dimension 1."
+        assert (self._dim == 1), "Dimension of inputSample must be 1."
+        assert (self._outputSample.getDimension() == 1), "Dimension of outputSample must be 1."
 
         # run the analysis
         self._run()

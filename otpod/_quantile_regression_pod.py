@@ -9,6 +9,7 @@ from ._pod import POD
 from statsmodels.regression.quantile_regression import QuantReg
 from scipy.interpolate import interp1d
 from _decorator import DocInherit, keepingArgs
+from _progress_bar import updateProgress
 import matplotlib.pyplot as plt
 import logging
 
@@ -52,12 +53,16 @@ class QuantileRegressionPOD(POD):
 
     The computeDetectionSize method calls the real quantile regression
     at the given probability level.
+
+    A progress bar is shown if the verbosity is enabled. It can be disabled using
+    the method *setVerbose*.
     """
 
     def __init__(self, inputSample=None, outputSample=None, detection=None, noiseThres=None,
                  saturationThres=None, boxCox=False):
 
         self._quantile = np.linspace(0.05, 0.98, 21)
+        self._verbose = True
 
         # initialize the POD class
         super(QuantileRegressionPOD, self).__init__(inputSample, outputSample,
@@ -76,7 +81,7 @@ class QuantileRegressionPOD(POD):
         # self._censored
         
         # assertion input dimension is 1
-        assert (self._dim == 1), "InputSample must be of dimension 1."
+        assert (self._dim == 1), "Dimension of inputSample must be 1."
 
         if self._censored:
             logging.info('Censored data are not taken into account : the quantile ' + \
@@ -176,6 +181,8 @@ class QuantileRegressionPOD(POD):
                                                    0, defectMax))
             # add the quantile in the numerical sample as the ith simulation
             self._defectsPerQuantile[i, :] = defectList
+            if self._verbose:
+                updateProgress((i+1)/float(self._simulationSize), 'Computing defect quantile')
 
     def getPODModel(self):
         """
@@ -337,6 +344,31 @@ class QuantileRegressionPOD(POD):
             fig.savefig(name, bbox_inches='tight', transparent=True)
 
         return fig, ax
+
+    def getVerbose(self):
+        """
+        Accessor to the verbosity.
+
+        Returns
+        -------
+        verbose : bool
+            Enable or disable the verbosity. Default is True. 
+        """
+        return self._verbose
+
+    def setVerbose(self, verbose):
+        """
+        Accessor to the verbosity.
+
+        Parameters
+        ----------
+        verbose : bool
+            Enable or disable the verbosity.
+        """
+        if type(verbose) is not bool:
+            raise TypeError('The parameter is not a bool.')
+        else:
+            self._verbose = verbose
 
     def _buildModel(self, probabilityLevel):
         """

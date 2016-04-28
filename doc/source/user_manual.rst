@@ -27,6 +27,7 @@ POD model
     UnivariateLinearModelPOD
     QuantileRegressionPOD
     PolynomialChaosPOD
+    KrigingPOD
 
 Tools
 =========

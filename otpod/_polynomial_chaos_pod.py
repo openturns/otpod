@@ -8,6 +8,7 @@ import numpy as np
 from ._pod import POD
 from scipy.interpolate import interp1d
 from _decorator import DocInherit, keepingArgs
+from _progress_bar import updateProgress
 from ._math_tools import computeR2
 import matplotlib.pyplot as plt
 import logging
@@ -38,14 +39,17 @@ class PolynomialChaosPOD(POD):
         Enable or not the Box Cox transformation. If boxCox is a float, the Box
         Cox transformation is enabled with the given value. Default is False.
 
-    Warning
-    -------
+    Warnings
+    --------
     The first column of the input sample must corresponds with the defects sample.
 
     Notes
     -----
-    This class aims at building the POD based on a polynomial chaos model. The
-    return POD model corresponds with an interpolate function built
+    This class aims at building the POD based on a polynomial chaos model. This
+    method must be used under the assumption that the residuals follows a Normal
+    distribution.
+    
+    The return POD model corresponds with an interpolate function built
     with the POD values computed for the given defect sizes. The default values
     are 20 defect sizes between the minimum and maximum value of the defect sample.
     The defect sizes can be changed using the method *setDefectSizes*.
@@ -58,7 +62,10 @@ class PolynomialChaosPOD(POD):
     For advanced use, all parameters can be defined thanks to dedicated set 
     methods. Moreover, if the user has already built a polynomial chaos result, 
     it can be given as parameter using the method *setPolynomialChaosResult*,
-    then the POD are computed based on this polynomial chaos result.
+    then the POD is computed based on this polynomial chaos result.
+
+    A progress bar is shown if the verbosity is enabled. It can be disabled using
+    the method *setVerbose*.
     """
 
     def __init__(self, inputSample=None, outputSample=None, detection=None, noiseThres=None,
@@ -81,11 +88,13 @@ class PolynomialChaosPOD(POD):
         # self._censored
 
         self._userChaos = False
-        self._samplingSize = 1000
+        self._chaosResult = None
+        self._samplingSize = 5000
         self._distribution = None
         self._adaptiveStrategy = None
         self._projectionStrategy = None
         self._defectSizes = None
+        self._verbose = True
 
         self._normalDist = ot.Normal()
 
@@ -126,8 +135,12 @@ class PolynomialChaosPOD(POD):
 
         # run the chaos algorithm and get result if not given
         if not self._userChaos:
-            self._algoChaos = self._buildChaosModel(self._input, self._signals)
+            if self._verbose:
+                print('Start build polynomial chaos model...')
+            self._algoChaos = self._buildChaosAlgo(self._input, self._signals)
             self._algoChaos.run()
+            if self._verbose:
+                print('Polynomial chaos model completed')
             self._chaosResult = self._algoChaos.getResult()
 
         # get the metamodel
@@ -162,6 +175,8 @@ class PolynomialChaosPOD(POD):
         self._PODPerDefect = ot.NumericalSample(self._simulationSize, self._defectNumber)
         for i, coefs in enumerate(coefsRandom):
             self._PODPerDefect[i, :] = self._computePOD(self._defectSizes, coefs)
+            if self._verbose:
+                updateProgress((i+1)/float(self._simulationSize), 'Computing POD per defect')
 
 
     def getPODModel(self):
@@ -248,6 +263,19 @@ class PolynomialChaosPOD(POD):
             fig.savefig(name, bbox_inches='tight', transparent=True)
 
         return fig, ax
+
+    @DocInherit # decorator to inherit the docstring from POD class
+    @keepingArgs # decorator to keep the real signature
+    def drawValidationGraph(self, name=None):
+
+        fig, ax = self._drawValidationGraph(self._signals, self._chaosPred(self._input))
+        ax.set_title("Validation of the polynomial chaos model")
+        ax.set_ylabel('Predicted signals')
+
+        if name is not None:
+            fig.savefig(name, bbox_inches='tight', transparent=True)
+        return fig, ax
+
 
     def drawPolynomialChaosModel(self, name=None):
         """
@@ -476,7 +504,7 @@ class PolynomialChaosPOD(POD):
         Accessor to the polynomial chaos result.
 
         Parameters
-        -------
+        ----------
         chaosResult : :py:class:`openturns.FunctionalChaosResult`
             The polynomial chaos result.
         """
@@ -501,8 +529,33 @@ class PolynomialChaosPOD(POD):
         else:
             return self._chaosResult
 
+    def getVerbose(self):
+        """
+        Accessor to the verbosity.
 
-    def _buildChaosModel(self, inputSample, outputSample):
+        Returns
+        -------
+        verbose : bool
+            Enable or disable the verbosity. Default is True. 
+        """
+        return self._verbose
+
+    def setVerbose(self, verbose):
+        """
+        Accessor to the verbosity.
+
+        Parameters
+        ----------
+        verbose : bool
+            Enable or disable the verbosity.
+        """
+        if type(verbose) is not bool:
+            raise TypeError('The parameter is not a bool.')
+        else:
+            self._verbose = verbose
+
+
+    def _buildChaosAlgo(self, inputSample, outputSample):
         """
         Build the functional chaos algorithm without running it.
         """
@@ -570,7 +623,7 @@ class PolynomialChaosPOD(POD):
 
     def _computePOD(self, defectSizes, coefs):
         """
-        Compute the POD for all defect sizes in vectorized way.
+        Compute the POD for all defect sizes in a vectorized way.
         """
         # create the input sample that must be computed by the metamodels
         samplePred = self._distribution.getSample(self._samplingSize)[:,1:]

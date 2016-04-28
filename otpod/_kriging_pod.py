@@ -8,6 +8,7 @@ import numpy as np
 from ._pod import POD
 from scipy.interpolate import interp1d
 from _decorator import DocInherit, keepingArgs
+from _progress_bar import updateProgress
 import matplotlib.pyplot as plt
 import logging
 
@@ -64,6 +65,9 @@ class KrigingPOD(POD):
     methods. Moreover, if the user has already built a kriging result, 
     it can be given as parameter using the method *setKrigingResult*,
     then the POD is computed based on this kriging result.
+
+    A progress bar is shown if the verbosity is enabled. It can be disabled using
+    the method *setVerbose*.
     """
 
     def __init__(self, inputSample=None, outputSample=None, detection=None, noiseThres=None,
@@ -85,18 +89,23 @@ class KrigingPOD(POD):
         # self._dim
         # self._censored
 
+        assert (self._dim > 1), "Dimension of inputSample must be greater than 1."
+
         self._userKriging = False
+        self._krigingResult = None
         self._distribution = None
         self._basis = None
         self._covarianceModel = None
-        self._samplingSize = 1000
+        self._samplingSize = 5000
         self._defectSizes = None
+        self._initialStartSize = 1000
+        self._verbose = True
 
         self._normalDist = ot.Normal()
 
         if self._censored:
             logging.info('Censored data are not taken into account : the ' + \
-                         'polynomial chaos model is only built on filtered data.')
+                         'kriging model is only built on filtered data.')
 
         # Run the preliminary run of the POD class
         result = self._run(self._inputSample, self._outputSample, self._detection,
@@ -132,16 +141,20 @@ class KrigingPOD(POD):
 
         # run the chaos algorithm and get result if not given
         if not self._userKriging:
+            if self._verbose:
+                print('Start optimizing covariance model parameters...')
             # build the kriging algorithm without optimizer
             self._algoKriging = self._buildKrigingAlgo(self._input, self._signals)
             # optimize the covariance model parameters and return the kriging
             # algorithm with the run launched
-            lowerBound = [0.001] * self._dim
-            upperBound = [50] * self._dim
-            size = 2000
+            covDim = self._algoKriging.getResult().getCovarianceModel().getScale().getDimension()
+            lowerBound = [0.001] * covDim
+            upperBound = [50] * covDim               
             self._algoKriging = self._estimKrigingTheta(self._algoKriging,
-                                                        lowerBound, upperBound, size)
-            logging.info('Kriging optimizer finished')
+                                                        lowerBound, upperBound,
+                                                        self._initialStartSize)
+            if self._verbose:
+                print('Kriging optimizer completed')
             self._krigingResult = self._algoKriging.getResult()
 
         if self._distribution is None:
@@ -154,8 +167,9 @@ class KrigingPOD(POD):
         self._PODPerDefect = ot.NumericalSample(self._simulationSize *
                                          self._samplingSize, self._defectNumber)
         for i, defect in enumerate(self._defectSizes):
-            print defect
             self._PODPerDefect[:, i] = self._computePOD(defect)
+            if self._verbose:
+                updateProgress((i+1)/float(self._defectNumber), 'Computing POD per defect')
 
         # compute the mean POD 
         meanPOD = self._PODPerDefect.computeMean()
@@ -251,6 +265,19 @@ class KrigingPOD(POD):
 
         return fig, ax
 
+    @DocInherit # decorator to inherit the docstring from POD class
+    @keepingArgs # decorator to keep the real signature
+    def drawValidationGraph(self, name=None):
+
+        outputSample, y_loo = self._computeLOO()
+        fig, ax = self._drawValidationGraph(outputSample, y_loo)
+        ax.set_title("Validation of the Kriging model")
+        ax.set_ylabel('Predicted leave one out signals')
+
+        if name is not None:
+            fig.savefig(name, bbox_inches='tight', transparent=True)
+        return fig, ax
+
     def getQ2(self):
         """
         Accessor to the Q2 value. 
@@ -261,43 +288,7 @@ class KrigingPOD(POD):
             The Q2 value computed analytically using Dubrule (1983) technique.
         """
         
-        inputSample = np.array(self._input)
-        outputSample = np.array(self._signals)
-        result = self._krigingResult
-
-        # get covariance model
-        cov = result.getCovarianceModel()
-        # get input transformation
-        t = result.getTransformation()
-        # check if the transformation was enabled or not and if so transform
-        # the input sample
-        if t.getInputDimension() == inputSample.shape[1]:
-            normalized_inputSample = np.array(t(inputSample))
-        else:
-            normalized_inputSample = inputSample
-
-        # correlation matrix and Cholesky decomposition
-        R = cov.discretize(normalized_inputSample)
-        C = R.computeCholesky()
-        # get sigma2 (covariance model scale parameters)
-        sigma2 = result.getSigma2()
-        # get coefficient and compute trend
-        basis = result.getBasisCollection()[0]
-        F1 = result.getTrendCoefficients()[0]
-        size = inputSample.shape[0]
-        p = F1.getDimension()
-        F = np.ones((size, p))
-        for i in range(p):
-            F[:, i] = np.hstack(basis.build(i)(normalized_inputSample))
-        # Calcul de y_loo
-        K = sigma2 * np.dot(C, C.transpose())
-        Z = np.zeros((p, p))
-        S = np.vstack([np.hstack([K, F]), np.hstack([F.T, Z])])
-        S_inv = np.linalg.inv(S)
-        B = S_inv[:size:, :size:]
-        B_but_its_diag = B * (np.ones(B.shape) - np.eye(size))
-        B_diag = np.atleast_2d(np.diag(B)).T
-        y_loo = (- np.dot(B_but_its_diag / B_diag, outputSample)).ravel()
+        outputSample, y_loo = self._computeLOO()
         # Calcul du Q2
         delta = (np.hstack(outputSample) - y_loo)
         Q2 = 1 - np.mean(delta**2)/np.var(outputSample)
@@ -327,6 +318,32 @@ class KrigingPOD(POD):
             each defect size.
         """
         self._samplingSize = size
+
+    def getInitialStartSize(self):
+        """
+        Accessor to the initial random search size.
+
+        Returns
+        -------
+        size : int
+            The size of the initial random search to find the best loglikelihood
+            value to start the TNC algorithm to optimize the covariance model
+            parameters. Default is 1000.
+        """
+        return self._initialStartSize
+
+    def setInitialStartSize(self, size):
+        """
+        Accessor to the initial random search size.
+
+        Parameters
+        ----------
+        size : int
+            The size of the initial random search to find the best loglikelihood
+            value to start the TNC algorithm to optimize the covariance model
+            parameters.
+        """
+        self._initialStartSize = size
 
     def getDefectSizes(self):
         """
@@ -368,7 +385,7 @@ class KrigingPOD(POD):
         Parameters
         ----------
         distribution : :py:class:`openturns.ComposedDistribution`
-            The input parameters distribution.
+            The input parameters distribution used for the Monte Carlo simulation.
         """
         try:
             ot.ComposedDistribution(distribution)
@@ -383,8 +400,8 @@ class KrigingPOD(POD):
         Returns
         -------
         distribution : :py:class:`openturns.ComposedDistribution`
-            The input parameters distribution, default is a Uniform distribution
-            for all parameters.
+            The input parameters distribution used for the Monte Carlo simulation.
+            Default is a Uniform distribution for all parameters.
         """
         if self._distribution is None:
             print 'The run method must be launched first.'
@@ -456,7 +473,7 @@ class KrigingPOD(POD):
         Accessor to the kriging result.
 
         Parameters
-        -------
+        ----------
         result : :py:class:`openturns.KrigingResult`
             The kriging result.
         """
@@ -481,6 +498,31 @@ class KrigingPOD(POD):
         else:
             return self._krigingResult
 
+    def getVerbose(self):
+        """
+        Accessor to the verbosity.
+
+        Returns
+        -------
+        verbose : bool
+            Enable or disable the verbosity. Default is True. 
+        """
+        return self._verbose
+
+    def setVerbose(self, verbose):
+        """
+        Accessor to the verbosity.
+
+        Parameters
+        ----------
+        verbose : bool
+            Enable or disable the verbosity.
+        """
+        if type(verbose) is not bool:
+            raise TypeError('The parameter is not a bool.')
+        else:
+            self._verbose = verbose
+
 
     def _buildKrigingAlgo(self, inputSample, outputSample):
         """
@@ -504,8 +546,10 @@ class KrigingPOD(POD):
                 covColl[i]  = ot.SquaredExponential(1, 1.)
             self._covarianceModel = ot.ProductCovarianceModel(covColl)
 
-        return ot.KrigingAlgorithm(inputSample, outputSample, self._basis,
-                                   self._covarianceModel, True)
+        algoKriging = ot.KrigingAlgorithm(inputSample, outputSample, self._basis,
+                                                     self._covarianceModel, True)
+        algoKriging.run()
+        return algoKriging
 
 
     def _estimKrigingTheta(self, algoKriging, lowerBound, upperBound, size):
@@ -516,8 +560,7 @@ class KrigingPOD(POD):
         # get input parameters of the kriging algorithm
         X = algoKriging.getInputSample()
         Y = algoKriging.getOutputSample()
-        dim = X.getDimension()
-
+        
         algoKriging.run()
         resultKriging = algoKriging.getResult()
         covarianceModel = resultKriging.getCovarianceModel()
@@ -525,6 +568,7 @@ class KrigingPOD(POD):
         llf = algoKriging.getLogLikelihoodFunction()
 
         # create uniform distribution of the parameters bounds
+        dim = len(lowerBound)
         distBoundCol = []
         for i in range(dim):
             distBoundCol += [ot.Uniform(lowerBound[i], upperBound[i])]
@@ -609,11 +653,11 @@ class KrigingPOD(POD):
         # return NormalDist
         return np.random.multivariate_normal(pred, covMatrix, size)
 
-    def _cleaningMatrixAndPrediction(self, prediction, matrix, eps=1e-6):
+    def _cleaningMatrixAndPrediction(self, prediction, matrix, eps=1e-5):
         """
         Remove from the matrix and prediction, values for which the diagonal
-        of the covariance matrix is lower than eps : to get positive semi definite
-        matrix.
+        of the covariance matrix is lower than eps : try to get positive semi
+        definite matrix.
         """
         matrix = np.array(matrix)
         lowIndex = np.where(matrix.diagonal() < eps)[0]
@@ -624,3 +668,46 @@ class KrigingPOD(POD):
         newMatrix = ot.CovarianceMatrix(newMatrix.getImplementation())
         newPrediction = np.delete(np.hstack(prediction), lowIndex)
         return newPrediction, newMatrix
+
+    def _computeLOO(self):
+        """
+        Compute the Leave One out prediction analytically.
+        """
+        inputSample = np.array(self._input)
+        outputSample = np.array(self._signals)
+        result = self._krigingResult
+
+        # get covariance model
+        cov = result.getCovarianceModel()
+        # get input transformation
+        t = result.getTransformation()
+        # check if the transformation was enabled or not and if so transform
+        # the input sample
+        if t.getInputDimension() == inputSample.shape[1]:
+            normalized_inputSample = np.array(t(inputSample))
+        else:
+            normalized_inputSample = inputSample
+
+        # correlation matrix and Cholesky decomposition
+        Rtrianglow = np.array(cov.discretize(normalized_inputSample))
+        R = Rtrianglow + Rtrianglow.T - np.eye(Rtrianglow.shape[0])
+        # get sigma2 (covariance model scale parameters)
+        sigma2 = result.getSigma2()
+        # get coefficient and compute trend
+        basis = result.getBasisCollection()[0]
+        F1 = result.getTrendCoefficients()[0]
+        size = inputSample.shape[0]
+        p = F1.getDimension()
+        F = np.ones((size, p))
+        for i in range(p):
+            F[:, i] = np.hstack(basis.build(i)(normalized_inputSample))
+        # Calcul de y_loo
+        K = sigma2 * R
+        Z = np.zeros((p, p))
+        S = np.vstack([np.hstack([K, F]), np.hstack([F.T, Z])])
+        S_inv = np.linalg.inv(S)
+        B = S_inv[:size:, :size:]
+        B_but_its_diag = B * (np.ones(B.shape) - np.eye(size))
+        B_diag = np.atleast_2d(np.diag(B)).T
+        y_loo = (- np.dot(B_but_its_diag / B_diag, outputSample)).ravel()
+        return outputSample, y_loo

@@ -50,7 +50,7 @@ class POD(object):
         assert (self._size >=3), "Not enough observations."
         assert (self._size == self._outputSample.getSize()), \
                 "InputSample and outputSample must have the same size."
-        assert (self._outputSample.getDimension() == 1), "OutputSample must be of dimension 1."
+        assert (self._outputSample.getDimension() == 1), "Dimension outputSample must be 1."
 
 
     def getSimulationSize(self):
@@ -95,8 +95,8 @@ class POD(object):
         Returns
         -------
         result : collection of :py:class:`openturns.NumericalPointWithDescription`
-            A list of NumericalPointWithDescription containing the detection size
-            computing for each case.
+            A NumericalPointWithDescription containing the detection size
+            computed at the given probability level and confidence level if provided.
         """
 
         if defectMin is None:
@@ -142,7 +142,7 @@ class POD(object):
             defect size is computed. Default is None.
         defectMin, defectMax : float
             Define the interval where the curve is plotted. Default : min and
-            max values of the inputSample.
+            max values of the input sample.
         nbPt : int
             The number of points to draw the curves. Default is 100.
         name : string
@@ -192,6 +192,40 @@ class POD(object):
         ax.set_ylabel('POD')
         return fig, ax
 
+
+    def _drawValidationGraph(self, target, prediction):
+        """
+        Draw the validation graph of the metamodel.
+
+        Parameters
+        ----------
+        name : string
+            name of the figure to be saved with *transparent* option sets to True
+            and *bbox_inches='tight'*. It can be only the file name or the 
+            full path name. Default is None.
+
+        Returns
+        -------
+        fig : `matplotlib.figure <http://matplotlib.org/api/figure_api.html>`_
+            Matplotlib figure object.
+        ax : `matplotlib.axes <http://matplotlib.org/api/axes_api.html>`_
+            Matplotlib axes object.
+        """
+        target = np.hstack(target)
+        prediction = np.hstack(prediction)
+        fig, ax = plt.subplots(figsize=(8, 8))
+        ax.plot(target, prediction, 'b.', ms=5)
+        # compute boundaries of the graph assuming target and prediction > 0 
+        _min = 0.99*np.concatenate([target, prediction]).min()
+        _max = 1.01*np.concatenate([target, prediction]).max()
+        ax.plot([_min, _max], [_min, _max], 'r-', lw=0.5)
+        ax.grid()
+        ax.set_xlim(_min, _max)
+        ax.set_ylim(_min, _max)
+        ax.set_xlabel('Signals')
+        ax.set_aspect(1.)
+        return fig, ax
+
     def _run(self, inputSample, outputSample, detection, noiseThres,
              saturationThres, boxCox, censored):
         """
@@ -211,10 +245,10 @@ class POD(object):
         # Compute Box Cox if enabled
         if boxCox:
             # optimization required, get optimal lambda without graph
-            lambdaBoxCox, graph = computeBoxCox(inputSample, signals)
+            self._lambdaBoxCox, self._graphBoxCox = computeBoxCox(inputSample, signals)
 
             # Transformation of data
-            boxCoxTransform = ot.BoxCoxTransform([lambdaBoxCox])
+            boxCoxTransform = ot.BoxCoxTransform([self._lambdaBoxCox])
             signals = boxCoxTransform(signals)
             if censored:
                 if noiseThres is not None:
@@ -224,8 +258,46 @@ class POD(object):
             detectionBoxCox = boxCoxTransform([detection])[0]
         else:
             detectionBoxCox = detection
-            lambdaBoxCox = None
+            self._lambdaBoxCox = None
 
         return {'inputSample':inputSample, 'signals':signals,
-                'lambdaBoxCox':lambdaBoxCox,
                 'detectionBoxCox':detectionBoxCox}
+
+    def drawBoxCoxLikelihood(self, name=None):
+        """
+        Draw the loglikelihood versus the Box Cox parameter.
+
+        Parameters
+        ----------
+        name : string
+            name of the figure to be saved with *transparent* option sets to True
+            and *bbox_inches='tight'*. It can be only the file name or the 
+            full path name. Default is None.
+
+        Returns
+        -------
+        fig : `matplotlib.figure <http://matplotlib.org/api/figure_api.html>`_
+            Matplotlib figure object.
+        ax : `matplotlib.axes <http://matplotlib.org/api/axes_api.html>`_
+            Matplotlib axes object.
+
+        Notes
+        -----
+        This method is available only when the parameter *boxCox* is set to True.
+        """
+
+        # Check is the censored model exists when asking for it 
+        if not self._boxCox:
+            raise Exception('The Box Cox transformation is not enabled.')
+
+        fig, ax = plt.subplots(figsize=(8, 6))
+        # get the graph from the method 'computeBoxCox'
+        View(self._graphBoxCox, axes=[ax])
+        ax.set_xlabel('Box Cox parameter')
+        ax.set_ylabel('LogLikelihood')
+        ax.set_title('Loglikelihood versus Box Cox parameter')
+
+        if name is not None:
+            fig.savefig(name, bbox_inches='tight', transparent=True)
+
+        return fig, ax

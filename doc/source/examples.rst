@@ -12,3 +12,4 @@ Examples of the API
     examples/linearPODCensoredData
     examples/quantileRegressionPOD
     examples/polynomialChaosPOD
+    examples/krigingPOD

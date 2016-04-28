@@ -301,3 +301,15 @@ class POD(object):
             fig.savefig(name, bbox_inches='tight', transparent=True)
 
         return fig, ax
+
+    def getBoxCoxParameter(self):
+        """
+        Accessor to the Box Cox parameter. 
+
+        Returns
+        -------
+        lambdaBoxCox : float
+            The Box Cox parameter used to transform the data. If the transformation
+            is not enabled None is returned. 
+        """
+        return self._lambdaBoxCox

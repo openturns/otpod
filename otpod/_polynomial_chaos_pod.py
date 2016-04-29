@@ -176,7 +176,7 @@ class PolynomialChaosPOD(POD):
         for i, coefs in enumerate(coefsRandom):
             self._PODPerDefect[i, :] = self._computePOD(self._defectSizes, coefs)
             if self._verbose:
-                updateProgress((i+1)/float(self._simulationSize), 'Computing POD per defect')
+                updateProgress(i, self._simulationSize, 'Computing POD per defect')
 
 
     def getPODModel(self):

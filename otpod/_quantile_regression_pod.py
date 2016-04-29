@@ -182,7 +182,7 @@ class QuantileRegressionPOD(POD):
             # add the quantile in the numerical sample as the ith simulation
             self._defectsPerQuantile[i, :] = defectList
             if self._verbose:
-                updateProgress((i+1)/float(self._simulationSize), 'Computing defect quantile')
+                updateProgress(i, self._simulationSize, 'Computing defect quantile')
 
     def getPODModel(self):
         """

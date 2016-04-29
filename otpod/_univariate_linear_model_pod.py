@@ -446,7 +446,7 @@ class UnivariateLinearModelPOD(POD):
 
             PODcoll.append(model.PODmodel)
             if self._verbose:
-                updateProgress((i+1)/float(self._simulationSize), 'Computing POD (bootstrap)')
+                updateProgress(i, self._simulationSize, 'Computing POD (bootstrap)')
 
         return PODcoll
 

@@ -169,7 +169,7 @@ class KrigingPOD(POD):
         for i, defect in enumerate(self._defectSizes):
             self._PODPerDefect[:, i] = self._computePOD(defect)
             if self._verbose:
-                updateProgress((i+1)/float(self._defectNumber), 'Computing POD per defect')
+                updateProgress(i, self._defectNumber, 'Computing POD per defect')
 
         # compute the mean POD 
         meanPOD = self._PODPerDefect.computeMean()
@@ -643,15 +643,23 @@ class KrigingPOD(POD):
         """
         Kriging Random vector perso
         """
-        # cov = resultKriging.getCovarianceModel()
-        # covMatrix = cov.discretize(sample)
-        covMatrix = resultKriging.getConditionalCovariance(sample)
-        metamodel = resultKriging.getMetaModel()
-        pred = metamodel(sample)
-        pred, covMatrix = self._cleaningMatrixAndPrediction(pred, covMatrix)
-        # NormalDist = ot.Normal(pred, covMatrix)
-        # return NormalDist
-        return np.random.multivariate_normal(pred, covMatrix, size)
+        
+        # only compute the variance
+        covMatrix = np.hstack([resultKriging.getConditionalCovariance(
+                            sample[i])[0,0] for i in xrange(self._samplingSize)])
+        pred = resultKriging.getConditionalMean(sample)
+
+        normalSample = self._normalDist.getSample(size)
+        # with numpy broadcasting
+        randomVector = np.array(normalSample)* np.sqrt(covMatrix) + np.array(pred)
+        return randomVector
+
+        # covMatrix = resultKriging.getConditionalCovariance(sample)
+        # metamodel = resultKriging.getMetaModel()
+        # pred = metamodel(sample)
+        # pred, covMatrix = self._cleaningMatrixAndPrediction(pred, covMatrix)
+        
+        # return np.random.multivariate_normal(pred, covMatrix, size)
 
     def _cleaningMatrixAndPrediction(self, prediction, matrix, eps=1e-5):
         """

@@ -6,3 +6,5 @@ doc/source/examples/figure/*
 *.pyc
 *.cache
 doc/source/examples/.ipynb_checkpoints/*
+doc/source/_generated/*
+doc/source/examples/*.rst

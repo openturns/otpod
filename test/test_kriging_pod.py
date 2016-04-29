@@ -50,9 +50,9 @@ POD1.setSimulationSize(100)
 POD1.run()
 detectionSize1 = POD1.computeDetectionSize(0.9, 0.95)
 def test_1_a90():
-    np.testing.assert_almost_equal(detectionSize1[0], 4.66319064678, decimal=2)
+    np.testing.assert_almost_equal(detectionSize1[0], 4.59259799611023, decimal=2)
 def test_1_a95():
-    np.testing.assert_almost_equal(detectionSize1[1], 4.69189900662, decimal=2)
+    np.testing.assert_almost_equal(detectionSize1[1], 4.627574229945496, decimal=2)
 def test_1_Q2_90():
     np.testing.assert_almost_equal(POD1.getQ2(), 0.999949500092, decimal=4)
 
@@ -65,9 +65,9 @@ POD2.setSimulationSize(100)
 POD2.run()
 detectionSize2 = POD2.computeDetectionSize(0.9, 0.95)
 def test_2_a90():
-    np.testing.assert_almost_equal(detectionSize2[0], 4.66185080887, decimal=2)
+    np.testing.assert_almost_equal(detectionSize2[0], 4.59254063082928, decimal=2)
 def test_2_a95():
-    np.testing.assert_almost_equal(detectionSize2[1], 4.68977894092, decimal=2)
+    np.testing.assert_almost_equal(detectionSize2[1], 4.6275736774389, decimal=2)
 def test_2_Q2_90():
     np.testing.assert_almost_equal(POD2.getQ2(), 0.999911246214, decimal=4)
 
@@ -75,15 +75,15 @@ def test_2_Q2_90():
 # Test kriging with Box Cox
 ot.RandomGenerator.SetSeed(0)
 POD3 = otpod.KrigingPOD(inputSample, signals, detection, boxCox=True)
-POD3.setInitialStartSize(50)
+POD3.setInitialStartSize(500)
 POD3.setSamplingSize(100)
 POD3.setSimulationSize(100)
 POD3.run()
 detectionSize3 = POD3.computeDetectionSize(0.9, 0.95)
 def test_3_a90():
-    np.testing.assert_almost_equal(detectionSize3[0], 4.64844732601, decimal=2)
+    np.testing.assert_almost_equal(detectionSize3[0], 4.592585200770312, decimal=2)
 def test_3_a95():
-    np.testing.assert_almost_equal(detectionSize3[1], 4.67895828923, decimal=2)
+    np.testing.assert_almost_equal(detectionSize3[1], 4.627568469822431, decimal=2)
 def test_3_Q2_90():
     np.testing.assert_almost_equal(POD3.getQ2(), 0.999934930229, decimal=4)
 
@@ -97,8 +97,8 @@ POD4.setSimulationSize(100)
 POD4.run()
 detectionSize4 = POD4.computeDetectionSize(0.9, 0.95)
 def test_4_a90():
-    np.testing.assert_almost_equal(detectionSize4[0], 4.64813188432, decimal=2)
+    np.testing.assert_almost_equal(detectionSize4[0], 4.59254063082928, decimal=2)
 def test_4_a95():
-    np.testing.assert_almost_equal(detectionSize4[1], 4.67894060882, decimal=2)
+    np.testing.assert_almost_equal(detectionSize4[1], 4.627573677541646, decimal=2)
 def test_4_Q2_90():
     np.testing.assert_almost_equal(POD4.getQ2(), 0.99989990438, decimal=4)

@@ -66,7 +66,7 @@ def test_1_durbin():
     np.testing.assert_almost_equal(analysis1.getDurbinWatsonPValue()[0], 0.616564347897)
 def test_1_warnings():
     msg = analysis1._printWarnings()
-    assert msg == ['Some hypothesis tests failed : please consider to use the Box Cox transformation.', '', '']
+    assert msg == ['Some hypothesis tests failed : you may consider to use the Box Cox transformation.', '', '']
 
 # Test with box cox
 ot.RandomGenerator.SetSeed(0)
@@ -103,7 +103,7 @@ def test_2_durbin():
     np.testing.assert_almost_equal(analysis2.getDurbinWatsonPValue()[0], 0.565540794481)
 def test_2_warnings():
     msg = analysis2._printWarnings()
-    assert msg == ['', 'Some hypothesis tests failed : please consider to use quantile regression or polynomial chaos to build POD.', '']
+    assert msg == ['', 'Some hypothesis tests failed : you may consider to use quantile regression or kriging (if input dimension > 1) to build POD.', '']
 
 
 # Test with residual distribution as Weibull
@@ -141,7 +141,7 @@ def test_3_durbin():
     np.testing.assert_almost_equal(analysis3.getDurbinWatsonPValue()[0], 0.616564347897)
 def test_3_warnings():
     msg = analysis3._printWarnings()
-    assert msg == ['Some hypothesis tests failed : please consider to use the Box Cox transformation.', '', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
+    assert msg == ['Some hypothesis tests failed : you may consider to use the Box Cox transformation.', '', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
 
 
 # Test residual distribution as Weibull and box cox
@@ -179,7 +179,7 @@ def test_4_durbin():
     np.testing.assert_almost_equal(analysis4.getDurbinWatsonPValue()[0], 0.565540794446)
 def test_4_warnings():
     msg = analysis4._printWarnings()
-    assert msg == ['', 'Some hypothesis tests failed : please consider to use quantile regression or polynomial chaos to build POD.', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
+    assert msg == ['', 'Some hypothesis tests failed : you may consider to use quantile regression or kriging (if input dimension > 1) to build POD.', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
 
 # Test with censored data
 ot.RandomGenerator.SetSeed(0)
@@ -216,7 +216,7 @@ def test_5_durbin():
     np.testing.assert_almost_equal(analysis5.getDurbinWatsonPValue()[0], 0.462419719618)
 def test_5_warnings():
     msg = analysis5._printWarnings()
-    assert msg == ['Some hypothesis tests failed : please consider to use the Box Cox transformation.', '', '']
+    assert msg == ['Some hypothesis tests failed : you may consider to use the Box Cox transformation.', '', '']
 
 
 # Test with censored data and box cox
@@ -254,7 +254,7 @@ def test_6_durbin():
     np.testing.assert_almost_equal(analysis6.getDurbinWatsonPValue()[0], 0.771991711693)
 def test_6_warnings():
     msg = analysis6._printWarnings()
-    assert msg == ['', 'Some hypothesis tests failed : please consider to use quantile regression or polynomial chaos to build POD.', '']
+    assert msg == ['', 'Some hypothesis tests failed : you may consider to use quantile regression or kriging (if input dimension > 1) to build POD.', '']
 
 # Test with censored data and Weibull distribution
 ot.RandomGenerator.SetSeed(0)
@@ -291,7 +291,7 @@ def test_7_durbin():
     np.testing.assert_almost_equal(analysis7.getDurbinWatsonPValue()[0], 0.462419719618)
 def test_7_warnings():
     msg = analysis7._printWarnings()
-    assert msg == ['Some hypothesis tests failed : please consider to use the Box Cox transformation.', '', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
+    assert msg == ['Some hypothesis tests failed : you may consider to use the Box Cox transformation.', '', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
 
 
 # Test with censored data, Weibull distribution and box cox
@@ -329,7 +329,7 @@ def test_8_durbin():
     np.testing.assert_almost_equal(analysis8.getDurbinWatsonPValue()[0], 0.771991711693)
 def test_8_warnings():
     msg = analysis8._printWarnings()
-    assert msg == ['', 'Some hypothesis tests failed : please consider to use quantile regression or polynomial chaos to build POD.', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
+    assert msg == ['', 'Some hypothesis tests failed : you may consider to use quantile regression or kriging (if input dimension > 1) to build POD.', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
 
 
 # Test with low censored data
@@ -367,7 +367,7 @@ def test_9_durbin():
     np.testing.assert_almost_equal(analysis9.getDurbinWatsonPValue()[0], 0.623449231786)
 def test_9_warnings():
     msg = analysis9._printWarnings()
-    assert msg == ['Some hypothesis tests failed : please consider to use the Box Cox transformation.', '', '']
+    assert msg == ['Some hypothesis tests failed : you may consider to use the Box Cox transformation.', '', '']
 
 
 # Test with low censored data and box cox
@@ -443,7 +443,7 @@ def test_11_durbin():
     np.testing.assert_almost_equal(analysis11.getDurbinWatsonPValue()[0], 0.623449231786)
 def test_11_warnings():
     msg = analysis11._printWarnings()
-    assert msg == ['Some hypothesis tests failed : please consider to use the Box Cox transformation.', '', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
+    assert msg == ['Some hypothesis tests failed : you may consider to use the Box Cox transformation.', '', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
 
 
 # Test with low censored data, Weibull distribution and box cox
@@ -519,7 +519,7 @@ def test_13_durbin():
     np.testing.assert_almost_equal(analysis13.getDurbinWatsonPValue()[0], 0.610205622901)
 def test_13_warnings():
     msg = analysis13._printWarnings()
-    assert msg == ['Some hypothesis tests failed : please consider to use the Box Cox transformation.', '', '']
+    assert msg == ['Some hypothesis tests failed : you may consider to use the Box Cox transformation.', '', '']
 
 
 # Test with high censored data and box cox
@@ -557,7 +557,7 @@ def test_14_durbin():
     np.testing.assert_almost_equal(analysis14.getDurbinWatsonPValue()[0], 0.816864678987)
 def test_14_warnings():
     msg = analysis14._printWarnings()
-    assert msg == ['', 'Some hypothesis tests failed : please consider to use quantile regression or polynomial chaos to build POD.', '']
+    assert msg == ['', 'Some hypothesis tests failed : you may consider to use quantile regression or kriging (if input dimension > 1) to build POD.', '']
 
 
 # Test with high censored data and Weibull distribution
@@ -595,7 +595,7 @@ def test_15_durbin():
     np.testing.assert_almost_equal(analysis15.getDurbinWatsonPValue()[0], 0.610205622901)
 def test_15_warnings():
     msg = analysis15._printWarnings()
-    assert msg == ['Some hypothesis tests failed : please consider to use the Box Cox transformation.', '', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
+    assert msg == ['Some hypothesis tests failed : you may consider to use the Box Cox transformation.', '', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
 
 
 # Test with high censored data, Weibull distribution and box cox
@@ -633,5 +633,5 @@ def test_16_durbin():
     np.testing.assert_almost_equal(analysis16.getDurbinWatsonPValue()[0], 0.816864678987)
 def test_16_warnings():
     msg = analysis16._printWarnings()
-    assert msg == ['', 'Some hypothesis tests failed : please consider to use quantile regression or polynomial chaos to build POD.', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
+    assert msg == ['', 'Some hypothesis tests failed : you may consider to use quantile regression or kriging (if input dimension > 1) to build POD.', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
 

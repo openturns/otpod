@@ -342,14 +342,14 @@ class UnivariateLinearModelAnalysis():
         # print warning if some pValues are less than 0.05
         msg = ["", "", ""]
         if testPValues and not self._boxCox:
-            msg[0] = 'Some hypothesis tests failed : please consider to use '+\
+            msg[0] = 'Some hypothesis tests failed : you may consider to use '+\
                         'the Box Cox transformation.'
             logging.warn(msg[0])
             # ot.Log.Warn(msg[0])
             # ot.Log.Flush()
         elif testPValues and self._boxCox:
-            msg[1] = 'Some hypothesis tests failed : please consider to use '+\
-                        'quantile regression or polynomial chaos to build POD.'
+            msg[1] = 'Some hypothesis tests failed : you may consider to use '+\
+                'quantile regression or kriging (if input dimension > 1) to build POD.'
             logging.warn(msg[1])
             # ot.Log.Warn(msg[1])
             # ot.Log.Flush()

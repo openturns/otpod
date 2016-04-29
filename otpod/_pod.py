@@ -214,11 +214,11 @@ class POD(object):
         target = np.hstack(target)
         prediction = np.hstack(prediction)
         fig, ax = plt.subplots(figsize=(8, 8))
-        ax.plot(target, prediction, 'b.', ms=5)
         # compute boundaries of the graph assuming target and prediction > 0 
         _min = 0.99*np.concatenate([target, prediction]).min()
         _max = 1.01*np.concatenate([target, prediction]).max()
         ax.plot([_min, _max], [_min, _max], 'r-', lw=0.5)
+        ax.plot(target, prediction, 'b.', ms=9)
         ax.grid()
         ax.set_xlim(_min, _max)
         ax.set_ylim(_min, _max)

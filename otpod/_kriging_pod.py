@@ -9,7 +9,6 @@ from ._pod import POD
 from scipy.interpolate import interp1d
 from _decorator import DocInherit, keepingArgs
 from _progress_bar import updateProgress
-import matplotlib.pyplot as plt
 import logging
 
 class KrigingPOD(POD):
@@ -645,20 +644,19 @@ class KrigingPOD(POD):
         """
         
         # only compute the variance
-        covMatrix = np.hstack([resultKriging.getConditionalCovariance(
+        variance = np.hstack([resultKriging.getConditionalCovariance(
                             sample[i])[0,0] for i in xrange(self._samplingSize)])
         pred = resultKriging.getConditionalMean(sample)
 
         normalSample = self._normalDist.getSample(size)
         # with numpy broadcasting
-        randomVector = np.array(normalSample)* np.sqrt(covMatrix) + np.array(pred)
+        randomVector = np.array(normalSample)* np.sqrt(variance) + np.array(pred)
         return randomVector
 
         # covMatrix = resultKriging.getConditionalCovariance(sample)
         # metamodel = resultKriging.getMetaModel()
         # pred = metamodel(sample)
         # pred, covMatrix = self._cleaningMatrixAndPrediction(pred, covMatrix)
-        
         # return np.random.multivariate_normal(pred, covMatrix, size)
 
     def _cleaningMatrixAndPrediction(self, prediction, matrix, eps=1e-5):

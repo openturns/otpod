@@ -301,15 +301,16 @@ class UnivariateLinearModelAnalysis():
 ################################################################################
 
     def printResults(self):
-        """ Print results of the linear analysis in the terminal.
+        """
+        Print results of the linear analysis.
         """
         # Enable warning to be displayed
         ot.Log.Show(ot.Log.WARN)
 
-        regressionResult = '\n'.join(['{:<45} {:>13} {:>13}'.format(*line) for
+        regressionResult = '\n'.join(['{:<47} {:>13} {:>13}'.format(*line) for
                             line in self._dataRegression])
 
-        residualsResult = '\n'.join(['{:<45} {:>13} {:>13}'.format(*line) for 
+        residualsResult = '\n'.join(['{:<47} {:>13} {:>13}'.format(*line) for 
                             line in self._dataResiduals])
 
         ndash = 80

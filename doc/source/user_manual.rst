@@ -28,6 +28,7 @@ POD model
     QuantileRegressionPOD
     PolynomialChaosPOD
     KrigingPOD
+    PODSummary
 
 Tools
 =========

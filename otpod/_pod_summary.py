@@ -12,9 +12,10 @@ from ._kriging_pod import KrigingPOD
 import logging
 import os
 
+
 class PODSummary():
     """
-    Compute POD with several methods.
+    Run the analysis and compute POD with several methods.
 
     **Available constructor:**
 
@@ -54,7 +55,7 @@ class PODSummary():
     - Polynomial chaos,
     - kriging if the dimension of the input sample is greater than 1.
 
-    Each method can be deactivate using the method *setMethodActive* and using
+    Each method can be deactivated using the method *setMethodActive* and using
     the key corresponding to the method.
 
     All results can be displayed and saved thanks to the methods *printResults*, 

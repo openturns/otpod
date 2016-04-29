@@ -16,8 +16,8 @@ Data analysis
 
     UnivariateLinearModelAnalysis
 
-POD model
-=========
+POD computation methods
+=======================
 
 .. autosummary::
     :toctree: _generated/
@@ -28,14 +28,14 @@ POD model
     QuantileRegressionPOD
     PolynomialChaosPOD
     KrigingPOD
-    PODSummary
 
 Tools
-=========
+=====
 
 .. autosummary:: 
     :toctree: _generated/
     :template: class.rst_t
     :nosignatures:
 
+    PODSummary
     DataHandling

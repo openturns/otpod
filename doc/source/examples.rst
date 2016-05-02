@@ -13,3 +13,4 @@ Examples of the API
     examples/quantileRegressionPOD
     examples/polynomialChaosPOD
     examples/krigingPOD
+    examples/PODSummary

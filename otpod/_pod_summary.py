@@ -91,6 +91,13 @@ class PODSummary():
         self._simulationSize = 1000
         self._samplingSize = 5000
 
+        self._PODgauss = None
+        self._PODbin = None
+        self._PODks = None
+        self._PODqr = None
+        self._PODchaos = None
+        self._PODkriging = None
+
         self._activeMethods = {'LinearGauss':True, 'LinearBinomial':True,
                          'LinearKernelSmoothing':True, 'QuantileRegression':True,
                          'PolynomialChaos':True, 'Kriging':True}
@@ -269,6 +276,110 @@ class PODSummary():
             each defect size for polynomial chaos and kriging.
         """
         return self._samplingSize
+
+    def getLinearGaussPOD(self):
+        """
+        Accessor to the linear model POD object with Gaussian hypothesis.
+
+        Returns
+        -------
+        algorithm : UnivariateLinearModelPOD
+            The UnivariateLinearModelPOD object that is used to compute the POD.
+        """
+        if not self._activeMethods['LinearGauss']:
+            raise Exception('LinearGauss is not activated.')
+        else:
+            if self._PODgauss is None:
+                raise Exception('The run method must be lauched.')
+            else:
+                return self._PODgauss
+
+    def getLinearBinomialPOD(self):
+        """
+        Accessor to the linear model POD object with no hypothesis on the residuals.
+
+        Returns
+        -------
+        algorithm : UnivariateLinearModelPOD
+            The UnivariateLinearModelPOD object that is used to compute the POD.
+        """
+        if not self._activeMethods['LinearBinomial']:
+            raise Exception('LinearBinomial is not activated.')
+        else:
+            if self._PODbin is None:
+                raise Exception('The run method must be lauched.')
+            else:
+                return self._PODbin
+
+    def getLinearKernelSmoothingPOD(self):
+        """
+        Accessor to the linear model POD object with kernel smoothing on the residuals.
+
+        Returns
+        -------
+        algorithm : UnivariateLinearModelPOD
+            The UnivariateLinearModelPOD object that is used to compute the POD.
+        """
+        if not self._activeMethods['LinearKernelSmoothing']:
+            raise Exception('LinearKernelSmoothing is not activated.')
+        else:
+            if self._PODks is None:
+                raise Exception('The run method must be lauched.')
+            else:
+                return self._PODks
+
+    def getQuantileRegressionPOD(self):
+        """
+        Accessor to the quantile regression POD object.
+
+        Returns
+        -------
+        algorithm : QuantileRegressionPOD
+            The QuantileRegressionPOD object that is used to compute the POD.
+        """
+        if not self._activeMethods['QuantileRegression']:
+            raise Exception('QuantileRegression is not activated.')
+        else:
+            if self._PODqr is None:
+                raise Exception('The run method must be lauched.')
+            else:
+                return self._PODqr
+
+    def getPolynomialChaosPOD(self):
+        """
+        Accessor to the polynomial chaos POD object.
+
+        Returns
+        -------
+        algorithm : PolynomialChaosPOD
+            The PolynomialChaosPOD object that is used to compute the POD.
+        """
+        if not self._activeMethods['PolynomialChaos']:
+            raise Exception('PolynomialChaos is not activated.')
+        else:
+            if self._PODchaos is None:
+                raise Exception('The run method must be lauched.')
+            else:
+                return self._PODchaos
+
+    def getKrigingPOD(self):
+        """
+        Accessor to the kriging POD object.
+
+        Returns
+        -------
+        algorithm : KrigingPOD
+            The KrigingPOD object that is used to compute the POD.
+        """
+        if not self._activeMethods['Kriging']:
+            raise Exception('Kriging is not activated.')
+        elif self._dim == 1:
+            raise Exception('Kriging cannot be used when input dimension is 1.')
+        else:
+            if self._PODkriging is None:
+                raise Exception('The run method must be lauched.')
+            else:
+                return self._PODkriging
 
     def setSamplingSize(self, size):
         """

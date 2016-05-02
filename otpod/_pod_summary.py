@@ -528,17 +528,32 @@ class PODSummary():
             # POD results
             self._dataPOD.append(["Linear Regression", "", ""])
             if self._activeMethods['LinearGauss']:
-                detectSize = self._PODgauss.computeDetectionSize(probabilityLevel, confidenceLevel)
+                try:
+                    detectSize = self._PODgauss.computeDetectionSize(probabilityLevel, confidenceLevel)
+                except:
+                    detectSize = [-1, -1]
+                    logging.warn('Detection size for linear model with Gaussian '+\
+                                 'residuals cannot be computed.')
                 self._dataPOD.append(["Gaussian residuals :", round(detectSize[0], n_digits),
                                                 round(detectSize[1], n_digits)])
 
             if self._activeMethods['LinearBinomial']:
-                detectSize = self._PODbin.computeDetectionSize(probabilityLevel, confidenceLevel)
+                try:
+                    detectSize = self._PODbin.computeDetectionSize(probabilityLevel, confidenceLevel)
+                except:
+                    detectSize = [-1, -1]
+                    logging.warn('Detection size for linear model with no '+\
+                                 'hypothesis on the residuals cannot be computed.')
                 self._dataPOD.append(["No residuals hypothesis :", round(detectSize[0], n_digits),
                                                 round(detectSize[1], n_digits)])
 
             if self._activeMethods['LinearKernelSmoothing']:
-                detectSize = self._PODks.computeDetectionSize(probabilityLevel, confidenceLevel)
+                try:
+                    detectSize = self._PODks.computeDetectionSize(probabilityLevel, confidenceLevel)
+                except:
+                    detectSize = [-1, -1]
+                    logging.warn('Detection size for linear model with kernel '+\
+                                 'smoothing on the residuals cannot be computed.')
                 self._dataPOD.append(["Kernel smoothing on residuals :", round(detectSize[0], n_digits),
                                                 round(detectSize[1], n_digits)])
 
@@ -552,7 +567,11 @@ class PODSummary():
             self._dataValidation.append(quantRegValid)
 
             # POD results
-            detectSize = self._PODqr.computeDetectionSize(probabilityLevel, confidenceLevel)
+            try:
+                detectSize = self._PODqr.computeDetectionSize(probabilityLevel, confidenceLevel)
+            except:
+                detectSize = [-1, -1]
+                logging.warn('Detection size for quantile regression cannot be computed.')
             self._dataPOD.append(["Quantile Regression :", round(detectSize[0], n_digits),
                                             round(detectSize[1], n_digits)])
 
@@ -563,7 +582,11 @@ class PODSummary():
             self._dataValidation.append(chaosValid)
 
             # POD results
-            detectSize = self._PODchaos.computeDetectionSize(probabilityLevel, confidenceLevel)
+            try:
+                detectSize = self._PODchaos.computeDetectionSize(probabilityLevel, confidenceLevel)
+            except:
+                detectSize = [-1, -1]
+                logging.warn('Detection size for polynomial chaos cannot be computed.')
             self._dataPOD.append(["Polynomial chaos :", round(detectSize[0], n_digits),
                                                  round(detectSize[1], n_digits)])
 
@@ -574,14 +597,18 @@ class PODSummary():
             self._dataValidation.append(krigingValid)
 
             # POD results
-            detectSize = self._PODkriging.computeDetectionSize(probabilityLevel, confidenceLevel)
+            try:
+                detectSize = self._PODkriging.computeDetectionSize(probabilityLevel, confidenceLevel)
+            except:
+                detectSize = [-1, -1]
+                logging.warn('Detection size for kriging cannot be computed.')
             self._dataPOD.append(["Kriging :", round(detectSize[0], n_digits),
                                                  round(detectSize[1], n_digits)])
 
-    def saveGraphs(self, directory=None, extension='png', probabilityLevel=0.9,
-                   confidenceLevel=0.95):
+    def drawGraphs(self, directory=None, extension='png', probabilityLevel=None,
+                   confidenceLevel=None):
         """
-        Save all possible graphs
+        draw and save all possible graphs
 
         Parameters
         ----------
@@ -591,60 +618,103 @@ class PODSummary():
             File extension of the graphs. Default is 'png'.
         probabilityLevel : float
             The probability level for which the defect size is computed.
-            default is 0.9.
+            default is None.
         confidenceLevel : float
             The confidence level associated to the given probability level the
-            defect size is computed. Default is 0.95.
+            defect size is computed. Default is None.
         """
 
         if directory is None:
             directory = os.getcwd()
+
+        fig = []
         
         if self._boxCox:
-            self._analysis.drawBoxCoxLikelihood(os.path.join(directory,
+            f, ax = self._analysis.drawBoxCoxLikelihood(os.path.join(directory,
                                             'BoxCox_likelihood.') + extension)
+            fig.append(f)
 
-        self._analysis.drawLinearModel(model='uncensored', name=os.path.join(directory,
+        f, ax = self._analysis.drawLinearModel(model='uncensored', name=os.path.join(directory,
                                                 'Linear_model.') + extension)
-        self._analysis.drawResiduals(model='uncensored', name=os.path.join(directory,
+        fig.append(f)
+        f, ax = self._analysis.drawResiduals(model='uncensored', name=os.path.join(directory,
                                                     'Residuals.') + extension)
-        self._analysis.drawResidualsDistribution(model='uncensored', name=os.path.join(directory,
+        fig.append(f)
+        f, ax = self._analysis.drawResidualsDistribution(model='uncensored', name=os.path.join(directory,
                                          'Residuals_distribution.') + extension)
-        self._analysis.drawResidualsQQplot(model='uncensored', name=os.path.join(directory,
+        fig.append(f)
+        f, ax = self._analysis.drawResidualsQQplot(model='uncensored', name=os.path.join(directory,
                                             'Residuals_QQ_plot.') + extension)
+        fig.append(f)
 
         if self._censored:
-            self._analysis.drawLinearModel(model='censored', name=os.path.join(directory,
+            f, ax = self._analysis.drawLinearModel(model='censored', name=os.path.join(directory,
                                 'Linear_model_censored.') + extension)
-            self._analysis.drawResiduals(model='censored', name=os.path.join(directory,
+            fig.append(f)
+            f, ax = self._analysis.drawResiduals(model='censored', name=os.path.join(directory,
                                 'Residuals_censored.') + extension)
-            self._analysis.drawResidualsDistribution(model='censored', name=os.path.join(directory,
+            fig.append(f)
+            f, ax = self._analysis.drawResidualsDistribution(model='censored', name=os.path.join(directory,
                                 'Residuals_distribution_censored.') + extension)
-            self._analysis.drawResidualsQQplot(model='censored', name=os.path.join(directory,
+            fig.append(f)
+            f, ax = self._analysis.drawResidualsQQplot(model='censored', name=os.path.join(directory,
                                 'Residuals_QQ_plot_censored.') + extension)
+            fig.append(f)
 
 
         if self._activeMethods['LinearGauss']:
-            self._PODgauss.drawPOD(probabilityLevel, confidenceLevel,
-                name=os.path.join(directory,'POD_Gauss.') + extension)
+            try:
+                f, ax = self._PODgauss.drawPOD(probabilityLevel, confidenceLevel,
+                    name=os.path.join(directory,'POD_Gauss.') + extension)
+                fig.append(f)
+            except:
+                logging.warn('POD for linear model with Gaussian residuals '+\
+                             'cannot be drawn for the given parameters.')
         if self._activeMethods['LinearBinomial']:
-            self._PODbin.drawPOD(probabilityLevel, confidenceLevel,
-                name=os.path.join(directory,'POD_Binomial.') + extension)
+            try:
+                f, ax = self._PODbin.drawPOD(probabilityLevel, confidenceLevel,
+                    name=os.path.join(directory,'POD_Binomial.') + extension)
+                fig.append(f)
+            except:
+                logging.warn('POD for linear model with no hypothesis on the '+\
+                             'residuals cannot be drawn for the given parameters.')
         if self._activeMethods['LinearKernelSmoothing']:
-            self._PODks.drawPOD(probabilityLevel, confidenceLevel,
-                name=os.path.join(directory,'POD_Kernel_Smoothing.') + extension)
+            try:
+                f, ax = self._PODks.drawPOD(probabilityLevel, confidenceLevel,
+                    name=os.path.join(directory,'POD_Kernel_Smoothing.') + extension)
+                fig.append(f)
+            except:
+                logging.warn('POD for linear model with kernel smoothing on the '+\
+                             'residuals cannot be drawn for the given parameters.')
         if self._activeMethods['QuantileRegression']:
-            self._PODqr.drawPOD(probabilityLevel, confidenceLevel,
-                name=os.path.join(directory,'POD_Quantile_Regression.') + extension)
-            self._PODqr.drawLinearModel(probabilityLevel, name=os.path.join(directory,
+            try:
+                f, ax = self._PODqr.drawPOD(probabilityLevel, confidenceLevel,
+                    name=os.path.join(directory,'POD_Quantile_Regression.') + extension)
+                fig.append(f)
+            except:
+                logging.warn('POD for quantile regression cannot be drawn for the given parameters.')
+            f, ax = self._PODqr.drawLinearModel(probabilityLevel, name=os.path.join(directory,
                                                 'Quantile_regression_model.') + extension)
+            fig.append(f)
         if self._activeMethods['PolynomialChaos']:
-            self._PODchaos.drawPOD(probabilityLevel, confidenceLevel,
-                name=os.path.join(directory,'POD_Polynomial_chaos.') + extension)
-            self._PODchaos.drawValidationGraph(name=os.path.join(directory,
+            try:
+                f, ax = self._PODchaos.drawPOD(probabilityLevel, confidenceLevel,
+                    name=os.path.join(directory,'POD_Polynomial_chaos.') + extension)
+                fig.append(f)
+            except:
+                logging.warn('POD for polynomial chaos cannot be drawn for the given parameters.')
+            f, ax = self._PODchaos.drawValidationGraph(name=os.path.join(directory,
                                     'Validation_graph_Polynomial_chaos.') + extension)
+            fig.append(f)
         if self._dim >1 and self._activeMethods['Kriging']:
-            self._PODkriging.drawPOD(probabilityLevel, confidenceLevel,
-                name=os.path.join(directory,'POD_Kriging.') + extension)
-            self._PODkriging.drawValidationGraph(name=os.path.join(directory,
+            try:
+                f, ax = self._PODkriging.drawPOD(probabilityLevel, confidenceLevel,
+                    name=os.path.join(directory,'POD_Kriging.') + extension)
+                fig.append(f)
+            except:
+                logging.warn('POD for kriging cannot be drawn for the given parameters.')
+            f, ax = self._PODkriging.drawValidationGraph(name=os.path.join(directory,
                                     'Validation_graph_Kriging.') + extension)
+            fig.append(f)
+
+        return fig

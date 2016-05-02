@@ -165,12 +165,12 @@ class POD(object):
 
         fig, ax = plt.subplots(figsize=(8, 6))
         # POD model graph
-        View(PODmodel.draw(defectMin, defectMax, nbPt), axes=[ax],
+        _ = View(PODmodel.draw(defectMin, defectMax, nbPt), axes=[ax],
             plot_kwargs={'color':'red', 'label':'POD'})
 
         if confidenceLevel is not None:
             # POD at confidence level graph
-            View(PODmodelCl.draw(defectMin, defectMax, nbPt), axes=[ax],
+            _ = View(PODmodelCl.draw(defectMin, defectMax, nbPt), axes=[ax],
                 plot_kwargs={'color':'blue', 'label':'POD at confidence level '+\
                                                       str(confidenceLevel)})
         if probabilityLevel is not None:
@@ -292,7 +292,7 @@ class POD(object):
 
         fig, ax = plt.subplots(figsize=(8, 6))
         # get the graph from the method 'computeBoxCox'
-        View(self._graphBoxCox, axes=[ax])
+        _ = View(self._graphBoxCox, axes=[ax])
         ax.set_xlabel('Box Cox parameter')
         ax.set_ylabel('LogLikelihood')
         ax.set_title('Loglikelihood versus Box Cox parameter')

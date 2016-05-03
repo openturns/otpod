@@ -9,6 +9,7 @@ from ._pod import POD
 from scipy.interpolate import interp1d
 from _decorator import DocInherit, keepingArgs
 from _progress_bar import updateProgress
+from _kriging_tools import estimKrigingTheta, computeLOO, computeQ2, computePODSamplePerDefect
 import logging
 
 class KrigingPOD(POD):
@@ -149,12 +150,15 @@ class KrigingPOD(POD):
             covDim = self._algoKriging.getResult().getCovarianceModel().getScale().getDimension()
             lowerBound = [0.001] * covDim
             upperBound = [50] * covDim               
-            self._algoKriging = self._estimKrigingTheta(self._algoKriging,
-                                                        lowerBound, upperBound,
-                                                        self._initialStartSize)
+            self._algoKriging = estimKrigingTheta(self._algoKriging,
+                                                  lowerBound, upperBound,
+                                                  self._initialStartSize)
             if self._verbose:
                 print('Kriging optimizer completed')
             self._krigingResult = self._algoKriging.getResult()
+
+        # compute the Q2
+        self._Q2 = computeQ2(self._input, self._signals, self._krigingResult)
 
         if self._distribution is None:
             inputMin = self._input.getMin()
@@ -166,7 +170,9 @@ class KrigingPOD(POD):
         self._PODPerDefect = ot.NumericalSample(self._simulationSize *
                                          self._samplingSize, self._defectNumber)
         for i, defect in enumerate(self._defectSizes):
-            self._PODPerDefect[:, i] = self._computePOD(defect)
+            self._PODPerDefect[:, i] = computePODSamplePerDefect(defect,
+                self._detectionBoxCox, self._krigingResult, self._distribution,
+                self._simulationSize, self._samplingSize)
             if self._verbose:
                 updateProgress(i, self._defectNumber, 'Computing POD per defect')
 
@@ -268,8 +274,8 @@ class KrigingPOD(POD):
     @keepingArgs # decorator to keep the real signature
     def drawValidationGraph(self, name=None):
 
-        outputSample, y_loo = self._computeLOO()
-        fig, ax = self._drawValidationGraph(outputSample, y_loo)
+        y_loo = computeLOO(self._input, self._signals, self._krigingResult)
+        fig, ax = self._drawValidationGraph(self._signals, y_loo)
         ax.set_title("Validation of the Kriging model")
         ax.set_ylabel('Predicted leave one out signals')
 
@@ -286,13 +292,7 @@ class KrigingPOD(POD):
         Q2 : float
             The Q2 value computed analytically using Dubrule (1983) technique.
         """
-        
-        outputSample, y_loo = self._computeLOO()
-        # Calcul du Q2
-        delta = (np.hstack(outputSample) - y_loo)
-        Q2 = 1 - np.mean(delta**2)/np.var(outputSample)
-        
-        return Q2
+        return self._Q2
 
     def getSamplingSize(self):
         """
@@ -549,171 +549,3 @@ class KrigingPOD(POD):
                                                      self._covarianceModel, True)
         algoKriging.run()
         return algoKriging
-
-
-    def _estimKrigingTheta(self, algoKriging, lowerBound, upperBound, size):
-        """
-        Estimate the kriging theta values with an initial random search using
-        a Sobol sequence of size samples.
-        """
-        # get input parameters of the kriging algorithm
-        X = algoKriging.getInputSample()
-        Y = algoKriging.getOutputSample()
-        
-        algoKriging.run()
-        resultKriging = algoKriging.getResult()
-        covarianceModel = resultKriging.getCovarianceModel()
-        basis = resultKriging.getBasisCollection()
-        llf = algoKriging.getLogLikelihoodFunction()
-
-        # create uniform distribution of the parameters bounds
-        dim = len(lowerBound)
-        distBoundCol = []
-        for i in range(dim):
-            distBoundCol += [ot.Uniform(lowerBound[i], upperBound[i])]
-        distBound = ot.ComposedDistribution(distBoundCol)    
-
-        # Generate starting points with a low discrepancy sequence
-        thetaStart = ot.LowDiscrepancyExperiment(ot.SobolSequence(), distBound,
-                                                                size).generate()
-        # Get the best theta from the maximum llf value
-        llfValue = llf(thetaStart)
-        indexMax = np.argmax(llfValue)
-        bestTheta = thetaStart[indexMax]
-
-        # update theta after random search
-        covarianceModel.setScale(bestTheta)
-
-        # set TNC optim
-        optimizer = ot.TNC()
-        searchInterval = ot.Interval(lowerBound, upperBound)
-        optimizer.setBoundConstraints(searchInterval)
-        # Now the KrigingAlgorithm is used to optimize the likelihood using a
-        # good starting point
-        algoKriging = ot.KrigingAlgorithm(X, Y, basis, covarianceModel, True)
-        algoKriging.setOptimizer(optimizer)
-        algoKriging.run() 
-        return algoKriging
-
-
-    def _computePOD(self, defect):
-        """
-        Compute the POD sample for a defect size.
-        """
-
-        # create a distibution with a dirac distribution for the defect size
-        diracDist = [ot.Dirac(defect)]
-        diracDist += [self._distribution.getMarginal(i+1) for i in xrange(self._dim-1)]
-        distribution = ot.ComposedDistribution(diracDist)
-
-        # create a sample for the Monte Carlo simulation and confidence interval
-        MC_sample = distribution.getSample(self._samplingSize)
-        # Kriging_RV = ot.KrigingRandomVector(self._krigingResult, MC_sample)
-        # Y_sample = Kriging_RV.getSample(self._simulationSize)
-        Y_sample = self._randomVectorSampling(self._krigingResult, MC_sample,
-                                                  self._simulationSize)
-
-        # compute the POD for all simulation size
-        POD_MCPG_a = [float(np.where(Y_sample[i] >  \
-                      self._detectionBoxCox)[0].shape[0])/Y_sample.shape[1] for i \
-                      in xrange(self._simulationSize)]
-        # compute the variance of the MC simulation using TCL
-        VAR_TCL = np.array(POD_MCPG_a)*(1-np.array(POD_MCPG_a)) / Y_sample.shape[1]
-        # Create distribution of the POD estimator for all simulation 
-        POD_PG_dist = []
-        for i in xrange(self._simulationSize):
-            if VAR_TCL[i] > 0:
-                POD_PG_dist += [ot.Normal(POD_MCPG_a[i],np.sqrt(VAR_TCL[i]))]
-            else:
-                if POD_MCPG_a[i] < 1:
-                    POD_PG_dist += [ot.Dirac([0.])]
-                else:
-                    POD_PG_dist += [ot.Dirac([1.])]
-        POD_PG_alea = ot.ComposedDistribution(POD_PG_dist)
-        # get a sample of these distributions
-        POD_PG_sample = POD_PG_alea.getSample(self._samplingSize)
-        POD_PG_sample_array = np.array(POD_PG_sample)
-        POD_PG_sample_array.resize((self._simulationSize * self._samplingSize,1))
-        POD_PG_sample = ot.NumericalSample(POD_PG_sample_array)
-
-        return POD_PG_sample
-
-    def _randomVectorSampling(self, resultKriging, sample, size):
-        """
-        Kriging Random vector perso
-        """
-        
-        # only compute the variance
-        variance = np.hstack([resultKriging.getConditionalCovariance(
-                            sample[i])[0,0] for i in xrange(self._samplingSize)])
-        pred = resultKriging.getConditionalMean(sample)
-
-        normalSample = self._normalDist.getSample(size)
-        # with numpy broadcasting
-        randomVector = np.array(normalSample)* np.sqrt(variance) + np.array(pred)
-        return randomVector
-
-        # covMatrix = resultKriging.getConditionalCovariance(sample)
-        # metamodel = resultKriging.getMetaModel()
-        # pred = metamodel(sample)
-        # pred, covMatrix = self._cleaningMatrixAndPrediction(pred, covMatrix)
-        # return np.random.multivariate_normal(pred, covMatrix, size)
-
-    def _cleaningMatrixAndPrediction(self, prediction, matrix, eps=1e-5):
-        """
-        Remove from the matrix and prediction, values for which the diagonal
-        of the covariance matrix is lower than eps : try to get positive semi
-        definite matrix.
-        """
-        matrix = np.array(matrix)
-        lowIndex = np.where(matrix.diagonal() < eps)[0]
-        newMatrix = matrix.copy()
-        newMatrix = np.delete(matrix, lowIndex, axis=0)
-        newMatrix = np.delete(newMatrix, lowIndex, axis=1)
-        newMatrix = ot.Matrix(newMatrix)
-        newMatrix = ot.CovarianceMatrix(newMatrix.getImplementation())
-        newPrediction = np.delete(np.hstack(prediction), lowIndex)
-        return newPrediction, newMatrix
-
-    def _computeLOO(self):
-        """
-        Compute the Leave One out prediction analytically.
-        """
-        inputSample = np.array(self._input)
-        outputSample = np.array(self._signals)
-        result = self._krigingResult
-
-        # get covariance model
-        cov = result.getCovarianceModel()
-        # get input transformation
-        t = result.getTransformation()
-        # check if the transformation was enabled or not and if so transform
-        # the input sample
-        if t.getInputDimension() == inputSample.shape[1]:
-            normalized_inputSample = np.array(t(inputSample))
-        else:
-            normalized_inputSample = inputSample
-
-        # correlation matrix and Cholesky decomposition
-        Rtrianglow = np.array(cov.discretize(normalized_inputSample))
-        R = Rtrianglow + Rtrianglow.T - np.eye(Rtrianglow.shape[0])
-        # get sigma2 (covariance model scale parameters)
-        sigma2 = result.getSigma2()
-        # get coefficient and compute trend
-        basis = result.getBasisCollection()[0]
-        F1 = result.getTrendCoefficients()[0]
-        size = inputSample.shape[0]
-        p = F1.getDimension()
-        F = np.ones((size, p))
-        for i in range(p):
-            F[:, i] = np.hstack(basis.build(i)(normalized_inputSample))
-        # Calcul de y_loo
-        K = sigma2 * R
-        Z = np.zeros((p, p))
-        S = np.vstack([np.hstack([K, F]), np.hstack([F.T, Z])])
-        S_inv = np.linalg.inv(S)
-        B = S_inv[:size:, :size:]
-        B_but_its_diag = B * (np.ones(B.shape) - np.eye(size))
-        B_diag = np.atleast_2d(np.diag(B)).T
-        y_loo = (- np.dot(B_but_its_diag / B_diag, outputSample)).ravel()
-        return outputSample, y_loo

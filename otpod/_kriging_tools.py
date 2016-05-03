@@ -57,6 +57,8 @@ def computeLOO(inputSample, outputSample, krigingResult):
     """
     Compute the Leave One out prediction analytically.
     """
+    inputSample = np.array(inputSample)
+    outputSample = np.array(outputSample)
 
     # get covariance model
     cov = krigingResult.getCovarianceModel()
@@ -91,13 +93,13 @@ def computeLOO(inputSample, outputSample, krigingResult):
     B_but_its_diag = B * (np.ones(B.shape) - np.eye(size))
     B_diag = np.atleast_2d(np.diag(B)).T
     y_loo = (- np.dot(B_but_its_diag / B_diag, outputSample)).ravel()
-    return outputSample, y_loo
+    return y_loo
 
-def computeQ2():
+def computeQ2(inputSample, outputSample, krigingResult):
     """
     Compute the Q2 using the analytical loo prediction.
     """
-    outputSample, y_loo = computeLOO()
+    y_loo = computeLOO(inputSample, outputSample, krigingResult)
     # Calcul du Q2
     delta = (np.hstack(outputSample) - y_loo)
     return 1 - np.mean(delta**2)/np.var(outputSample)

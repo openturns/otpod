@@ -157,9 +157,9 @@ class PolynomialChaosPOD(POD):
         self._stderr = np.sqrt(np.sum(np.array(self._residuals)**2) / (inputSize - basisSize - 1))
 
         # Compute the POD values for each defect sizes
-        POD = self._computePOD(self._defectSizes, self._chaosCoefs)
+        self.POD = self._computePOD(self._defectSizes, self._chaosCoefs)
         # create the interpolate function
-        interpModel = interp1d(self._defectSizes, POD, kind='linear')
+        interpModel = interp1d(self._defectSizes, self.POD, kind='linear')
         self._PODmodel = ot.PythonFunction(1, 1, interpModel)
 
         ####################### confidence interval ############################
@@ -641,10 +641,10 @@ class PolynomialChaosPOD(POD):
         residualsSample = self._normalDist.getSample(self._samplingSize * \
                                              self._defectNumber) * self._stderr
         chaosRandomSample = chaosFunction(fullSamplePred) + residualsSample
+        chaosRandomSample = np.reshape(chaosRandomSample, (self._samplingSize,
+                                       self._defectNumber), 'F')
 
         # compute the POD for all defect sizes
-        POD = [1.*len(np.where(np.array(chaosRandomSample[self._samplingSize \
-                    * i:self._samplingSize*(i+1)]) > self._detectionBoxCox)[0]) \
-                    / self._samplingSize for i in xrange(self._defectNumber)]
+        POD = np.mean(chaosRandomSample > self._detectionBoxCox, axis=0)
 
         return POD

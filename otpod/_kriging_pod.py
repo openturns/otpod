@@ -153,6 +153,7 @@ class KrigingPOD(POD):
             self._algoKriging = estimKrigingTheta(self._algoKriging,
                                                   lowerBound, upperBound,
                                                   self._initialStartSize)
+            self._algoKriging.run()
             if self._verbose:
                 print('Kriging optimizer completed')
             self._krigingResult = self._algoKriging.getResult()

@@ -18,9 +18,9 @@ def estimKrigingTheta(algoKriging, lowerBound, upperBound, size):
     Y = algoKriging.getOutputSample()
     
     algoKriging.run()
-    resultKriging = algoKriging.getResult()
-    covarianceModel = resultKriging.getCovarianceModel()
-    basis = resultKriging.getBasisCollection()
+    krigingResult = algoKriging.getResult()
+    covarianceModel = krigingResult.getCovarianceModel()
+    basis = krigingResult.getBasisCollection()
     llf = algoKriging.getLogLikelihoodFunction()
 
     # create uniform distribution of the parameters bounds
@@ -49,7 +49,6 @@ def estimKrigingTheta(algoKriging, lowerBound, upperBound, size):
     # good starting point
     algoKriging = ot.KrigingAlgorithm(X, Y, basis, covarianceModel, True)
     algoKriging.setOptimizer(optimizer)
-    algoKriging.run() 
     return algoKriging
 
 
@@ -124,9 +123,7 @@ def computePODSamplePerDefect(defect, detection, krigingResult, distribution,
                                     samplingSize)
 
     # compute the POD for all simulation size
-    POD_MCPG_a = [float(np.where(Y_sample[i] >  \
-                  detection)[0].shape[0])/Y_sample.shape[1] for i \
-                  in xrange(simulationSize)]
+    POD_MCPG_a = np.mean(Y_sample > detection, axis=1)
     # compute the variance of the MC simulation using TCL
     VAR_TCL = np.array(POD_MCPG_a)*(1-np.array(POD_MCPG_a)) / Y_sample.shape[1]
     # Create distribution of the POD estimator for all simulation 
@@ -144,19 +141,18 @@ def computePODSamplePerDefect(defect, detection, krigingResult, distribution,
     POD_PG_sample = POD_PG_alea.getSample(samplingSize)
     POD_PG_sample_array = np.array(POD_PG_sample)
     POD_PG_sample_array.resize((simulationSize * samplingSize,1))
-    POD_PG_sample = ot.NumericalSample(POD_PG_sample_array)
 
-    return POD_PG_sample
+    return POD_PG_sample_array
 
-def randomVectorSampling(resultKriging, sample, simulationSize, samplingSize):
+def randomVectorSampling(krigingResult, sample, simulationSize, samplingSize):
     """
     Kriging Random vector perso
     """
     
     # only compute the variance
-    variance = np.hstack([resultKriging.getConditionalCovariance(
+    variance = np.hstack([krigingResult.getConditionalCovariance(
                         sample[i])[0,0] for i in xrange(samplingSize)])
-    pred = resultKriging.getConditionalMean(sample)
+    pred = krigingResult.getConditionalMean(sample)
 
     normalSample = ot.Normal().getSample(simulationSize)
     # with numpy broadcasting

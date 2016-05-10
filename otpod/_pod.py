@@ -259,9 +259,10 @@ class POD(object):
         else:
             detectionBoxCox = detection
             self._lambdaBoxCox = None
+            boxCoxTransform = None
 
         return {'inputSample':inputSample, 'signals':signals,
-                'detectionBoxCox':detectionBoxCox}
+                'detectionBoxCox':detectionBoxCox, 'boxCoxTransform':boxCoxTransform}
 
     def drawBoxCoxLikelihood(self, name=None):
         """

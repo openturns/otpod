@@ -70,7 +70,7 @@ def computeLOO(inputSample, outputSample, krigingResult):
     else:
         normalized_inputSample = inputSample
 
-    # correlation matrix and Cholesky decomposition
+    # correlation matrix
     Rtrianglow = np.array(cov.discretize(normalized_inputSample))
     R = Rtrianglow + Rtrianglow.T - np.eye(Rtrianglow.shape[0])
     # get sigma2 (covariance model scale parameters)
@@ -119,8 +119,8 @@ def computePODSamplePerDefect(defect, detection, krigingResult, distribution,
     MC_sample = distribution.getSample(samplingSize)
     # Kriging_RV = ot.KrigingRandomVector(krigingResult, MC_sample)
     # Y_sample = Kriging_RV.getSample(simulationSize)
-    Y_sample = randomVectorSampling(krigingResult, MC_sample, simulationSize,
-                                    samplingSize)
+    Y_sample = randomVectorSampling(krigingResult, MC_sample,
+                                    simulationSize, samplingSize)
 
     # compute the POD for all simulation size
     POD_MCPG_a = np.mean(Y_sample > detection, axis=1)

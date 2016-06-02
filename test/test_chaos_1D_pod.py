@@ -92,10 +92,10 @@ POD4.setSimulationSize(100)
 POD4.run()
 detectionSize4 = POD4.computeDetectionSize(0.9, 0.95)
 def test_4_a90():
-    np.testing.assert_almost_equal(detectionSize4[0], 0.298705808978)
+    np.testing.assert_almost_equal(detectionSize4[0], 0.29077057016094426)
 def test_4_a95():
-    np.testing.assert_almost_equal(detectionSize4[1], 0.317754239075)
+    np.testing.assert_almost_equal(detectionSize4[1], 0.3127756005340909)
 def test_4_R2_90():
-    np.testing.assert_almost_equal(POD4.getR2(), 0.876590150764)
+    np.testing.assert_almost_equal(POD4.getR2(), 0.8716647905822066)
 def test_4_Q2_90():
-    np.testing.assert_almost_equal(POD4.getQ2(), 0.870973508545)
+    np.testing.assert_almost_equal(POD4.getQ2(), 0.86811804068316134)

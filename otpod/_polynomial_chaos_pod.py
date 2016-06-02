@@ -57,7 +57,7 @@ class PolynomialChaosPOD(POD):
     The default polynomial chaos model is built with uniform distributions for
     each parameters. Coefficients are computed using the LAR algorithm combined
     with the KFold. The AdaptiveStrategy is chosen fixed with a linear enumerate
-    function of maximum degree 5.
+    function of maximum degree 3.
 
     For advanced use, all parameters can be defined thanks to dedicated set 
     methods. Moreover, if the user has already built a polynomial chaos result, 
@@ -93,6 +93,7 @@ class PolynomialChaosPOD(POD):
         self._distribution = None
         self._adaptiveStrategy = None
         self._projectionStrategy = None
+        self._degree = 3
         self._defectSizes = None
         self._verbose = True
 
@@ -143,18 +144,27 @@ class PolynomialChaosPOD(POD):
                 print('Polynomial chaos model completed')
             self._chaosResult = self._algoChaos.getResult()
 
-        # get the metamodel
+                # get the metamodel
         self._chaosPred = self._chaosResult.getMetaModel()
         # get the basis, coef and transformation, needed for the confidence interval
         self._chaosCoefs = self._chaosResult.getCoefficients()
         self._reducedBasis = self._chaosResult.getReducedBasis()
         self._transformation = self._chaosResult.getTransformation()
+        self._basisFunction = ot.NumericalMathFunction(ot.NumericalMathFunction(
+                                self._reducedBasis), self._transformation)
 
         # compute the residuals and stderr
         inputSize = self._input.getSize()
         basisSize = self._reducedBasis.getSize()
         self._residuals = self._signals - self._chaosPred(self._input) # residuals
         self._stderr = np.sqrt(np.sum(np.array(self._residuals)**2) / (inputSize - basisSize - 1))
+
+        # Check the quality of the chaos model
+        R2 = self.getR2()
+        Q2 = self.getQ2()
+        if self._verbose:
+            print 'R2 : {:0.4f}'.format(R2)
+            print 'Q2 : {:0.4f}'.format(Q2)
 
         # Compute the POD values for each defect sizes
         self.POD = self._computePOD(self._defectSizes, self._chaosCoefs)
@@ -163,8 +173,6 @@ class PolynomialChaosPOD(POD):
         self._PODmodel = ot.PythonFunction(1, 1, interpModel)
 
         ####################### confidence interval ############################
-        self._basisFunction = ot.NumericalMathFunction(ot.NumericalMathFunction(
-                                self._reducedBasis), self._transformation)
         dof = inputSize - basisSize - 1
         varEpsilon = (ot.ChiSquare(dof).inverse() * dof * self._stderr**2).getRealization()[0]
         gramBasis = ot.Matrix(self._basisFunction(self._input)).computeGram()
@@ -218,7 +226,15 @@ class PolynomialChaosPOD(POD):
     @DocInherit # decorator to inherit the docstring from POD class
     @keepingArgs # decorator to keep the real signature
     def computeDetectionSize(self, probabilityLevel, confidenceLevel=None):
-        return self._computeDetectionSize(self.getPODModel(),
+        if confidenceLevel is None:
+            return self._computeDetectionSize(self.getPODModel(),
+                                          None,
+                                          probabilityLevel,
+                                          confidenceLevel,
+                                          np.min(self._defectSizes),
+                                          np.max(self._defectSizes))
+        elif confidenceLevel is not None:
+            return self._computeDetectionSize(self.getPODModel(),
                                           self.getPODCLModel(confidenceLevel),
                                           probabilityLevel,
                                           confidenceLevel,
@@ -499,6 +515,28 @@ class PolynomialChaosPOD(POD):
         else:
             return self._projectionStrategy
 
+    def setDegree(self, degree):
+        """
+        Accessor to the polynomial chaos degree. 
+
+        Parameters
+        ----------
+        degree : int
+            The degree of the polynomial chaos.
+        """
+        self._degree = degree
+
+    def getDegree(self):
+        """
+        Accessor to the polynomial chaos degree.
+
+        Returns
+        -------
+        degree : int
+            The degree of the polynomial chaos.
+        """
+        return self._degree
+
     def setPolynomialChaosResult(self, chaosResult):
         """
         Accessor to the polynomial chaos result.
@@ -581,9 +619,8 @@ class PolynomialChaosPOD(POD):
             
             enumerateFunction = ot.EnumerateFunction(self._dim)
             multivariateBasis = ot.OrthogonalProductPolynomialFactory(polyCol, enumerateFunction)
-            # max degree 5
-            p = 5
-            indexMax = enumerateFunction.getStrataCumulatedCardinal(p)
+            # default degree is 3 (in __init__)
+            indexMax = enumerateFunction.getStrataCumulatedCardinal(self._degree)
             self._adaptiveStrategy = ot.FixedStrategy(multivariateBasis, indexMax)
 
         if self._projectionStrategy is None:

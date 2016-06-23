@@ -4,6 +4,7 @@ otpod.egg-info/*
 .directory
 *.pyc
 *.cache
+*.csv
 doc/source/examples/.ipynb_checkpoints/*
 doc/source/_generated/*
 doc/source/examples/*.rst

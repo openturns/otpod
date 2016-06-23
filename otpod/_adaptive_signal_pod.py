@@ -7,12 +7,11 @@ import openturns as ot
 import numpy as np
 from ._pod import POD
 from scipy.interpolate import interp1d
-from _decorator import DocInherit, keepingArgs
 from _progress_bar import updateProgress
-from _kriging_tools import estimKrigingTheta, computeLOO, computeQ2, computePODSamplePerDefect
+from _kriging_tools import KrigingBase
 import logging
 
-class AdaptiveSignalPOD(POD):
+class AdaptiveSignalPOD(POD, KrigingBase):
     """
     Adaptive algorithm for signal data type.
 
@@ -23,11 +22,13 @@ class AdaptiveSignalPOD(POD):
 
     Parameters
     ----------
-    inputSample : 2-d sequence of float
+    inputDOE : 2-d sequence of float
         Vector of the input values. The first column must correspond with the
         defect sizes.
-    outputSample : 2-d sequence of float
+    outputDOE : 2-d sequence of float
         Vector of the signals, of dimension 1.
+    physicalModel : :py:class:`~openturns.NumericalMathFunction`
+        True model used to compute the real signal value to be added to the DOE.
     detection : float
         Detection value of the signal.
     noiseThres : float
@@ -40,15 +41,26 @@ class AdaptiveSignalPOD(POD):
 
     Warnings
     --------
-    The first column of the input sample must corresponds with the defects sample.
+    The first column of the input sample must corresponds with the defect sizes.
 
     Notes
     -----
-    This class aims at building the POD based on a kriging model. No assumptions
-    are required for the residuals with this method. The POD are computed by
-    simulating conditional prediction. For each, a Monte Carlo simulation is
-    performed. The accuracy of the Monte Carlo simulation is taken into account
-    using the TCL.
+    This class aims at building the POD based on a kriging model where the design
+    of experiments is iteravely enriched. The initial design of experiments is
+    given as input parameters. The enrichment criterion is based on the integrated
+    mean squared of the POD. The criterion is computed on several candidate
+    points and the one that maximizes the criterion is added to the current
+    design of experiments. The sample of candidate points is created using 
+    a Latin Hypercube Sampling technique if the input distribution has an
+    independant copula, otherwise a Monte Carlo experiment is used. This is a 
+    time consuming technique because it requires to compute the mean and variance
+    of the POD for all candidate points. The stopping criterion is only based 
+    on the number of points that must be added to the design of experiments.
+
+    No assumptions are required for the residuals with this method. The POD are
+    computed by simulating conditional prediction. For each, a Monte Carlo
+    simulation is performed. The accuracy of the Monte Carlo simulation is taken
+    into account using the TCL.
     
     The return POD model corresponds with an interpolate function built
     with the POD values computed for the given defect sizes. The default values
@@ -70,8 +82,8 @@ class AdaptiveSignalPOD(POD):
     the method *setVerbose*.
     """
 
-    def __init__(self, inputDOE, outputDOE, physicalModel, detection, noiseThres=None,
-                 saturationThres=None, boxCox=False):
+    def __init__(self, inputDOE, outputDOE, physicalModel, nIteration,
+                 detection, noiseThres=None, saturationThres=None, boxCox=False):
 
         # initialize the POD class
         super(AdaptiveSignalPOD, self).__init__(inputDOE, outputDOE,
@@ -91,12 +103,18 @@ class AdaptiveSignalPOD(POD):
 
         assert (self._dim > 1), "Dimension of inputSample must be greater than 1."
 
-        self._normalDist = ot.Normal()
-        self._samplingSize = 1000 # Number of MC simulations to compute POD
-        self._simulationSize = 100
-        self._enrichDOESize = 100
-        self._nMaxIteration = 20
+        self._physicalModel = physicalModel
+        self._basis = None
+        self._covarianceModel = None
+        self._distribution = None
+        self._initialStartSize = 1000
+        self._samplingSize = 5000 # Number of MC simulations to compute POD
+        self._candidateSize = 1000
+        self._nIteration = nIteration
         self._verbose = True
+        self._graph = False # flag to print or not the POD curves at each iteration
+        
+        self._normalDist = ot.Normal()
 
         if self._censored:
             logging.info('Censored data are not taken into account : the ' + \
@@ -114,84 +132,97 @@ class AdaptiveSignalPOD(POD):
         self._boxCoxTransform = result['boxCoxTransform']
 
         # define the defect sizes for the interpolation function if not defined
-        if self._defectSizes is None:
-            self._defectNumber = 10
-            self._defectSizes = np.linspace(self._input[:,0].getMin()[0], 
-                                      self._input[:,0].getMax()[0],
-                                      self._defectNumber)
+        self._defectNumber = 10
+        self._defectSizes = np.linspace(self._input[:,0].getMin()[0], 
+                                        self._input[:,0].getMax()[0],
+                                        self._defectNumber)
 
     def run(self):
         """
-        Build the POD models.
+        Launch the algorithm and build the POD models.
 
         Notes
         -----
-        This method build the kriging model. First the censored data
+        This method launche the iterative algorithm. First the censored data
         are filtered if needed. The Box Cox transformation is performed if it is
-        enabled. Then it builds the POD models : conditional samples are 
+        enabled. Then the enrichment of the design of experiments is performed.
+        Once the algorithm stops, it builds the POD models : conditional samples are 
         simulated for each defect size, then the distributions of the probability
         estimator (for MC simulation) are built. Eventually, a sample of this
         distribution is used to compute the mean POD and the POD at the confidence
         level.
         """
 
+        # Create an initial uniform distribution if not given
+        if self._distribution is None:
+            inputMin = self._input.getMin()
+            inputMin[0] = np.min(self._defectSizes)
+            inputMax = self._input.getMax()
+            inputMax[0] = np.max(self._defectSizes)
+            marginals = [ot.Uniform(inputMin[i], inputMax[i]) for i in range(self._dim)]
+            self._distribution = ot.ComposedDistribution(marginals)
 
-        inputMin = self._input.getMin()
-        inputMax = self._input.getMax()
-        marginals = [ot.Uniform(inputMin[i], inputMax[i]) for i in range(self._dim)]
-        distribution = ot.ComposedDistribution(marginals)
+        # Create the design of experiments of the candidate points where the
+        # criterion is computed
+        if self._distribution.hasIndependentCopula():
+            # without copula use LHS as first doe
+            doeCandidate = ot.LHSExperiment(self._distribution, self._candidateSize).generate()
+        else:
+            # else simple Monte Carlo distribution
+            doeCandidate = self._distribution.getSample(self._candidateSize)
 
-        samplingSize = 1000 # Number of MC simulations to compute POD
-        simulationSize = 100
-        enrichDOESize = 100
-        doeCandidate = distribution.getSample(enrichDOESize)
-
+        # Start the improvment loop
         iteration = 0
-        while iteration < self._nMaxIteration:
+        while iteration < self._nIteration:
             iteration += 1
             if self._verbose:
-                print 'Iteration : {}/{}'.format(iteration, self._nMaxIteration)
-            # First build of the kriging
+                print 'Iteration : {}/{}'.format(iteration, self._nIteration)
+
+            # build the kriging model without optimization
             algoKriging = self._buildKrigingAlgo(self._input, self._signals)
             algoKriging.run()
 
-            Q2 = computeQ2(self._input, self._signals, algoKriging.getResult())
-            print Q2
+            self._Q2 = self._computeQ2(self._input, self._signals, algoKriging.getResult())
 
-            # for the first iteration the optimization is always performed
-            if Q2 < 0.95 or iteration == 1:
+            # Check the quality of the kriging model if it needs optimization
+            # for the first iteration the optimization is always performed.
+            if self._Q2 < 0.95 or iteration == 1:
                 if self._verbose:
-                    'Optimization of the covariance model parameters...'
+                    print 'Optimization of the covariance model parameters...'
                 covDim = algoKriging.getResult().getCovarianceModel().getScale().getDimension()
                 lowerBound = [0.001] * covDim
                 upperBound = [50] * covDim               
-                algoKriging = estimKrigingTheta(algoKriging,
+                algoKriging = self._estimKrigingTheta(algoKriging,
                                                       lowerBound, upperBound,
                                                       self._initialStartSize)
                 algoKriging.run()
 
-            krigingResult = algoKriging.getResult()
-            self._covarianceModel = krigingResult.getCovarianceModel()
-            self._basis = krigingResult.getBasisCollection()
-            metamodel = krigingResult.getMetaModel()
+            # Get kriging results
+            self._krigingResult = algoKriging.getResult()
+            self._covarianceModel = self._krigingResult.getCovarianceModel()
+            self._basis = self._krigingResult.getBasisCollection()
+            metamodel = self._krigingResult.getMetaModel()
 
-            Q2 = computeQ2(self._input, self._signals, algoKriging.getResult())
+            self._Q2 = self._computeQ2(self._input, self._signals, self._krigingResult)
             if self._verbose:
-                print 'Q2 : {0.4f}'.format(Q2)
+                print 'Kriging validation Q2 (>0.9): {:0.4f}'.format(self._Q2)
 
             # compute POD (ptrue = pn-1) for bias reducing in the criterion
-            # Monte Carlo for all defect sizes in a vectorized way
-            samplePred = distribution.getSample(samplingSize)[:,1:]
-            fullSamplePred = ot.NumericalSample(samplingSize * self._defectNumber, self._dim)
+            # Monte Carlo for all defect sizes in a vectorized way.
+            # get Sample for all parameters except the defect size
+            samplePred = self._distribution.getSample(self._samplingSize)[:,1:]
+            fullSamplePred = ot.NumericalSample(self._samplingSize * self._defectNumber,
+                                                self._dim)
+            # Add the defect sizes as first value 
             for i, defect in enumerate(self._defectSizes):
-                fullSamplePred[samplingSize*i:samplingSize*(i+1), :] = \
+                fullSamplePred[self._samplingSize*i:self._samplingSize*(i+1), :] = \
                                         self._mergeDefectInX(defect, samplePred)
             predictionSample = metamodel(fullSamplePred)
-            predictionSample = np.reshape(predictionSample, (samplingSize,
+            predictionSample = np.reshape(predictionSample, (self._samplingSize,
                                                     self._defectNumber), 'F')
+            # compute the POD for all defect sizes
             currentPOD = np.mean(predictionSample > self._detectionBoxCox, axis=0)
 
-            # compute criterion
             # Compute criterion for all candidate in the candidate doe
             criterion = []
             for icand, candidate in enumerate(doeCandidate):
@@ -214,21 +245,28 @@ class AdaptiveSignalPOD(POD):
 
                 # compute the criterion for all defect size
                 crit = []
+                # save results, used to compute the PODModel et PODCLModel
+                self._PODPerDefect = ot.NumericalSample(self._simulationSize *
+                                         self._samplingSize, self._defectNumber)
                 for idef, defect in enumerate(self._defectSizes):
-                    podSample = computePODSamplePerDefect(defect, self._detectionBoxCox,
-                        krigingResultTemp,distribution, simulationSize, samplingSize)
+                    podSample = self._computePODSamplePerDefect(defect,
+                        self._detectionBoxCox, krigingResultTemp,
+                        self._distribution, self._simulationSize, self._samplingSize)
+                    self._PODPerDefect[:, idef] = podSample
 
-                    meanPOD = np.mean(podSample)
-                    varPOD = np.var(podSample, ddof=1)
+                    meanPOD = podSample.computeMean()[0]
+                    varPOD = podSample.computeVariance()[0]
                     crit.append(varPOD + (meanPOD - currentPOD[idef])**2)
-                # compute the criterion
+                # compute the criterion aggregated for all defect sizes
                 criterion.append(np.sqrt(np.mean(crit)))
                 
                 if self._verbose:
                     updateProgress(icand, int(doeCandidate.getSize()), 'Computing criterion')
 
             # look for the best candidate
-            indexOpt = np.argmax(criterion)
+            indexOpt = np.argmin(criterion)
+            # Compute the relative deviation between the previous and the current
+            # criterion value.
             candidateOpt = doeCandidate[indexOpt]
             # add new point to DOE
             self._input.add(candidateOpt)
@@ -239,37 +277,84 @@ class AdaptiveSignalPOD(POD):
             # remove added candidate
             doeCandidate.erase(indexOpt)
             if self._verbose:
-                    print 'Criterion value : {:0.4f}'.format(criterion[indexOpt])
-                    print 'Added point : {}'.format(candidateOpt)
-                    print ''
+                print 'Criterion value : {:0.4f}'.format(criterion[indexOpt])
+                print 'Added point : {}'.format(candidateOpt)
+                print ''
 
+            if self._graph:
+                # create the interpolate function of the POD model
+                # interpModel = interp1d(self._defectSizes, np.array(currentPOD), kind='linear')
+                # self._PODmodel = ot.PythonFunction(1, 1, interpModel)
+                # # The POD at confidence level is built in getPODCLModel() directly
+                # fig, ax = self.drawPOD()
+                # fig.show()
+                pass
 
-    def _buildKrigingAlgo(self, inputSample, outputSample):
+                # The POD at confidence level is built in getPODCLModel() directly
+
+    def getOutputDOE(self):
         """
-        Build the functional chaos algorithm without running it.
+        Accessor to the final output values of the DOE.
         """
-        if self._basis is None:
-            # create linear basis only for the defect parameter (1st parameter),
-            # constant otherwise
-            input = ['x'+str(i) for i in range(self._dim)]
-            functions = []
-            # constant
-            functions.append(ot.NumericalMathFunction(input, ['y'], ['1']))
-            # linear for the first parameter only
-            functions.append(ot.NumericalMathFunction(input, ['y'], [input[0]]))
-            self._basis = ot.Basis(functions)
+        if self._boxCox:
+            invBoxCox = self._boxCoxTransform.getInverse()
+            return invBoxCox(self._signals)
+        else:
+            return self._signals
 
-        if self._covarianceModel is None:
-            # anisotropic squared exponential covariance model
-            covColl = ot.CovarianceModelCollection(self._dim)
-            for i in xrange(self._dim):
-                covColl[i]  = ot.SquaredExponential(1, 1.)
-            self._covarianceModel = ot.ProductCovarianceModel(covColl)
+    def getInputDOE(self):
+        """
+        Accessor to the final input values of the DOE.
+        """
+        return self._input 
 
-        algoKriging = ot.KrigingAlgorithm(inputSample, outputSample, self._basis,
-                                                     self._covarianceModel, True)
-        algoKriging.run()
-        return algoKriging
+    def getCandidateSize(self):
+        """
+        Accessor to the number of candidate points.
+
+        Returns
+        -------
+        size : int
+            The number of candidate points on which the criterion is computed.
+        """
+        return self._candidateSize
+
+    def setCandidateSize(self, size):
+        """
+        Accessor to the number of candidate points.
+
+        Parameters
+        ----------
+        size : int
+            The number of candidate points on which the criterion is computed
+        """
+        self._candidateSize = size
+
+    def getGraphActive(self):
+        """
+        Accessor to the graph verbosity.
+
+        Returns
+        -------
+        graphVerbose : bool
+            Enable or disable the display of the POD graph at each iteration. Default
+            is False. 
+        """
+        return self._graph
+
+    def setGraphActive(self, graphVerbose):
+        """
+        Accessor to the graph verbosity.
+
+        Parameters
+        ----------
+        graphVerbose : bool
+            Enable or disable the display of the POD graph at each iteration.
+        """
+        if type(graphVerbose) is not bool:
+            raise TypeError('The parameter is not a bool.')
+        else:
+            self._graph = graphVerbose
 
     def _mergeDefectInX(self, defect, X):
         """

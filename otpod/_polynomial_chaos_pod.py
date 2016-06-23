@@ -163,8 +163,8 @@ class PolynomialChaosPOD(POD):
         R2 = self.getR2()
         Q2 = self.getQ2()
         if self._verbose:
-            print 'R2 : {:0.4f}'.format(R2)
-            print 'Q2 : {:0.4f}'.format(Q2)
+            print 'Polynomial chaos validation R2 (>0.8) : {:0.4f}'.format(R2)
+            print 'Polynomial chaos validation Q2 (>0.8) : {:0.4f}'.format(Q2)
 
         # Compute the POD values for each defect sizes
         self.POD = self._computePOD(self._defectSizes, self._chaosCoefs)
@@ -602,7 +602,9 @@ class PolynomialChaosPOD(POD):
             # input sample
             inputSample = ot.NumericalSample(inputSample)
             inputMin = inputSample.getMin()
+            inputMin[0] = np.min(self._defectSizes)
             inputMax = inputSample.getMax()
+            inputMax[0] = np.max(self._defectSizes)
             marginals = [ot.Uniform(inputMin[i], inputMax[i]) for i in range(self._dim)]
             self._distribution = ot.ComposedDistribution(marginals)
 

@@ -79,7 +79,7 @@ class POD(object):
 ################ Common methods called inside subclass #########################
 ################################################################################
 
-    def _computeDetectionSize(self, model, modelCl, probabilityLevel,
+    def _computeDetectionSize(self, model, modelCl=None, probabilityLevel=None,
                               confidenceLevel=None, defectMin=None, defectMax=None):
         """
         Compute the detection size for a given probability level.

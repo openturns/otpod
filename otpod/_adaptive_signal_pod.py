@@ -10,6 +10,7 @@ from scipy.interpolate import interp1d
 from _progress_bar import updateProgress
 from _kriging_tools import KrigingBase
 import logging
+import matplotlib.pyplot as plt
 
 class AdaptiveSignalPOD(POD, KrigingBase):
     """
@@ -113,6 +114,8 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         self._nIteration = nIteration
         self._verbose = True
         self._graph = False # flag to print or not the POD curves at each iteration
+        self._probabilityLevel = None # default graph option
+        self._confidenceLevel = None # default graph option
         
         self._normalDist = ot.Normal()
 
@@ -171,6 +174,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             # else simple Monte Carlo distribution
             doeCandidate = self._distribution.getSample(self._candidateSize)
 
+        plt.ion()
         # Start the improvment loop
         iteration = 0
         while iteration < self._nIteration:
@@ -224,7 +228,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             currentPOD = np.mean(predictionSample > self._detectionBoxCox, axis=0)
 
             # Compute criterion for all candidate in the candidate doe
-            criterion = []
+            criterion = 1000000000
             for icand, candidate in enumerate(doeCandidate):
 
                 # add the current candidate to the kriging doe
@@ -246,25 +250,31 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                 # compute the criterion for all defect size
                 crit = []
                 # save results, used to compute the PODModel et PODCLModel
-                self._PODPerDefect = ot.NumericalSample(self._simulationSize *
+                PODPerDefect = ot.NumericalSample(self._simulationSize *
                                          self._samplingSize, self._defectNumber)
                 for idef, defect in enumerate(self._defectSizes):
                     podSample = self._computePODSamplePerDefect(defect,
                         self._detectionBoxCox, krigingResultTemp,
                         self._distribution, self._simulationSize, self._samplingSize)
-                    self._PODPerDefect[:, idef] = podSample
+                    PODPerDefect[:, idef] = podSample
 
                     meanPOD = podSample.computeMean()[0]
                     varPOD = podSample.computeVariance()[0]
                     crit.append(varPOD + (meanPOD - currentPOD[idef])**2)
                 # compute the criterion aggregated for all defect sizes
-                criterion.append(np.sqrt(np.mean(crit)))
+                newCriterion = np.sqrt(np.mean(crit))
+
+                # check if the result is better or not
+                if newCriterion < criterion:
+                    self._PODPerDefect = PODPerDefect
+                    criterion = newCriterion
+                    indexOpt = icand
                 
                 if self._verbose:
                     updateProgress(icand, int(doeCandidate.getSize()), 'Computing criterion')
 
             # look for the best candidate
-            indexOpt = np.argmin(criterion)
+            # indexOpt = np.argmin(criterion)
             # Compute the relative deviation between the previous and the current
             # criterion value.
             candidateOpt = doeCandidate[indexOpt]
@@ -277,20 +287,21 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             # remove added candidate
             doeCandidate.erase(indexOpt)
             if self._verbose:
-                print 'Criterion value : {:0.4f}'.format(criterion[indexOpt])
+                print 'Criterion value : {:0.4f}'.format(criterion)
                 print 'Added point : {}'.format(candidateOpt)
                 print ''
 
             if self._graph:
                 # create the interpolate function of the POD model
-                # interpModel = interp1d(self._defectSizes, np.array(currentPOD), kind='linear')
-                # self._PODmodel = ot.PythonFunction(1, 1, interpModel)
-                # # The POD at confidence level is built in getPODCLModel() directly
-                # fig, ax = self.drawPOD()
-                # fig.show()
-                pass
-
+                meanPOD = self._PODPerDefect.computeMean()
+                interpModel = interp1d(self._defectSizes, np.array(meanPOD), kind='linear')
+                self._PODmodel = ot.PythonFunction(1, 1, interpModel)
                 # The POD at confidence level is built in getPODCLModel() directly
+                fig, ax = self.drawPOD(self._probabilityLevel, self._confidenceLevel)
+                plt.draw()
+                plt.pause(0.001)
+                plt.show()
+
 
     def getOutputDOE(self):
         """
@@ -342,7 +353,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         """
         return self._graph
 
-    def setGraphActive(self, graphVerbose):
+    def setGraphActive(self, graphVerbose, probabilityLevel=None, confidenceLevel=None):
         """
         Accessor to the graph verbosity.
 
@@ -350,11 +361,19 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         ----------
         graphVerbose : bool
             Enable or disable the display of the POD graph at each iteration.
+        probabilityLevel : float
+            The probability level for which the defect size is computed. Default
+            is None.
+        confidenceLevel : float
+            The confidence level associated to the given probability level the
+            defect size is computed. Default is None.
         """
         if type(graphVerbose) is not bool:
             raise TypeError('The parameter is not a bool.')
         else:
             self._graph = graphVerbose
+            self._probabilityLevel=probabilityLevel
+            self._confidenceLevel=confidenceLevel
 
     def _mergeDefectInX(self, defect, X):
         """

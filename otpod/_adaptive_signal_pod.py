@@ -3,6 +3,7 @@
 
 __all__ = ['AdaptiveSignalPOD']
 
+import os
 import openturns as ot
 import numpy as np
 from ._pod import POD
@@ -50,7 +51,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
     of experiments is iteravely enriched. The initial design of experiments is
     given as input parameters. The enrichment criterion is based on the integrated
     mean squared of the POD. The criterion is computed on several candidate
-    points and the one that maximizes the criterion is added to the current
+    points and the one that minimizes the criterion is added to the current
     design of experiments. The sample of candidate points is created using 
     a Latin Hypercube Sampling technique if the input distribution has an
     independant copula, otherwise a Monte Carlo experiment is used. This is a 
@@ -66,13 +67,18 @@ class AdaptiveSignalPOD(POD, KrigingBase):
     The return POD model corresponds with an interpolate function built
     with the POD values computed for the given defect sizes. The default values
     are 20 defect sizes between the minimum and maximum value of the defect sample.
-    The defect sizes can be changed using the method *setDefectSizes*.
+    The defect sizes can be changed using the method *setDefectSizes*. It is
+    adviced to run a preliminary POD study in order to know the interesting range
+    of defect sizes. This enables reducing the computing time.
 
     The default kriging model is built with a linear basis only for the defect
     size and constant otherwise. The covariance model is an anisotropic squared
     exponential model. Parameters are estimated using the TNC algorithm, the
     initial starting point of the TNC is found thanks to a quasi random search 
     of the best loglikelihood value among 1000 computations.
+    In the algorithm, when a point is added the design of experiments, the kriging
+    model is not always optimized. The covariance model scale coefficients are
+    optimized only if the Q2 value is lower than 0.95.
 
     For advanced use, all parameters can be defined thanks to dedicated set 
     methods. Moreover, if the user has already built a kriging result, 
@@ -116,6 +122,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         self._graph = False # flag to print or not the POD curves at each iteration
         self._probabilityLevel = None # default graph option
         self._confidenceLevel = None # default graph option
+        self._graphDirectory = None # graph directory for saving
         
         self._normalDist = ot.Normal()
 
@@ -146,7 +153,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
 
         Notes
         -----
-        This method launche the iterative algorithm. First the censored data
+        This method launches the iterative algorithm. First the censored data
         are filtered if needed. The Box Cox transformation is performed if it is
         enabled. Then the enrichment of the design of experiments is performed.
         Once the algorithm stops, it builds the POD models : conditional samples are 
@@ -301,6 +308,9 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                 plt.draw()
                 plt.pause(0.001)
                 plt.show()
+                if self._graphDirectory is not None:
+                    fig.savefig(os.path.join(self._graphDirectory, 'AdaptiveSignalPOD_')+str(iteration),
+                                bbox_inches='tight', transparent=True)
 
 
     def getOutputDOE(self):
@@ -353,7 +363,8 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         """
         return self._graph
 
-    def setGraphActive(self, graphVerbose, probabilityLevel=None, confidenceLevel=None):
+    def setGraphActive(self, graphVerbose, probabilityLevel=None, confidenceLevel=None,
+                       directory=None):
         """
         Accessor to the graph verbosity.
 
@@ -367,13 +378,18 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         confidenceLevel : float
             The confidence level associated to the given probability level the
             defect size is computed. Default is None.
+        directory : string
+            Directory where to save the graphs as png files.
         """
         if type(graphVerbose) is not bool:
-            raise TypeError('The parameter is not a bool.')
+            raise TypeError("The parameter 'graphVerbose' is not a bool.")
+        elif type(directory) is not str and directory is not None:
+            raise TypeError("The parameter 'directory' is not a string.")
         else:
             self._graph = graphVerbose
-            self._probabilityLevel=probabilityLevel
-            self._confidenceLevel=confidenceLevel
+            self._probabilityLevel = probabilityLevel
+            self._confidenceLevel = confidenceLevel
+            self._graphDirectory = directory
 
     def _mergeDefectInX(self, defect, X):
         """

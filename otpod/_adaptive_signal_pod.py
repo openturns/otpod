@@ -186,7 +186,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         algoKriging = self._buildKrigingAlgo(self._input, self._signals)
         algoKriging.run()
         if self._verbose:
-            print 'Build kriging model'
+            print 'Building the kriging model'
             print 'Optimization of the covariance model parameters...'
         covDim = algoKriging.getResult().getCovarianceModel().getScale().getDimension()
         lowerBound = [0.001] * covDim

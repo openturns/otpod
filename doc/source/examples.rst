@@ -14,3 +14,4 @@ Examples of the API
     examples/polynomialChaosPOD
     examples/krigingPOD
     examples/PODSummary
+    examples/AdaptiveSignalPOD

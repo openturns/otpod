@@ -29,6 +29,16 @@ POD computation methods
     PolynomialChaosPOD
     KrigingPOD
 
+Adaptive algorithms
+===================
+
+.. autosummary::
+    :toctree: _generated/
+    :template: class.rst_t
+    :nosignatures:
+
+    AdaptiveSignalPOD
+
 Tools
 =====
 

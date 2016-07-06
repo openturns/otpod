@@ -48,19 +48,19 @@ class AdaptiveSignalPOD(POD, KrigingBase):
     Notes
     -----
     This class aims at building the POD based on a kriging model where the design
-    of experiments is iteravely enriched. The initial design of experiments is
+    of experiments is iteratively enriched. The initial design of experiments is
     given as input parameters. The enrichment criterion is based on the integrated
     mean squared of the POD. The criterion is computed on several candidate
     points and the one that minimizes the criterion is added to the current
     design of experiments. The sample of candidate points is created using 
-    a Latin Hypercube Sampling technique if the input distribution has an
+    a low discrepancy sequence (Sobol') if the input distribution has an
     independant copula, otherwise a Monte Carlo experiment is used. This is a 
     time consuming technique because it requires to compute the mean and variance
     of the POD for all candidate points. The stopping criterion is only based 
     on the number of points that must be added to the design of experiments.
 
     No assumptions are required for the residuals with this method. The POD are
-    computed by simulating conditional prediction. For each, a Monte Carlo
+    computed by simulating conditional predictions. For each, a Monte Carlo
     simulation is performed. The accuracy of the Monte Carlo simulation is taken
     into account using the TCL.
     
@@ -76,14 +76,13 @@ class AdaptiveSignalPOD(POD, KrigingBase):
     exponential model. Parameters are estimated using the TNC algorithm, the
     initial starting point of the TNC is found thanks to a quasi random search 
     of the best loglikelihood value among 1000 computations.
-    In the algorithm, when a point is added the design of experiments, the kriging
+
+    In the algorithm, when a point is added to the design of experiments, the kriging
     model is not always optimized. The covariance model scale coefficients are
     optimized only if the Q2 value is lower than 0.95.
 
     For advanced use, all parameters can be defined thanks to dedicated set 
-    methods. Moreover, if the user has already built a kriging result, 
-    it can be given as parameter using the method *setKrigingResult*,
-    then the POD is computed based on this kriging result.
+    methods.
 
     A progress bar is shown if the verbosity is enabled. It can be disabled using
     the method *setVerbose*.
@@ -175,11 +174,37 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         # Create the design of experiments of the candidate points where the
         # criterion is computed
         if self._distribution.hasIndependentCopula():
-            # without copula use LHS as first doe
-            doeCandidate = ot.LHSExperiment(self._distribution, self._candidateSize).generate()
+            # without copula use low discrepancy experiment as first doe
+            doeCandidate = ot.LowDiscrepancyExperiment(ot.SobolSequence(), 
+                            self._distribution, self._candidateSize).generate()
         else:
             # else simple Monte Carlo distribution
             doeCandidate = self._distribution.getSample(self._candidateSize)
+
+        # build initial kriging model
+        # build the kriging model without optimization
+        algoKriging = self._buildKrigingAlgo(self._input, self._signals)
+        algoKriging.run()
+        if self._verbose:
+            print 'Build kriging model'
+            print 'Optimization of the covariance model parameters...'
+        covDim = algoKriging.getResult().getCovarianceModel().getScale().getDimension()
+        lowerBound = [0.001] * covDim
+        upperBound = [50] * covDim               
+        algoKriging = self._estimKrigingTheta(algoKriging,
+                                              lowerBound, upperBound,
+                                              self._initialStartSize)
+        algoKriging.run()
+
+        # Get kriging results
+        self._krigingResult = algoKriging.getResult()
+        self._covarianceModel = self._krigingResult.getCovarianceModel()
+        self._basis = self._krigingResult.getBasisCollection()
+        metamodel = self._krigingResult.getMetaModel()
+
+        self._Q2 = self._computeQ2(self._input, self._signals, self._krigingResult)
+        if self._verbose:
+            print 'Kriging validation Q2 (>0.9): {:0.4f}\n'.format(self._Q2)
 
         plt.ion()
         # Start the improvment loop
@@ -188,35 +213,6 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             iteration += 1
             if self._verbose:
                 print 'Iteration : {}/{}'.format(iteration, self._nIteration)
-
-            # build the kriging model without optimization
-            algoKriging = self._buildKrigingAlgo(self._input, self._signals)
-            algoKriging.run()
-
-            self._Q2 = self._computeQ2(self._input, self._signals, algoKriging.getResult())
-
-            # Check the quality of the kriging model if it needs optimization
-            # for the first iteration the optimization is always performed.
-            if self._Q2 < 0.95 or iteration == 1:
-                if self._verbose:
-                    print 'Optimization of the covariance model parameters...'
-                covDim = algoKriging.getResult().getCovarianceModel().getScale().getDimension()
-                lowerBound = [0.001] * covDim
-                upperBound = [50] * covDim               
-                algoKriging = self._estimKrigingTheta(algoKriging,
-                                                      lowerBound, upperBound,
-                                                      self._initialStartSize)
-                algoKriging.run()
-
-            # Get kriging results
-            self._krigingResult = algoKriging.getResult()
-            self._covarianceModel = self._krigingResult.getCovarianceModel()
-            self._basis = self._krigingResult.getBasisCollection()
-            metamodel = self._krigingResult.getMetaModel()
-
-            self._Q2 = self._computeQ2(self._input, self._signals, self._krigingResult)
-            if self._verbose:
-                print 'Kriging validation Q2 (>0.9): {:0.4f}'.format(self._Q2)
 
             # compute POD (ptrue = pn-1) for bias reducing in the criterion
             # Monte Carlo for all defect sizes in a vectorized way.
@@ -228,11 +224,11 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             for i, defect in enumerate(self._defectSizes):
                 fullSamplePred[self._samplingSize*i:self._samplingSize*(i+1), :] = \
                                         self._mergeDefectInX(defect, samplePred)
-            predictionSample = metamodel(fullSamplePred)
-            predictionSample = np.reshape(predictionSample, (self._samplingSize,
+            meanPredictionSample = metamodel(fullSamplePred)
+            meanPredictionSample = np.reshape(meanPredictionSample, (self._samplingSize,
                                                     self._defectNumber), 'F')
             # compute the POD for all defect sizes
-            currentPOD = np.mean(predictionSample > self._detectionBoxCox, axis=0)
+            currentPOD = np.mean(meanPredictionSample > self._detectionBoxCox, axis=0)
 
             # Compute criterion for all candidate in the candidate doe
             criterion = 1000000000
@@ -280,23 +276,49 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                 if self._verbose:
                     updateProgress(icand, int(doeCandidate.getSize()), 'Computing criterion')
 
-            # look for the best candidate
-            # indexOpt = np.argmin(criterion)
-            # Compute the relative deviation between the previous and the current
-            # criterion value.
+            # get the best candidate
             candidateOpt = doeCandidate[indexOpt]
             # add new point to DOE
             self._input.add(candidateOpt)
+            # add the signal computed by the physical model
             if self._boxCox:
                 self._signals.add(self._boxCoxTransform(self._physicalModel(candidateOpt)))
             else:
                 self._signals.add(self._physicalModel(candidateOpt))
-            # remove added candidate
+            # remove added candidate from the doeCandidate
             doeCandidate.erase(indexOpt)
             if self._verbose:
                 print 'Criterion value : {:0.4f}'.format(criterion)
                 print 'Added point : {}'.format(candidateOpt)
-                print ''
+                print 'Update the kriging model'
+
+            # update the kriging model without optimization
+            algoKriging = self._buildKrigingAlgo(self._input, self._signals)
+            algoKriging.run()
+
+            self._Q2 = self._computeQ2(self._input, self._signals, algoKriging.getResult())
+
+            # Check the quality of the kriging model if it needs optimization
+            if self._Q2 < 0.95:
+                if self._verbose:
+                    print 'Optimization of the covariance model parameters...'
+                covDim = algoKriging.getResult().getCovarianceModel().getScale().getDimension()
+                lowerBound = [0.001] * covDim
+                upperBound = [50] * covDim               
+                algoKriging = self._estimKrigingTheta(algoKriging,
+                                                      lowerBound, upperBound,
+                                                      self._initialStartSize)
+                algoKriging.run()
+
+            # Get kriging results
+            self._krigingResult = algoKriging.getResult()
+            self._covarianceModel = self._krigingResult.getCovarianceModel()
+            self._basis = self._krigingResult.getBasisCollection()
+            metamodel = self._krigingResult.getMetaModel()
+
+            self._Q2 = self._computeQ2(self._input, self._signals, self._krigingResult)
+            if self._verbose:
+                print 'Kriging validation Q2 (>0.9): {:0.4f}'.format(self._Q2)
 
             if self._graph:
                 # create the interpolate function of the POD model
@@ -311,6 +333,27 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                 if self._graphDirectory is not None:
                     fig.savefig(os.path.join(self._graphDirectory, 'AdaptiveSignalPOD_')+str(iteration),
                                 bbox_inches='tight', transparent=True)
+
+        # Compute the final POD with the last updated kriging model
+        if self._verbose:
+                print '\nStart computing the POD with the last updated kriging model'
+        # compute the sample containing the POD values for all defect 
+        self._PODPerDefect = ot.NumericalSample(self._simulationSize *
+                                         self._samplingSize, self._defectNumber)
+        for i, defect in enumerate(self._defectSizes):
+            self._PODPerDefect[:, i] = self._computePODSamplePerDefect(defect,
+                self._detectionBoxCox, self._krigingResult, self._distribution,
+                self._simulationSize, self._samplingSize)
+            if self._verbose:
+                updateProgress(i, self._defectNumber, 'Computing POD per defect')
+
+        # compute the mean POD 
+        meanPOD = self._PODPerDefect.computeMean()
+        # create the interpolate function of the POD model
+        interpModel = interp1d(self._defectSizes, np.array(meanPOD), kind='linear')
+        self._PODmodel = ot.PythonFunction(1, 1, interpModel)
+
+        # The POD at confidence level is built in getPODCLModel() directly
 
 
     def getOutputDOE(self):

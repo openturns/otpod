@@ -452,16 +452,17 @@ class KrigingBase():
             distBoundCol += [ot.Uniform(lowerBound[i], upperBound[i])]
         distBound = ot.ComposedDistribution(distBoundCol)    
 
-        # Generate starting points with a low discrepancy sequence
-        thetaStart = ot.LowDiscrepancyExperiment(ot.SobolSequence(), distBound,
-                                                                size).generate()
-        # Get the best theta from the maximum llf value
-        llfValue = llf(thetaStart)
-        indexMax = np.argmax(llfValue)
-        bestTheta = thetaStart[indexMax]
+        if size > 0:
+            # Generate starting points with a low discrepancy sequence
+            thetaStart = ot.LowDiscrepancyExperiment(ot.SobolSequence(), distBound,
+                                                                    size).generate()
+            # Get the best theta from the maximum llf value
+            llfValue = llf(thetaStart)
+            indexMax = np.argmax(llfValue)
+            bestTheta = thetaStart[indexMax]
 
-        # update theta after random search
-        covarianceModel.setScale(bestTheta)
+            # update theta after random search
+            covarianceModel.setScale(bestTheta)
 
         # set TNC optim
         optimizer = ot.TNC()

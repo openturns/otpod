@@ -13,10 +13,10 @@ def _initializing():
     def check_version(module, version, equal=False):
         moduleImport = import_module(module)
         if equal:
-            if moduleImport.__version__ != version:
+            if moduleImport.__version__.split('.')[:2] != version.split('.')[:2]:
                 raise ImportError(module + ' version must be ' + version)
         else:
-            if moduleImport.__version__ < version:
+            if moduleImport.__version__.split('.')[:2] < version.split('.')[:2]:
                 raise ImportError(module + ' version must be at least ' + version)
 
     check_version('openturns', '1.6', True)
@@ -25,7 +25,7 @@ def _initializing():
     check_version('matplotlib', '1.5.1')
     check_version('scipy', '0.17.0')
     check_version('logging', '0.5.1.2')
-    check_version('decorator', '4.0.9')
+    check_version('decorator', '4.0.09')
 
     # initialize the logger to display informations and warnings
     import logging

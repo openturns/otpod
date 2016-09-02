@@ -458,7 +458,7 @@ class KrigingBase():
                                                                     size).generate()
             # Get the best theta from the maximum llf value
             llfValue = llf(thetaStart)
-            indexMax = np.argmax(llfValue)
+            indexMax = int(np.argmax(llfValue))
             bestTheta = thetaStart[indexMax]
 
             # update theta after random search

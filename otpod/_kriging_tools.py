@@ -450,7 +450,7 @@ class KrigingBase():
         distBoundCol = []
         for i in range(dim):
             distBoundCol += [ot.Uniform(lowerBound[i], upperBound[i])]
-        distBound = ot.ComposedDistribution(distBoundCol)    
+        distBound = ot.ComposedDistribution(distBoundCol)
 
         if size > 0:
             # Generate starting points with a low discrepancy sequence

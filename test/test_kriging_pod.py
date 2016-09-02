@@ -71,27 +71,26 @@ def test_2_a95():
 def test_2_Q2_90():
     np.testing.assert_almost_equal(POD2.getQ2(), 0.999911246214, decimal=4)
 
-
 # Test kriging with Box Cox
 ot.RandomGenerator.SetSeed(0)
 POD3 = otpod.KrigingPOD(inputSample, signals, detection, boxCox=True)
-POD3.setInitialStartSize(500)
+POD3.setInitialStartSize(1000)
 POD3.setSamplingSize(100)
 POD3.setSimulationSize(100)
 POD3.run()
-detectionSize3 = POD3.computeDetectionSize(0.9, 0.95)
+detectionSize3 = POD3.computeDetectionSize(0.6, 0.95)
+print detectionSize3
 def test_3_a90():
-    np.testing.assert_almost_equal(detectionSize3[0], 4.629859794629612, decimal=2)
+    np.testing.assert_almost_equal(detectionSize3[0], 4.409917420355756, decimal=2)
 def test_3_a95():
-    np.testing.assert_almost_equal(detectionSize3[1], 4.660507930496906, decimal=2)
+    np.testing.assert_almost_equal(detectionSize3[1], 4.4620664690272225, decimal=2)
 def test_3_Q2_90():
     np.testing.assert_almost_equal(POD3.getQ2(), 0.999934930229, decimal=4)
-
 
 # Test kriging with censored data with Box Cox
 ot.RandomGenerator.SetSeed(0)
 POD4 = otpod.KrigingPOD(inputSample, signals, detection, noiseThres, saturationThres, boxCox=True)
-POD4.setInitialStartSize(50)
+POD4.setInitialStartSize(1000)
 POD4.setSamplingSize(100)
 POD4.setSimulationSize(100)
 POD4.run()

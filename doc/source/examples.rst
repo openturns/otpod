@@ -15,3 +15,4 @@ Examples of the API
     examples/krigingPOD
     examples/PODSummary
     examples/AdaptiveSignalPOD
+    examples/adaptiveHitMissPOD

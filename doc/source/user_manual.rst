@@ -38,6 +38,7 @@ Adaptive algorithms
     :nosignatures:
 
     AdaptiveSignalPOD
+    AdaptiveHitMissPOD
 
 Tools
 =====

@@ -31,6 +31,8 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         Vector of the signals, of dimension 1.
     physicalModel : :py:class:`~openturns.NumericalMathFunction`
         True model used to compute the real signal value to be added to the DOE.
+    nIteration : positive int
+        The number of points to add to the DOE, computed by the *physicalModel*.
     detection : float
         Detection value of the signal.
     noiseThres : float
@@ -355,6 +357,8 @@ class AdaptiveSignalPOD(POD, KrigingBase):
 
         # The POD at confidence level is built in getPODCLModel() directly
 
+        # remove the interactive plotting
+        plt.ioff()
 
     def getOutputDOE(self):
         """

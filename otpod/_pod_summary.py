@@ -4,6 +4,7 @@
 __all__ = ['PODSummary']
 
 import openturns as ot
+import numpy as np
 from ._univariate_linear_model_analysis import UnivariateLinearModelAnalysis
 from ._univariate_linear_model_pod import UnivariateLinearModelPOD
 from ._quantile_regression_pod import QuantileRegressionPOD
@@ -71,8 +72,8 @@ class PODSummary():
                  saturationThres=None, boxCox=False):
 
 
-        self._inputSample = inputSample
-        self._signals = outputSample
+        self._inputSample = ot.NumericalSample(np.vstack(inputSample))
+        self._signals = ot.NumericalSample(np.vstack(outputSample))
         self._detection = detection
         self._noiseThres = noiseThres
         self._saturationThres = saturationThres

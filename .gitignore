@@ -10,3 +10,4 @@ doc/source/_generated/*
 doc/source/examples/*.rst
 doc/source/examples/*files/*
 doc/source/examples/figure/*
+tasks.py

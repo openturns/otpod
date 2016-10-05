@@ -19,7 +19,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
 
     **Available constructor:**
 
-    AdaptiveSignalPOD(*initialDOE, physicalModel, detection, noiseThres,
+    AdaptiveSignalPOD(*inputDOE, outputDOE,  physicalModel, nMorePoints, detection, noiseThres,
     saturationThres, boxCox*)
 
     Parameters
@@ -31,7 +31,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         Vector of the signals, of dimension 1.
     physicalModel : :py:class:`~openturns.NumericalMathFunction`
         True model used to compute the real signal value to be added to the DOE.
-    nIteration : positive int
+    nMorePoints : positive int
         The number of points to add to the DOE, computed by the *physicalModel*.
     detection : float
         Detection value of the signal.
@@ -90,7 +90,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
     the method *setVerbose*.
     """
 
-    def __init__(self, inputDOE, outputDOE, physicalModel, nIteration,
+    def __init__(self, inputDOE, outputDOE, physicalModel, nMorePoints,
                  detection, noiseThres=None, saturationThres=None, boxCox=False):
 
         # initialize the POD class
@@ -118,7 +118,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         self._initialStartSize = 1000
         self._samplingSize = 5000 # Number of MC simulations to compute POD
         self._candidateSize = 1000
-        self._nIteration = nIteration
+        self._nIteration = nMorePoints
         self._verbose = True
         self._graph = False # flag to print or not the POD curves at each iteration
         self._probabilityLevel = None # default graph option

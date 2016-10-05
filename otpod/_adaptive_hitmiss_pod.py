@@ -23,8 +23,8 @@ class AdaptiveHitMissPOD(POD):
 
     **Available constructor:**
 
-    AdaptiveHitMissPOD(*initialDOE, physicalModel, detection, noiseThres,
-    saturationThres, boxCox*)
+    AdaptiveHitMissPOD(*inputDOE, outputDOE, physicalModel, nMorePoints,
+    detection, noiseThres, saturationThres*)
 
     Parameters
     ----------
@@ -43,9 +43,6 @@ class AdaptiveHitMissPOD(POD):
         Value for low censored data. Default is None.
     saturationThres : float
         Value for high censored data. Default is None
-    boxCox : bool or float
-        Enable or not the Box Cox transformation. If boxCox is a float, the Box
-        Cox transformation is enabled with the given value. Default is False.
 
     Warnings
     --------
@@ -53,42 +50,26 @@ class AdaptiveHitMissPOD(POD):
 
     Notes
     -----
-    This class aims at building the POD based on a kriging model where the design
-    of experiments is iteratively enriched. The initial design of experiments is
-    given as input parameters. The enrichment criterion is based on the integrated
-    mean squared of the POD. The criterion is computed on several candidate
-    points and the one that minimizes the criterion is added to the current
-    design of experiments. The sample of candidate points is created using 
+    This class aims at building the POD based on a classifier model where the
+    design of experiments is iteratively enriched. The initial design of
+    experiments is given as input parameters. The enrichment criterion is based
+    on the misclassification empirical risk. The criterion is computed on several
+    candidate points. The sample of candidate points is created using 
     a low discrepancy sequence (Sobol') if the input distribution has an
-    independant copula, otherwise a Monte Carlo experiment is used. This is a 
-    time consuming technique because it requires to compute the mean and variance
-    of the POD for all candidate points. The stopping criterion is only based 
-    on the number of points that must be added to the design of experiments.
+    independant copula, otherwise a Monte Carlo experiment is used. The stopping
+    criterion is only based on the number of points that must be added to the
+    design of experiments.
 
-    No assumptions are required for the residuals with this method. The POD are
-    computed by simulating conditional predictions. For each, a Monte Carlo
-    simulation is performed. The accuracy of the Monte Carlo simulation is taken
-    into account using the TCL.
+    The classifier algorithms availables are the SVC and the random forests. The
+    choice of the algorithm can be defined using *setClassifierType*. The default
+    algorithm is the random forests. 
     
+    The POD are computed by a Monte Carlo simulation for several defect values. 
+    The accuracy of the Monte Carlo simulation is taken into account using the TCL.
     The return POD model corresponds with an interpolate function built
     with the POD values computed for the given defect sizes. The default values
     are 20 defect sizes between the minimum and maximum value of the defect sample.
-    The defect sizes can be changed using the method *setDefectSizes*. It is
-    adviced to run a preliminary POD study in order to know the interesting range
-    of defect sizes. This enables reducing the computing time.
-
-    The default kriging model is built with a linear basis only for the defect
-    size and constant otherwise. The covariance model is an anisotropic squared
-    exponential model. Parameters are estimated using the TNC algorithm, the
-    initial starting point of the TNC is found thanks to a quasi random search 
-    of the best loglikelihood value among 1000 computations.
-
-    In the algorithm, when a point is added to the design of experiments, the kriging
-    model is not always optimized. The covariance model scale coefficients are
-    optimized only if the Q2 value is lower than 0.95.
-
-    For advanced use, all parameters can be defined thanks to dedicated set 
-    methods.
+    The defect sizes can be changed using the method *setDefectSizes*.
 
     A progress bar is shown if the verbosity is enabled. It can be disabled using
     the method *setVerbose*.
@@ -172,14 +153,10 @@ class AdaptiveHitMissPOD(POD):
 
         Notes
         -----
-        This method launches the iterative algorithm. First the censored data
-        are filtered if needed. The Box Cox transformation is performed if it is
-        enabled. Then the enrichment of the design of experiments is performed.
-        Once the algorithm stops, it builds the POD models : conditional samples are 
-        simulated for each defect size, then the distributions of the probability
-        estimator (for MC simulation) are built. Eventually, a sample of this
-        distribution is used to compute the mean POD and the POD at the confidence
-        level.
+        This method launches the iterative algorithm. Once the algorithm stops,
+        it builds the POD models : Monte Carlo simulation are performed for each
+        defect sizes with the final classifier model. Eventually, the sample is
+        used to compute the mean POD and the POD at the confidence level.
         """
 
         # Create an initial uniform distribution if not given

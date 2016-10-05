@@ -44,7 +44,7 @@ from ._adaptive_hitmiss_pod import *
 from ._pod_summary import *
 from ._math_tools import *
 
-__version__ = "0.0"
+__version__ = "0.1"
 
 __all__ = (_univariate_linear_model_analysis.__all__ +
            _univariate_linear_model_pod.__all__ + 

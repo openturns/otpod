@@ -34,11 +34,13 @@ class AdaptiveHitMissPOD(POD):
     outputDOE : 2-d sequence of float
         Vector of the signals, of dimension 1.
     physicalModel : :py:class:`~openturns.NumericalMathFunction`
-        True model used to compute the real signal value to be added to the DOE.
+        True model used to compute the real hit miss value of the signal value 
+        to be added to the DOE.
     nMorePoints : positive int
         The number of points to add to the DOE, computed by the *physicalModel*.
     detection : float
-        Detection value of the signal.
+        Detection value of the signal if the physical model does not return a
+        hit miss value.
     noiseThres : float
         Value for low censored data. Default is None.
     saturationThres : float
@@ -62,7 +64,11 @@ class AdaptiveHitMissPOD(POD):
 
     The classifier algorithms availables are the SVC and the random forests. The
     choice of the algorithm can be defined using *setClassifierType*. The default
-    algorithm is the random forests. 
+    algorithm is the random forests.
+
+    The physical model can return either the hit miss value (0 or 1) or the signal
+    value. In this case, the detection value must be given and the physical 
+    model is transformed in order to provide a hit miss value.
     
     The POD are computed by a Monte Carlo simulation for several defect values. 
     The accuracy of the Monte Carlo simulation is taken into account using the TCL.

@@ -3,6 +3,20 @@ otpod module
 
 otpod is a module for `OpenTURNS <http://www.openturns.org>`_.
 
+Requirements
+============
+
+This module is developped in python using several external modules :
+
+- openturns >= 1.6
+- statsmodels >= 0.6
+- numpy >= 1.10
+- sklearn >= 0.17
+- matplotlib >= 1.5
+- scipy >= 0.17
+- logging >= 0.5
+- decorator >= 4.0
+
 
 Installation
 ============
@@ -12,6 +26,9 @@ In a terminal, type in :
 .. code-block:: shell
 
     $ python setup.py install
+    $ python setup.py install --user
+
+Add the user option to install without administrator rights.
 
 Documentation is available `here <http://adumasphi.github.io/otpod/>`_.
 

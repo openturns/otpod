@@ -22,6 +22,7 @@ def _initializing():
     check_version('openturns', '1.6', True)
     check_version('statsmodels', '0.6.1')
     check_version('numpy', '1.10.4')
+    check_version('sklearn', '0.17')
     check_version('matplotlib', '1.5.1')
     check_version('scipy', '0.17.0')
     check_version('logging', '0.5.1.2')

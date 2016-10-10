@@ -19,7 +19,7 @@ def _initializing():
             if moduleImport.__version__.split('.')[:2] < version.split('.')[:2]:
                 raise ImportError(module + ' version must be at least ' + version)
 
-    check_version('openturns', '1.6', True)
+    check_version('openturns', '1.6')
     check_version('statsmodels', '0.6.1')
     check_version('numpy', '1.10.4')
     check_version('sklearn', '0.17')

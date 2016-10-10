@@ -37,7 +37,10 @@ analysis1 = otpod.UnivariateLinearModelAnalysis(defects, signals)
 def test_1_residual_dist():
     dist = analysis1.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
-    Nparam = dist.getParametersNumber()
+    if ot.__version__ == '1.6':
+        Nparam = dist.getParametersNumber()
+    elif ot.__version__ > '1.6':
+        Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
     np.testing.assert_almost_equal(values, [8.412825991399587e-13, 267.52649350967033], decimal=5)
 def test_1_intercept():
@@ -74,7 +77,10 @@ analysis2 = otpod.UnivariateLinearModelAnalysis(defects, signals, boxCox=True)
 def test_2_residual_dist():
     dist = analysis2.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
-    Nparam = dist.getParametersNumber()
+    if ot.__version__ == '1.6':
+        Nparam = dist.getParametersNumber()
+    elif ot.__version__ > '1.6':
+        Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
     np.testing.assert_almost_equal(values, [7.44293515708705e-15, 1.9277340138649486], decimal=5)
 def test_2_intercept():
@@ -112,7 +118,10 @@ analysis3 = otpod.UnivariateLinearModelAnalysis(defects, signals, resDistFact=ot
 def test_3_residual_dist():
     dist = analysis3.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
-    Nparam = dist.getParametersNumber()
+    if ot.__version__ == '1.6':
+        Nparam = dist.getParametersNumber()
+    elif ot.__version__ > '1.6':
+        Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
     np.testing.assert_almost_equal(values, [753.1600021356328, 2.6999234275917843, -669.7717921948919], decimal=5)
 def test_3_intercept():
@@ -150,7 +159,10 @@ analysis4 = otpod.UnivariateLinearModelAnalysis(defects, signals, resDistFact=ot
 def test_4_residual_dist():
     dist = analysis4.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
-    Nparam = dist.getParametersNumber()
+    if ot.__version__ == '1.6':
+        Nparam = dist.getParametersNumber()
+    elif ot.__version__ > '1.6':
+        Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
     np.testing.assert_almost_equal(values, [5.8945050002139014, 2.973243515863942, -5.261613781071394], decimal=5)
 def test_4_intercept():
@@ -187,7 +199,10 @@ analysis5 = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, sa
 def test_5_residual_dist():
     dist = analysis5.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
-    Nparam = dist.getParametersNumber()
+    if ot.__version__ == '1.6':
+        Nparam = dist.getParametersNumber()
+    elif ot.__version__ > '1.6':
+        Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
     np.testing.assert_almost_equal(values, [-4.044376583314961e-13, 193.4290569841005], decimal=5)
 def test_5_intercept():
@@ -225,7 +240,10 @@ analysis6 = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, sa
 def test_6_residual_dist():
     dist = analysis6.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
-    Nparam = dist.getParametersNumber()
+    if ot.__version__ == '1.6':
+        Nparam = dist.getParametersNumber()
+    elif ot.__version__ > '1.6':
+        Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
     np.testing.assert_almost_equal(values, [5.155518413201876e-15, 1.3889338794567685], decimal=5)
 def test_6_intercept():
@@ -262,7 +280,10 @@ analysis7 = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, sa
 def test_7_residual_dist():
     dist = analysis7.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
-    Nparam = dist.getParametersNumber()
+    if ot.__version__ == '1.6':
+        Nparam = dist.getParametersNumber()
+    elif ot.__version__ > '1.6':
+        Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
     np.testing.assert_almost_equal(values, [600.2380099188549, 3.025100794953687, -536.1982683387504], decimal=5)
 def test_7_intercept():
@@ -300,7 +321,10 @@ analysis8 = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, sa
 def test_8_residual_dist():
     dist = analysis8.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
-    Nparam = dist.getParametersNumber()
+    if ot.__version__ == '1.6':
+        Nparam = dist.getParametersNumber()
+    elif ot.__version__ > '1.6':
+        Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
     np.testing.assert_almost_equal(values, [4.2084342987316266, 2.9416335632358823, -3.75485509626758], decimal=5)
 def test_8_intercept():
@@ -338,7 +362,10 @@ analysis9 = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres)
 def test_9_residual_dist():
     dist = analysis9.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
-    Nparam = dist.getParametersNumber()
+    if ot.__version__ == '1.6':
+        Nparam = dist.getParametersNumber()
+    elif ot.__version__ > '1.6':
+        Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
     np.testing.assert_almost_equal(values, [-1.1126796883392207e-13, 272.05069780052406], decimal=5)
 def test_9_intercept():
@@ -376,7 +403,10 @@ analysis10 = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, N
 def test_10_residual_dist():
     dist = analysis10.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
-    Nparam = dist.getParametersNumber()
+    if ot.__version__ == '1.6':
+        Nparam = dist.getParametersNumber()
+    elif ot.__version__ > '1.6':
+        Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
     np.testing.assert_almost_equal(values, [-7.369991142192528e-16, 1.045892341894865], decimal=5)
 def test_10_intercept():
@@ -414,7 +444,10 @@ analysis11 = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, N
 def test_11_residual_dist():
     dist = analysis11.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
-    Nparam = dist.getParametersNumber()
+    if ot.__version__ == '1.6':
+        Nparam = dist.getParametersNumber()
+    elif ot.__version__ > '1.6':
+        Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
     np.testing.assert_almost_equal(values, [764.0613939729924, 2.6924123692533612, -679.4018639515667], decimal=5)
 def test_11_intercept():
@@ -452,7 +485,10 @@ analysis12 = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, N
 def test_12_residual_dist():
     dist = analysis12.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
-    Nparam = dist.getParametersNumber()
+    if ot.__version__ == '1.6':
+        Nparam = dist.getParametersNumber()
+    elif ot.__version__ > '1.6':
+        Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
     np.testing.assert_almost_equal(values, [3.214540830870479, 2.991213147115559, -2.870149515568862], decimal=5)
 def test_12_intercept():
@@ -490,7 +526,10 @@ analysis13 = otpod.UnivariateLinearModelAnalysis(defects, signals, None, saturat
 def test_13_residual_dist():
     dist = analysis13.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
-    Nparam = dist.getParametersNumber()
+    if ot.__version__ == '1.6':
+        Nparam = dist.getParametersNumber()
+    elif ot.__version__ > '1.6':
+        Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
     np.testing.assert_almost_equal(values, [-1.1001952037575745e-13, 189.58500581594078], decimal=5)
 def test_13_intercept():
@@ -528,7 +567,10 @@ analysis14 = otpod.UnivariateLinearModelAnalysis(defects, signals, None, saturat
 def test_14_residual_dist():
     dist = analysis14.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
-    Nparam = dist.getParametersNumber()
+    if ot.__version__ == '1.6':
+        Nparam = dist.getParametersNumber()
+    elif ot.__version__ > '1.6':
+        Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
     np.testing.assert_almost_equal(values, [-1.2606403376388875e-15, 2.4508852295357273], decimal=5)
 def test_14_intercept():
@@ -566,7 +608,10 @@ analysis15 = otpod.UnivariateLinearModelAnalysis(defects, signals, None, saturat
 def test_15_residual_dist():
     dist = analysis15.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
-    Nparam = dist.getParametersNumber()
+    if ot.__version__ == '1.6':
+        Nparam = dist.getParametersNumber()
+    elif ot.__version__ > '1.6':
+        Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
     np.testing.assert_almost_equal(values, [591.389857572173, 3.043705573914849, -528.4395183410408], decimal=5)
 def test_15_intercept():
@@ -604,7 +649,10 @@ analysis16 = otpod.UnivariateLinearModelAnalysis(defects, signals, None, saturat
 def test_16_residual_dist():
     dist = analysis16.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
-    Nparam = dist.getParametersNumber()
+    if ot.__version__ == '1.6':
+        Nparam = dist.getParametersNumber()
+    elif ot.__version__ > '1.6':
+        Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
     np.testing.assert_almost_equal(values, [7.333918167967567, 2.8989242654479312, -6.539478667132534], decimal=5)
 def test_16_intercept():

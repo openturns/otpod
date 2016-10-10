@@ -281,8 +281,13 @@ class UnivariateLinearModelAnalysis():
         testResults['ZeroMean'] = computeZeroMeanTest(residuals)
 
         # compute Kolmogorov test (fitting test)
-        testKol = ot.FittingTest.Kolmogorov(residuals, resDist, 0.95,
+        if ot.__version__ == '1.6':
+            testKol = ot.FittingTest.Kolmogorov(residuals, resDist, 0.95,
                                             resDist.getParametersNumber())
+        elif ot.__version__ > '1.6':
+            testKol = ot.FittingTest.Kolmogorov(residuals, resDist, 0.95,
+                                            resDist.getParameterDimension())
+
         testResults['Kolmogorov'] = testKol.getPValue()
 
         # compute Breusch Pagan test (homoskedasticity : constant variance)

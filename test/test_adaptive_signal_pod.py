@@ -45,9 +45,10 @@ outputDOE = signals[:10]
 basis = ot.ConstantBasisFactory(4).build()
 covModel = ot.SquaredExponential(4)
 krigingModel = ot.KrigingAlgorithm(inputSample, signals, basis, covModel)
-TNC = ot.TNC()
-TNC.setBoundConstraints(ot.Interval([0.001], [100]))
-krigingModel.setOptimizer(TNC)
+if ot.__version__ == '1.6':
+    TNC = ot.TNC()
+    TNC.setBoundConstraints(ot.Interval([0.001], [100]))
+    krigingModel.setOptimizer(TNC)
 krigingModel.run()
 physicalModel = krigingModel.getResult().getMetaModel()
 
@@ -60,6 +61,7 @@ nIteration = 1
 ####### Test on the POD models ###################
 # Test kriging without Box Cox
 ot.RandomGenerator.SetSeed(0)
+ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
 POD1 = otpod.AdaptiveSignalPOD(inputDOE, outputDOE, physicalModel, nIteration, detection)
 POD1.setDefectSizes([4.2, 4.35, 4.5, 4.6, 4.7, 4.8])
 POD1.setCandidateSize(10)
@@ -68,14 +70,15 @@ POD1.setSimulationSize(10)
 POD1.run()
 detectionSize1 = POD1.computeDetectionSize(0.9, 0.95)
 def test_1_a90():
-    np.testing.assert_almost_equal(detectionSize1[0], 4.650501863571124, decimal=2)
+    np.testing.assert_almost_equal(detectionSize1[0], 4.648286232120922, decimal=3)
 def test_1_a95():
-    np.testing.assert_almost_equal(detectionSize1[1], 4.665993051495268, decimal=2)
+    np.testing.assert_almost_equal(detectionSize1[1], 4.665993051495268, decimal=3)
 def test_1_Q2_90():
-    np.testing.assert_almost_equal(POD1.getQ2(), 0.99931283144650018, decimal=2)
+    np.testing.assert_almost_equal(POD1.getQ2(), 0.99574658462789301, decimal=3)
 
 # Test kriging with censored data without Box Cox
 ot.RandomGenerator.SetSeed(0)
+ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
 POD2 = otpod.AdaptiveSignalPOD(inputDOE, outputDOE, physicalModel, nIteration, detection, noiseThres, saturationThres)
 POD2.setDefectSizes([4.2, 4.35, 4.5, 4.6, 4.7, 4.8])
 POD2.setCandidateSize(10)
@@ -84,11 +87,11 @@ POD2.setSimulationSize(10)
 POD2.run()
 detectionSize2 = POD2.computeDetectionSize(0.9, 0.95)
 def test_2_a90():
-    np.testing.assert_almost_equal(detectionSize2[0], 4.614360484538281, decimal=1)
+    np.testing.assert_almost_equal(detectionSize2[0], 4.608852965017486, decimal=3)
 def test_2_a95():
-    np.testing.assert_almost_equal(detectionSize2[1], 4.648587037807056, decimal=1)
+    np.testing.assert_almost_equal(detectionSize2[1], 4.6627205059813015, decimal=3)
 def test_2_Q2_90():
-    np.testing.assert_almost_equal(POD2.getQ2(), 0.99960284696371227, decimal=2)
+    np.testing.assert_almost_equal(POD2.getQ2(), 0.99460619211496437, decimal=3)
 
 # # Test kriging with Box Cox
 # ot.RandomGenerator.SetSeed(0)

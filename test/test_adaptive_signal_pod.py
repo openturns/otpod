@@ -43,12 +43,8 @@ outputDOE = signals[:10]
 
 # simulate the true physical model
 basis = ot.ConstantBasisFactory(4).build()
-covModel = ot.SquaredExponential(4)
+covModel = ot.SquaredExponential([5.03148,13.9442,20,20], [15.1697])
 krigingModel = ot.KrigingAlgorithm(inputSample, signals, basis, covModel)
-if ot.__version__ == '1.6':
-    TNC = ot.TNC()
-    TNC.setBoundConstraints(ot.Interval([0.001], [100]))
-    krigingModel.setOptimizer(TNC)
 krigingModel.run()
 physicalModel = krigingModel.getResult().getMetaModel()
 
@@ -70,11 +66,11 @@ POD1.setSimulationSize(10)
 POD1.run()
 detectionSize1 = POD1.computeDetectionSize(0.9, 0.95)
 def test_1_a90():
-    np.testing.assert_almost_equal(detectionSize1[0], 4.648286232120922, decimal=3)
+    np.testing.assert_almost_equal(detectionSize1[0], 4.599261030114589, decimal=3)
 def test_1_a95():
-    np.testing.assert_almost_equal(detectionSize1[1], 4.665993051495268, decimal=3)
+    np.testing.assert_almost_equal(detectionSize1[1], 4.644242837712604, decimal=3)
 def test_1_Q2_90():
-    np.testing.assert_almost_equal(POD1.getQ2(), 0.99574658462789301, decimal=3)
+    np.testing.assert_almost_equal(POD1.getQ2(), 0.99655973759347671, decimal=3)
 
 # Test kriging with censored data without Box Cox
 ot.RandomGenerator.SetSeed(0)

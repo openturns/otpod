@@ -186,13 +186,12 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         # build initial kriging model
         # build the kriging model without optimization
         algoKriging = self._buildKrigingAlgo(self._input, self._signals)
-        algoKriging.run()
         if self._verbose:
             print 'Building the kriging model'
             print 'Optimization of the covariance model parameters...'
-        covDim = algoKriging.getResult().getCovarianceModel().getScale().getDimension()
-        lowerBound = [0.001] * covDim
-        upperBound = [50] * covDim               
+        llDim = algoKriging.getLogLikelihoodFunction().getInputDimension()
+        lowerBound = [0.001] * llDim
+        upperBound = [50] * llDim               
         algoKriging = self._estimKrigingTheta(algoKriging,
                                               lowerBound, upperBound,
                                               self._initialStartSize)
@@ -249,6 +248,11 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                                                       self._basis,
                                                       self._covarianceModel,
                                                       True)
+                if ot.__version__ > '1.6':
+                    optimizer = algoKrigingTemp.getOptimizationSolver()
+                    optimizer.setMaximumIterationNumber(0)
+                    algoKrigingTemp.setOptimizationSolver(optimizer)
+
                 algoKrigingTemp.run()
                 krigingResultTemp = algoKrigingTemp.getResult()
 
@@ -296,6 +300,11 @@ class AdaptiveSignalPOD(POD, KrigingBase):
 
             # update the kriging model without optimization
             algoKriging = self._buildKrigingAlgo(self._input, self._signals)
+            if ot.__version__ > '1.6':
+                optimizer = algoKriging.getOptimizationSolver()
+                optimizer.setMaximumIterationNumber(0)
+                algoKriging.setOptimizationSolver(optimizer)
+
             algoKriging.run()
 
             self._Q2 = self._computeQ2(self._input, self._signals, algoKriging.getResult())
@@ -304,9 +313,9 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             if self._Q2 < 0.95:
                 if self._verbose:
                     print 'Optimization of the covariance model parameters...'
-                covDim = algoKriging.getResult().getCovarianceModel().getScale().getDimension()
-                lowerBound = [0.001] * covDim
-                upperBound = [50] * covDim               
+                llDim = algoKriging.getLogLikelihoodFunction().getInputDimension()
+                lowerBound = [0.001] * llDim
+                upperBound = [50] * llDim               
                 algoKriging = self._estimKrigingTheta(algoKriging,
                                                       lowerBound, upperBound,
                                                       self._initialStartSize)

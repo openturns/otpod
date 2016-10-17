@@ -144,9 +144,9 @@ class KrigingPOD(POD, KrigingBase):
             algoKriging = self._buildKrigingAlgo(self._input, self._signals)
             # optimize the covariance model parameters and return the kriging
             # algorithm with the run launched
-            covDim = algoKriging.getResult().getCovarianceModel().getScale().getDimension()
-            lowerBound = [0.001] * covDim
-            upperBound = [50] * covDim
+            llDim = algoKriging.getLogLikelihoodFunction().getInputDimension()
+            lowerBound = [0.001] * llDim
+            upperBound = [50] * llDim
             algoKriging = self._estimKrigingTheta(algoKriging,
                                                   lowerBound, upperBound,
                                                   self._initialStartSize)

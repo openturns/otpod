@@ -367,7 +367,10 @@ class KrigingBase():
             # anisotropic squared exponential covariance model
             covColl = ot.CovarianceModelCollection(self._dim)
             for i in xrange(self._dim):
-                covColl[i]  = ot.SquaredExponential(1, 1.)
+                if ot.__version__ == '1.6':
+                    covColl[i]  = ot.SquaredExponential(1, 1.)
+                elif ot.__version__ > '1.6':
+                    covColl[i]  = ot.SquaredExponential([1], [1.])
             self._covarianceModel = ot.ProductCovarianceModel(covColl)
 
         algoKriging = ot.KrigingAlgorithm(inputSample, outputSample, self._basis,
@@ -462,16 +465,31 @@ class KrigingBase():
             bestTheta = thetaStart[indexMax]
 
             # update theta after random search
-            covarianceModel.setScale(bestTheta)
+            if ot.__version__ == '1.6':
+                covarianceModel.setScale(bestTheta)
+            elif ot.__version__ > '1.6':
+                # optimize theta and sigma in ot 1.8
+                covarianceModel.setScale(bestTheta[:-1])
+                covarianceModel.setAmplitude([bestTheta[-1]])
 
-        # set TNC optim
-        optimizer = ot.TNC()
-        searchInterval = ot.Interval(lowerBound, upperBound)
-        optimizer.setBoundConstraints(searchInterval)
+            
         # Now the KrigingAlgorithm is used to optimize the likelihood using a
         # good starting point
         algoKriging = ot.KrigingAlgorithm(X, Y, basis, covarianceModel, True)
-        algoKriging.setOptimizer(optimizer)
+
+        # set TNC optim
+        searchInterval = ot.Interval(lowerBound, upperBound)
+        if ot.__version__ == '1.6':
+            optimizer = ot.TNC()
+            optimizer.setBoundConstraints(searchInterval)
+            algoKriging.setOptimizer(optimizer)
+        elif ot.__version__ > '1.6':
+            optimizer = algoKriging.getOptimizationSolver()
+            problem = optimizer.getProblem()
+            problem.setBounds(searchInterval)
+            optimizer.setProblem(problem)
+            algoKriging.setOptimizationSolver(optimizer)
+
         return algoKriging
 
 
@@ -493,11 +511,19 @@ class KrigingBase():
         else:
             normalized_inputSample = inputSample
 
-        # correlation matrix
-        Rtrianglow = np.array(cov.discretize(normalized_inputSample))
-        R = Rtrianglow + Rtrianglow.T - np.eye(Rtrianglow.shape[0])
-        # get sigma2 (covariance model scale parameters)
-        sigma2 = krigingResult.getSigma2()
+        if ot.__version__ == '1.6':
+            # correlation matrix
+            Rtrianglow = np.array(cov.discretize(normalized_inputSample))
+            R = Rtrianglow + Rtrianglow.T - np.eye(Rtrianglow.shape[0])
+            # get sigma2 (covariance model scale parameters)
+            sigma2 = krigingResult.getSigma2()
+            K = sigma2 * R
+        elif ot.__version__ > '1.6':
+            R = cov.discretize(normalized_inputSample)
+            C = R.computeCholesky()
+            sigma2 = krigingResult.getCovarianceModel().getAmplitude()[0]**2
+            K = sigma2 * np.dot(C, C.transpose())
+
         # get coefficient and compute trend
         basis = krigingResult.getBasisCollection()[0]
         F1 = krigingResult.getTrendCoefficients()[0]
@@ -507,7 +533,6 @@ class KrigingBase():
         for i in range(p):
             F[:, i] = np.hstack(basis.build(i)(normalized_inputSample))
         # Calcul de y_loo
-        K = sigma2 * R
         Z = np.zeros((p, p))
         S = np.vstack([np.hstack([K, F]), np.hstack([F.T, Z])])
         S_inv = np.linalg.inv(S)

@@ -45,12 +45,8 @@ outputDOE = signals[:]
 
 # simulate the true physical model
 basis = ot.ConstantBasisFactory(4).build()
-covModel = ot.SquaredExponential(4)
+covModel = ot.SquaredExponential([5.03148,13.9442,20,20], [15.1697])
 krigingModel = ot.KrigingAlgorithm(inputSample, signals, basis, covModel)
-if ot.__version__ == '1.6':
-    TNC = ot.TNC()
-    TNC.setBoundConstraints(ot.Interval([0.001], [100]))
-    krigingModel.setOptimizer(TNC)
 krigingModel.run()
 physicalModel = krigingModel.getResult().getMetaModel()
 

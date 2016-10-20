@@ -61,14 +61,16 @@ saturationThres=47.
 ot.RandomGenerator.SetSeed(0)
 ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
 POD2 = otpod.KrigingPOD(inputSample, signals, detection, noiseThres, saturationThres, boxCox=False)
-covColl = ot.CovarianceModelCollection(4)
-scale = [5.90467,19.9378,21.5421,39.6305]
-for i in xrange(4):
-    if ot.__version__ == '1.6':
-        covColl[i]  = ot.SquaredExponential(1, scale[i])
-    elif ot.__version__ > '1.6':
-        covColl[i]  = ot.SquaredExponential([scale[i]], [1.])
-covarianceModel = ot.ProductCovarianceModel(covColl)
+if ot.__version__ == '1.6':
+    covColl = ot.CovarianceModelCollection(4)
+    scale = [5.03148,13.9442,20,20]
+    for i in range(4):
+        c = ot.SquaredExponential(1, scale[i])
+        c.setAmplitude([15.1697])
+        covColl[i]  = c
+    covarianceModel = ot.ProductCovarianceModel(covColl)
+elif ot.__version__ > '1.6':
+    covarianceModel = ot.SquaredExponential([5.03148,13.9442,20,20], [15.1697])
 POD2.setCovarianceModel(covarianceModel)
 POD2.setInitialStartSize(0)
 POD2.setSamplingSize(100)
@@ -76,9 +78,9 @@ POD2.setSimulationSize(100)
 POD2.run()
 detectionSize2 = POD2.computeDetectionSize(0.6, 0.95)
 def test_2_a90():
-    np.testing.assert_almost_equal(detectionSize2[0], 4.423224253595858, decimal=3)
+    np.testing.assert_almost_equal(detectionSize2[0], 4.423224253595858, decimal=2)
 def test_2_a95():
-    np.testing.assert_almost_equal(detectionSize2[1], 4.459265407336185, decimal=3)
+    np.testing.assert_almost_equal(detectionSize2[1], 4.459265407336185, decimal=2)
 def test_2_Q2_90():
     np.testing.assert_almost_equal(POD2.getQ2(), 0.999945898652, decimal=4)
 

@@ -152,6 +152,8 @@ class UnivariateLinearModelAnalysis():
 
         # run the analysis
         self._run()
+        # print warnings
+        self._printWarnings()
 
     def _run(self):
         """
@@ -305,7 +307,7 @@ class UnivariateLinearModelAnalysis():
 ########################## Print and save results ##############################
 ################################################################################
 
-    def printResults(self):
+    def getResults(self):
         """
         Print results of the linear analysis.
         """
@@ -319,22 +321,25 @@ class UnivariateLinearModelAnalysis():
                             line in self._dataResiduals])
 
         ndash = 80
-        print '-' * ndash
-        print '         Linear model analysis results'
-        print '-' * ndash
-        print regressionResult
-        print '-' * ndash
-        print ''
-        print '-' * ndash
-        print '         Residuals analysis results'
-        print '-' * ndash
-        print residualsResult
-        print '-' * ndash
-        print ''
-        # print warnings
-        self._printWarnings()
+        results = '-' * ndash + '\n'
+        results = results + '         Linear model analysis results' + '\n'
+        results = results + '-' * ndash + '\n'
+        results = results + regressionResult + '\n'
+        results = results + '-' * ndash + '\n'
+        results = results + '' + '\n'
+        results = results + '-' * ndash + '\n'
+        results = results + '         Residuals analysis results' + '\n'
+        results = results + '-' * ndash + '\n'
+        results = results + residualsResult + '\n'
+        results = results + '-' * ndash + '\n'
+        results = results + '' + '\n'
+        # print warnings if not empty
+        if self._printWarnings(False).count('') != len(self._printWarnings(False)):
+            results = results + 'Warning : ' + '\nWarning : '.join(['{}'.format(line) for 
+                            line in self._printWarnings(False) if len(line)>0])
+        return results
 
-    def _printWarnings(self):
+    def _printWarnings(self, disp=True):
         # Check results and display warnings
 
         valuesUnc = np.array(self._resultsUnc.testResults.values())
@@ -349,24 +354,27 @@ class UnivariateLinearModelAnalysis():
         if testPValues and not self._boxCox:
             msg[0] = 'Some hypothesis tests failed : you may consider to use '+\
                         'the Box Cox transformation.'
-            logging.warn(msg[0])
-            # ot.Log.Warn(msg[0])
-            # ot.Log.Flush()
+            if disp:
+                logging.warn(msg[0])
+                # ot.Log.Warn(msg[0])
+                # ot.Log.Flush()
         elif testPValues and self._boxCox:
             msg[1] = 'Some hypothesis tests failed : you may consider to use '+\
                 'quantile regression or kriging (if input dimension > 1) to build POD.'
-            logging.warn(msg[1])
-            # ot.Log.Warn(msg[1])
-            # ot.Log.Flush()
+            if disp:
+                logging.warn(msg[1])
+                # ot.Log.Warn(msg[1])
+                # ot.Log.Flush()
 
         if self._resultsUnc.resDist.getClassName() != 'Normal':
             msg[2] = 'Confidence interval, Normality tests and zero ' + \
                         'residual mean test are given assuming the residuals ' +\
                         'follow a Normal distribution.'
-            logging.warn(msg[2])
-            # ot.Log.Warn(msg[2])
-            # ot.Log.Flush()
-        # return msg for the test with pytest
+            if disp:
+                logging.warn(msg[2])
+                # ot.Log.Warn(msg[2])
+                # ot.Log.Flush()
+        # return msg for the test with pytest and the method getResult()
         return msg
 
     def saveResults(self, name):
@@ -396,6 +404,11 @@ class UnivariateLinearModelAnalysis():
             fd.write(regressionResult)
             fd.write('\n\nResiduals analysis results\n\n')
             fd.write(residualsResult)
+            # add warnings if not empty
+            if self._printWarnings(False).count('') != len(self._printWarnings(False)):
+                fd.write('\n\n')
+                fd.write('Warning : ' + '\nWarning : '.join(['{}'.format(line) for 
+                                line in self._printWarnings(False) if len(line)>0]))
 
     def _buildPrintResults(self):
         # Build the lists used in the printResult and saveResults methods :

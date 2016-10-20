@@ -5,7 +5,7 @@ install:
   - curl http://ubuntu.openturns.org/openturns.org-repo.key | sudo apt-key add -
   - echo deb http://ubuntu.openturns.org precise main | sudo tee /etc/apt/sources.list.d/openturns.list
   - sudo apt-get update
-  - sudo apt-get -y install python-openturns texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra dvipng python-pip python-tk pandoc numpydoc
+  - sudo apt-get -y install python-openturns texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra dvipng python-pip python-tk pandoc
   - sudo pip install jupyter matplotlib scikit-learn statsmodels numpy scipy logging decorator pytest numpydoc
 # sphinx >=1.2 is looking better
   - git clone https://github.com/sphinx-doc/sphinx.git

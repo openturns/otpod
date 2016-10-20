@@ -45,8 +45,17 @@ outputDOE = signals[:]
 
 # simulate the true physical model
 basis = ot.ConstantBasisFactory(4).build()
-covModel = ot.SquaredExponential([5.03148,13.9442,20,20], [15.1697])
-krigingModel = ot.KrigingAlgorithm(inputSample, signals, basis, covModel)
+if ot.__version__ == '1.6':
+    covColl = ot.CovarianceModelCollection(4)
+    scale = [5.03148,13.9442,20,20]
+    for i in range(4):
+        c = ot.SquaredExponential(1, scale[i])
+        c.setAmplitude([15.1697])
+        covColl[i]  = c
+    covarianceModel = ot.ProductCovarianceModel(covColl)
+elif ot.__version__ > '1.6':
+    covarianceModel = ot.SquaredExponential([5.03148,13.9442,20,20], [15.1697])
+krigingModel = ot.KrigingAlgorithm(inputSample, signals, basis, covarianceModel)
 krigingModel.run()
 physicalModel = krigingModel.getResult().getMetaModel()
 

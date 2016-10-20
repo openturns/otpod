@@ -43,8 +43,18 @@ outputDOE = signals[:10]
 
 # simulate the true physical model
 basis = ot.ConstantBasisFactory(4).build()
-covModel = ot.SquaredExponential([5.03148,13.9442,20,20], [15.1697])
-krigingModel = ot.KrigingAlgorithm(inputSample, signals, basis, covModel)
+basis = ot.ConstantBasisFactory(4).build()
+if ot.__version__ == '1.6':
+    covColl = ot.CovarianceModelCollection(4)
+    scale = [5.03148,13.9442,20,20]
+    for i in range(4):
+        c = ot.SquaredExponential(1, scale[i])
+        c.setAmplitude([15.1697])
+        covColl[i]  = c
+    covarianceModel = ot.ProductCovarianceModel(covColl)
+elif ot.__version__ > '1.6':
+    covarianceModel = ot.SquaredExponential([5.03148,13.9442,20,20], [15.1697])
+krigingModel = ot.KrigingAlgorithm(inputSample, signals, basis, covarianceModel)
 krigingModel.run()
 physicalModel = krigingModel.getResult().getMetaModel()
 
@@ -66,7 +76,7 @@ POD1.setSimulationSize(10)
 POD1.run()
 detectionSize1 = POD1.computeDetectionSize(0.9, 0.95)
 def test_1_a90():
-    np.testing.assert_almost_equal(detectionSize1[0], 4.599261030114589, decimal=3)
+    np.testing.assert_almost_equal(detectionSize1[0], 4.599261030114589, decimal=2)
 def test_1_a95():
     np.testing.assert_almost_equal(detectionSize1[1], 4.644242837712604, decimal=3)
 def test_1_Q2_90():

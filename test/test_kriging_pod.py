@@ -61,7 +61,16 @@ saturationThres=47.
 ot.RandomGenerator.SetSeed(0)
 ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
 POD2 = otpod.KrigingPOD(inputSample, signals, detection, noiseThres, saturationThres, boxCox=False)
-POD2.setInitialStartSize(100)
+covColl = ot.CovarianceModelCollection(4)
+scale = [5.90467,19.9378,21.5421,39.6305]
+for i in xrange(4):
+    if ot.__version__ == '1.6':
+        covColl[i]  = ot.SquaredExponential(1, scale[i])
+    elif ot.__version__ > '1.6':
+        covColl[i]  = ot.SquaredExponential([scale[i]], [1.])
+covarianceModel = ot.ProductCovarianceModel(covColl)
+POD2.setCovarianceModel(covarianceModel)
+POD2.setInitialStartSize(0)
 POD2.setSamplingSize(100)
 POD2.setSimulationSize(100)
 POD2.run()

@@ -15,5 +15,6 @@ install:
 
 script:
   - python setup.py install --user
+  - py.test test/
   - cd ./doc/source/examples/ && jupyter-nbconvert --to rst *.ipynb
   - cd ../../ && make html

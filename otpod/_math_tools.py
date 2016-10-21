@@ -80,7 +80,7 @@ class LinearBoxCoxFactory:
 # This function applies the Box Cox transformation on the data.
 def computeBoxCox(factors, valuesInit):
     # if no affine trend is considered
-    if valuesInit.getMin() < 0:
+    if valuesInit.getMin()[0] < 0:
         shift = - valuesInit.getMin()[0]
     else:
         shift = 0.

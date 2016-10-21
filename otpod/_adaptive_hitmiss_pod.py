@@ -8,8 +8,8 @@ import openturns as ot
 import numpy as np
 from ._pod import POD
 from scipy.interpolate import interp1d
-from _progress_bar import updateProgress
-from _decorator import DocInherit, keepingArgs
+from ._progress_bar import updateProgress
+from ._decorator import DocInherit, keepingArgs
 import logging
 import matplotlib.pyplot as plt
 from sklearn.ensemble import ExtraTreesClassifier
@@ -103,7 +103,7 @@ class AdaptiveHitMissPOD(POD):
 
         self._distribution = None
         self._classifierType = 'rf' # random forest classifier or svc
-        self._ClassifierParameters = [(100,None,2,0)]
+        self._ClassifierParameters = [[100],[None],[2],[0]]
         self._classifierModel = None
         self._confMat = None
         self._pmax = 0.52
@@ -189,7 +189,7 @@ class AdaptiveHitMissPOD(POD):
         # build the kriging model without optimization
 
         if self._verbose:
-            print 'Building the classifier'
+            print('Building the classifier')
 
         n_ini = int(self._input.getSize())
         self._input = np.array(self._input)
@@ -200,8 +200,8 @@ class AdaptiveHitMissPOD(POD):
         
         ## Cas de la classif par svc
         if self._classifierType == "svc" :
-            algo_temp = map(
-                lambda (C, kernel, degree, probability) :
+            algo_temp = list(map(
+                lambda C, kernel, degree, probability :
                 svm.SVC(
                     C=C,
                     kernel=kernel,
@@ -209,19 +209,19 @@ class AdaptiveHitMissPOD(POD):
                     probability=probability,
                     coef0=1,
                 ),
-                self._ClassifierParameters)[0]
+                *self._ClassifierParameters))[0]
 
         ## Cas de la classif par fro
         if self._classifierType == "rf" :
-            algo_temp = map(
-                lambda (n_estimators, max_depth, min_samples_split, random_state) :                               
+            algo_temp = list(map(
+                lambda n_estimators, max_depth, min_samples_split, random_state :                               
                 ExtraTreesClassifier(
                     n_estimators=n_estimators,
                     max_depth=max_depth,
                     min_samples_split=min_samples_split,
                     random_state=random_state
                 ),
-                self._ClassifierParameters)[0]                        
+                *self._ClassifierParameters))[0]                        
                     
         algo_temp.fit(self._input,self._signals)
         
@@ -233,7 +233,7 @@ class AdaptiveHitMissPOD(POD):
         plt.ion()
         # Start the improvment loop
         if self._verbose and self._nMorePoints > 0:
-            print 'Start the improvement loop'
+            print('Start the improvement loop')
 
         while n_added_points < self._nMorePoints : 
         
@@ -278,27 +278,27 @@ class AdaptiveHitMissPOD(POD):
             algo_iteration =  algo_iteration + 1
             
             if self._classifierType == "svc" :
-                algo_temp = map(
-                    lambda (C, kernel, degree, probability) :
+                algo_temp = list(map(
+                    lambda C, kernel, degree, probability :
                     svm.SVC(
                         C=C,
                         kernel=kernel,
                         degree=degree,
                         probability=probability,
                         coef0=1),
-                    self._ClassifierParameters)[0]
+                    *self._ClassifierParameters))[0]
            
         
             if self._classifierType == "rf" :
-                algo_temp = map(
-                    lambda (n_estimators, max_depth, min_samples_split, random_state) :                               
+                algo_temp = list(map(
+                    lambda n_estimators, max_depth, min_samples_split, random_state :                               
                     ExtraTreesClassifier(
                         n_estimators=n_estimators,
                         max_depth=max_depth,
                         min_samples_split=min_samples_split,
                         random_state=random_state
                     ),
-                    self._ClassifierParameters)[0]                        
+                    *self._ClassifierParameters))[0]                        
                                                
             # Apprentissage avec self._input,self._signals
             algo_temp.fit(self._input,self._signals)
@@ -459,7 +459,7 @@ class AdaptiveHitMissPOD(POD):
         Accessor to the confusion matrix.
         """
         if self._confMat is None:
-            print 'The run method must be launched first.'
+            print('The run method must be launched first.')
         else:
             return self._confMat
 
@@ -508,9 +508,9 @@ class AdaptiveHitMissPOD(POD):
         else:
             self._classifierType = classifier
             if classifier == "svc" :
-                self._ClassifierParameters = [(1.,"poly",3,True)]
+                self._ClassifierParameters = [[1.],["poly"],[3],[True]]
             if classifier == "rf" :
-                self._ClassifierParameters = [(100,None,2,0)]
+                self._ClassifierParameters = [[100],[None],[2],[0]]
 
     def getClassifierParameters(self):
         """
@@ -685,7 +685,7 @@ class AdaptiveHitMissPOD(POD):
             for all parameters.
         """
         if self._distribution is None:
-            print 'The run method must be launched first.'
+            print('The run method must be launched first.')
         else:
             return self._distribution
 
@@ -699,7 +699,7 @@ class AdaptiveHitMissPOD(POD):
             The classifier model, either random forest or svm.
         """
         if self._classifierModel is None:
-            print 'The run method must be launched first.'
+            print('The run method must be launched first.')
         else:
             return self._classifierModel
 

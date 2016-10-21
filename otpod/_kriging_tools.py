@@ -4,7 +4,7 @@
 import openturns as ot
 import numpy as np
 from scipy.interpolate import interp1d
-from _decorator import DocInherit, keepingArgs
+from ._decorator import DocInherit, keepingArgs
 
 
 __all__ = []
@@ -144,7 +144,7 @@ class KrigingBase():
             The kriging result.
         """
         if self._krigingResult is None:
-            print 'The run method must be launched first.'
+            print('The run method must be launched first.')
         else:
             return self._krigingResult
 
@@ -258,7 +258,7 @@ class KrigingBase():
             Default is a Uniform distribution for all parameters.
         """
         if self._distribution is None:
-            print 'The run method must be launched first.'
+            print('The run method must be launched first.')
         else:
             return self._distribution
 
@@ -288,7 +288,7 @@ class KrigingBase():
             basis for the defect and constant for the other parameters.
         """
         if self._basis is None:
-            print 'The run method must be launched first.'
+            print('The run method must be launched first.')
         else:
             return self._basis
 
@@ -318,7 +318,7 @@ class KrigingBase():
             squared exponential covariance model.
         """
         if self._covarianceModel is None:
-            print 'The run method must be launched first.'
+            print('The run method must be launched first.')
         else:
             return self._covarianceModel
 
@@ -366,7 +366,7 @@ class KrigingBase():
         if self._covarianceModel is None:
             # anisotropic squared exponential covariance model
             covColl = ot.CovarianceModelCollection(self._dim)
-            for i in xrange(self._dim):
+            for i in range(self._dim):
                 if ot.__version__ == '1.6':
                     covColl[i]  = ot.SquaredExponential(1, 1.)
                 elif ot.__version__ > '1.6':
@@ -387,7 +387,7 @@ class KrigingBase():
         dim = distribution.getDimension()
         # create a distibution with a dirac distribution for the defect size
         diracDist = [ot.Dirac(defect)]
-        diracDist += [distribution.getMarginal(i+1) for i in xrange(dim-1)]
+        diracDist += [distribution.getMarginal(i+1) for i in range(dim-1)]
         distribution = ot.ComposedDistribution(diracDist)
 
         # create a sample for the Monte Carlo simulation and confidence interval
@@ -403,7 +403,7 @@ class KrigingBase():
         VAR_TCL = np.array(POD_MCPG_a)*(1-np.array(POD_MCPG_a)) / Y_sample.shape[1]
         # Create distribution of the POD estimator for all simulation 
         POD_PG_dist = []
-        for i in xrange(simulationSize):
+        for i in range(simulationSize):
             if VAR_TCL[i] > 0:
                 POD_PG_dist += [ot.Normal(POD_MCPG_a[i],np.sqrt(VAR_TCL[i]))]
             else:
@@ -424,7 +424,7 @@ class KrigingBase():
         
         # only compute the variance
         variance = np.hstack([krigingResult.getConditionalCovariance(
-                            sample[i])[0,0] for i in xrange(samplingSize)])
+                            sample[i])[0,0] for i in range(samplingSize)])
         pred = krigingResult.getConditionalMean(sample)
 
         normalSample = ot.Normal().getSample(simulationSize)

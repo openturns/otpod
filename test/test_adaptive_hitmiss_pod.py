@@ -61,7 +61,7 @@ physicalModel = krigingModel.getResult().getMetaModel()
 
 
 ####### Test on the POD models ###################
-# Test hitmiss without Box Cox
+# Test hitmiss without Box Cox with rf classifier
 ot.RandomGenerator.SetSeed(0)
 ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
 POD1 = otpod.AdaptiveHitMissPOD(inputDOE, outputDOE, physicalModel, 20, detection)
@@ -73,3 +73,19 @@ def test_1_a95():
     np.testing.assert_almost_equal(detectionSize1[1], 5.35497504836619, decimal=5)
 def test_1_confusion_matrix():
     np.testing.assert_almost_equal(POD1.getConfusionMatrix(), [[ 0.84003497,  0.0703125 ],[ 0.15996503,  0.9296875 ]], decimal=5)
+
+####### Test on the POD models ###################
+# Test hitmiss without Box Cox with svc classifier
+ot.RandomGenerator.SetSeed(0)
+ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
+POD2 = otpod.AdaptiveHitMissPOD(inputDOE, outputDOE, physicalModel, 10, detection)
+POD2.setClassifierType('svc')
+POD2.run()
+detectionSize2 = POD2.computeDetectionSize(0.5, 0.95)
+# the test is not reproducible
+# def test_2_a90():
+#     np.testing.assert_almost_equal(detectionSize2[0], 4.267675047394733, decimal=5)
+# def test_2_a95():
+#     np.testing.assert_almost_equal(detectionSize2[1], 4.473170408027023, decimal=5)
+# def test_2_confusion_matrix():
+#     np.testing.assert_almost_equal(POD2.getConfusionMatrix(), [[ 0.83333333,  0.24175824], [ 0.16666667,  0.75824176]], decimal=5)

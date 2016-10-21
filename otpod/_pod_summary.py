@@ -110,7 +110,7 @@ class PODSummary():
 
         # run the univariate linear model analysis with gaussian residuals hypothesis
         if self._verbose:
-            print "\nStart univariate linear model analysis..."
+            print("\nStart univariate linear model analysis...")
         self._analysis = UnivariateLinearModelAnalysis(self._inputSample[:, 0],
                                                  self._signals, self._noiseThres,
                                                  self._saturationThres,
@@ -119,7 +119,7 @@ class PODSummary():
         # run the univariate linear model with gaussian residuals
         if self._activeMethods['LinearGauss']:
             if self._verbose:
-                print "\nStart univariate linear model POD with Gaussian residuals..."
+                print("\nStart univariate linear model POD with Gaussian residuals...")
             self._PODgauss = UnivariateLinearModelPOD(self._inputSample[:, 0], self._signals,
                                                 self._detection, self._noiseThres,
                                                 self._saturationThres,
@@ -132,7 +132,7 @@ class PODSummary():
         # run the univariate linear model with no hypothesis on the residuals
         if self._activeMethods['LinearBinomial']:
             if self._verbose:
-                print "\nStart univariate linear model POD with no hypothesis on the residuals..."
+                print("\nStart univariate linear model POD with no hypothesis on the residuals...")
             self._PODbin = UnivariateLinearModelPOD(self._inputSample[:, 0], self._signals,
                                                 self._detection, self._noiseThres,
                                                 self._saturationThres,
@@ -143,7 +143,7 @@ class PODSummary():
         # run the univariate linear model with kernel smoothing on the residuals
         if self._activeMethods['LinearKernelSmoothing']:
             if self._verbose:
-                print "\nStart univariate linear model POD with kernel smoothing on the residuals..."
+                print("\nStart univariate linear model POD with kernel smoothing on the residuals...")
             self._PODks = UnivariateLinearModelPOD(self._inputSample[:, 0], self._signals,
                                                 self._detection, self._noiseThres,
                                                 self._saturationThres,
@@ -155,7 +155,7 @@ class PODSummary():
         # run the quantile regression 
         if self._activeMethods['QuantileRegression']:
             if self._verbose:
-                print "\nStart quantile regression POD..."
+                print("\nStart quantile regression POD...")
             self._PODqr = QuantileRegressionPOD(self._inputSample[:, 0], self._signals,
                                                 self._detection, self._noiseThres,
                                                 self._saturationThres, self._boxCox)
@@ -167,7 +167,7 @@ class PODSummary():
         # run the polynomial chaos
         if self._activeMethods['PolynomialChaos']:
             if self._verbose:
-                print "\nStart polynomial chaos POD..."
+                print("\nStart polynomial chaos POD...")
             self._PODchaos = PolynomialChaosPOD(self._inputSample, self._signals,
                                        self._detection, self._noiseThres,
                                        self._saturationThres, self._boxCox)
@@ -179,7 +179,7 @@ class PODSummary():
         # run the kriging
         if self._dim > 1 and self._activeMethods['Kriging']:
             if self._verbose:
-                print "\nStart kriging POD..."
+                print("\nStart kriging POD...")
             self._PODkriging = KrigingPOD(self._inputSample, self._signals,
                                self._detection, self._noiseThres,
                                self._saturationThres, self._boxCox)
@@ -212,7 +212,7 @@ class PODSummary():
         activation : bool
             Set to True to activate and False to deactivate.
         """
-        if not self._activeMethods.has_key(method):
+        if not method in self._activeMethods:
             raise NameError(method + ' is not an admissible keys.')
         if type(activation) is not bool:
             raise ValueError('The given activation parameter is not a boolean.')
@@ -394,7 +394,7 @@ class PODSummary():
         """
         self._samplingSize = size
 
-    def printResults(self, probabilityLevel=0.9, confidenceLevel=0.95):
+    def getResults(self, probabilityLevel=0.9, confidenceLevel=0.95):
         """
         Print all results in the terminal.
 
@@ -421,24 +421,24 @@ class PODSummary():
 
         PODResult = '\n'.join(['{:<47} {:>13} {:>13}'.format(*line) for line in self._dataPOD])
 
-        self._analysis.printResults()
+        print(self._analysis.getResults())
         ndash = 80
-        print ''
-        print '-' * ndash
-        print '         Model validation results'
-        print '-' * ndash
-        print validationResult
-        print '-' * ndash
-        print ''
-        print '-' * ndash
-        print '         POD results'
-        print '-' * ndash
-        print PODResult
-        print '-' * ndash
-        print ''
+        results = '' + '\n'
+        results = results + '-' * ndash + '\n'
+        results = results + '         Model validation results' + '\n'
+        results = results + '-' * ndash + '\n'
+        results = results + validationResult + '\n'
+        results = results + '-' * ndash + '\n'
+        results = results + '' + '\n'
+        results = results + '-' * ndash + '\n'
+        results = results + '         POD results' + '\n'
+        results = results + '-' * ndash + '\n'
+        results = results + PODResult + '\n'
+        results = results + '-' * ndash + '\n'
+        results = results + '' + '\n'
 
         if self._censored:
-            msg = 'For '
+            msg = 'Warning : For '
             if self._activeMethods['QuantileRegression']:
                 msg = msg + 'quantile regression, '
             if self._activeMethods['PolynomialChaos']:
@@ -447,6 +447,8 @@ class PODSummary():
                 msg = msg + 'kriging, '
             msg = msg + 'results are given for filtered data.'
             logging.info(msg)
+            results = results + msg
+        return results
 
 
     def saveResults(self, name, probabilityLevel=0.9, confidenceLevel=0.95):

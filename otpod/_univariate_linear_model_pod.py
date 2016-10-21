@@ -10,8 +10,8 @@ from ._math_tools import computeBoxCox, DataHandling, computeLinearParametersCen
                          computeR2
 from statsmodels.regression.linear_model import OLS
 import numpy as np
-from _decorator import DocInherit, keepingArgs
-from _progress_bar import updateProgress
+from ._decorator import DocInherit, keepingArgs
+from ._progress_bar import updateProgress
 
 
 class UnivariateLinearModelPOD(POD):

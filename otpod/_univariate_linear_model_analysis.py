@@ -342,9 +342,9 @@ class UnivariateLinearModelAnalysis():
     def _printWarnings(self, disp=True):
         # Check results and display warnings
 
-        valuesUnc = np.array(self._resultsUnc.testResults.values())
+        valuesUnc = np.array(list(self._resultsUnc.testResults.values()))
         if self._censored:
-            valuesCens = np.array(self._resultsCens.testResults.values())
+            valuesCens = np.array(list(self._resultsCens.testResults.values()))
             testPValues = ((valuesUnc < 0.05).any() or (valuesCens < 0.05).any())
         else:
             testPValues = (valuesUnc < 0.05).any()

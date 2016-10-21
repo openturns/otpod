@@ -7,8 +7,8 @@ import openturns as ot
 import numpy as np
 from ._pod import POD
 from scipy.interpolate import interp1d
-from _progress_bar import updateProgress
-from _kriging_tools import KrigingBase
+from ._progress_bar import updateProgress
+from ._kriging_tools import KrigingBase
 import logging
 
 class KrigingPOD(POD, KrigingBase):
@@ -158,7 +158,7 @@ class KrigingPOD(POD, KrigingBase):
         # compute the Q2
         self._Q2 = self._computeQ2(self._input, self._signals, self._krigingResult)
         if self._verbose:
-            print 'kriging validation Q2 (>0.9): {:0.4f}'.format(self._Q2)
+            print('kriging validation Q2 (>0.9): {:0.4f}'.format(self._Q2))
 
         # set default uniform distribution with min and max of the given defect sizes 
         if self._distribution is None:

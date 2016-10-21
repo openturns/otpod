@@ -8,8 +8,8 @@ import openturns as ot
 import numpy as np
 from ._pod import POD
 from scipy.interpolate import interp1d
-from _progress_bar import updateProgress
-from _kriging_tools import KrigingBase
+from ._progress_bar import updateProgress
+from ._kriging_tools import KrigingBase
 import logging
 import matplotlib.pyplot as plt
 
@@ -187,8 +187,8 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         # build the kriging model without optimization
         algoKriging = self._buildKrigingAlgo(self._input, self._signals)
         if self._verbose:
-            print 'Building the kriging model'
-            print 'Optimization of the covariance model parameters...'
+            print('Building the kriging model')
+            print('Optimization of the covariance model parameters...')
         llDim = algoKriging.getLogLikelihoodFunction().getInputDimension()
         lowerBound = [0.001] * llDim
         upperBound = [50] * llDim               
@@ -205,7 +205,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
 
         self._Q2 = self._computeQ2(self._input, self._signals, self._krigingResult)
         if self._verbose:
-            print 'Kriging validation Q2 (>0.9): {:0.4f}\n'.format(self._Q2)
+            print('Kriging validation Q2 (>0.9): {:0.4f}\n'.format(self._Q2))
 
         plt.ion()
         # Start the improvment loop
@@ -213,7 +213,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         while iteration < self._nIteration:
             iteration += 1
             if self._verbose:
-                print 'Iteration : {}/{}'.format(iteration, self._nIteration)
+                print('Iteration : {}/{}'.format(iteration, self._nIteration))
 
             # compute POD (ptrue = pn-1) for bias reducing in the criterion
             # Monte Carlo for all defect sizes in a vectorized way.
@@ -294,9 +294,9 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             # remove added candidate from the doeCandidate
             doeCandidate.erase(indexOpt)
             if self._verbose:
-                print 'Criterion value : {:0.4f}'.format(criterion)
-                print 'Added point : {}'.format(candidateOpt)
-                print 'Update the kriging model'
+                print('Criterion value : {:0.4f}'.format(criterion))
+                print('Added point : {}'.format(candidateOpt))
+                print('Update the kriging model')
 
             # update the kriging model without optimization
             algoKriging = self._buildKrigingAlgo(self._input, self._signals)
@@ -312,7 +312,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             # Check the quality of the kriging model if it needs optimization
             if self._Q2 < 0.95:
                 if self._verbose:
-                    print 'Optimization of the covariance model parameters...'
+                    print('Optimization of the covariance model parameters...')
                 llDim = algoKriging.getLogLikelihoodFunction().getInputDimension()
                 lowerBound = [0.001] * llDim
                 upperBound = [50] * llDim               
@@ -329,7 +329,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
 
             self._Q2 = self._computeQ2(self._input, self._signals, self._krigingResult)
             if self._verbose:
-                print 'Kriging validation Q2 (>0.9): {:0.4f}'.format(self._Q2)
+                print('Kriging validation Q2 (>0.9): {:0.4f}'.format(self._Q2))
 
             if self._graph:
                 # create the interpolate function of the POD model
@@ -347,7 +347,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
 
         # Compute the final POD with the last updated kriging model
         if self._verbose:
-                print '\nStart computing the POD with the last updated kriging model'
+                print('\nStart computing the POD with the last updated kriging model')
         # compute the sample containing the POD values for all defect 
         self._PODPerDefect = ot.NumericalSample(self._simulationSize *
                                          self._samplingSize, self._defectNumber)

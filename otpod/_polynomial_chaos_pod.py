@@ -7,8 +7,8 @@ import openturns as ot
 import numpy as np
 from ._pod import POD
 from scipy.interpolate import interp1d
-from _decorator import DocInherit, keepingArgs
-from _progress_bar import updateProgress
+from ._decorator import DocInherit, keepingArgs
+from ._progress_bar import updateProgress
 from ._math_tools import computeR2
 import matplotlib.pyplot as plt
 import logging
@@ -163,8 +163,8 @@ class PolynomialChaosPOD(POD):
         R2 = self.getR2()
         Q2 = self.getQ2()
         if self._verbose:
-            print 'Polynomial chaos validation R2 (>0.8) : {:0.4f}'.format(R2)
-            print 'Polynomial chaos validation Q2 (>0.8) : {:0.4f}'.format(Q2)
+            print('Polynomial chaos validation R2 (>0.8) : {:0.4f}'.format(R2))
+            print('Polynomial chaos validation Q2 (>0.8) : {:0.4f}'.format(Q2))
 
         # Compute the POD values for each defect sizes
         self.POD = self._computePOD(self._defectSizes, self._chaosCoefs)
@@ -366,7 +366,7 @@ class PolynomialChaosPOD(POD):
         H = basisMatrix * gramBasis.solveLinearSystem(basisMatrix.transpose())
         Hdiag = np.vstack(np.array(H).diagonal())
         fittedSignals = np.array(self._chaosPred(self._input))
-        delta = (self._signals - fittedSignals) / (1. - Hdiag)
+        delta = np.array(self._signals - fittedSignals) / (1. - Hdiag)
 
         return 1 - np.mean(delta**2)/ self._signals.computeVariance()[0]
 
@@ -453,7 +453,7 @@ class PolynomialChaosPOD(POD):
             for all parameters.
         """
         if self._distribution is None:
-            print 'The run method must be launched first.'
+            print('The run method must be launched first.')
         else:
             return self._distribution
 
@@ -482,7 +482,7 @@ class PolynomialChaosPOD(POD):
             The adaptive strategy for the polynomial chaos.
         """
         if self._adaptiveStrategy is None:
-            print 'The run method must be launched first.'
+            print('The run method must be launched first.')
         else:
             return self._adaptiveStrategy
 
@@ -511,7 +511,7 @@ class PolynomialChaosPOD(POD):
             The projection strategy for the polynomial chaos.
         """
         if self._projectionStrategy is None:
-            print 'The run method must be launched first.'
+            print('The run method must be launched first.')
         else:
             return self._projectionStrategy
 
@@ -563,7 +563,7 @@ class PolynomialChaosPOD(POD):
             The polynomial chaos result.
         """
         if self._chaosResult is None:
-            print 'The run method must be launched first.'
+            print('The run method must be launched first.')
         else:
             return self._chaosResult
 

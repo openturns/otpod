@@ -8,8 +8,8 @@ import numpy as np
 from ._pod import POD
 from statsmodels.regression.quantile_regression import QuantReg
 from scipy.interpolate import interp1d
-from _decorator import DocInherit, keepingArgs
-from _progress_bar import updateProgress
+from ._decorator import DocInherit, keepingArgs
+from ._progress_bar import updateProgress
 import matplotlib.pyplot as plt
 import logging
 

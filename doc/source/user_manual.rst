@@ -40,6 +40,16 @@ Adaptive algorithms
     AdaptiveSignalPOD
     AdaptiveHitMissPOD
 
+Sensitivity analysis
+====================
+
+.. autosummary::
+    :toctree: _generated/
+    :template: class.rst_t
+    :nosignatures:
+
+    SobolIndices
+
 Tools
 =====
 

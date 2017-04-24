@@ -43,6 +43,7 @@ from ._kriging_pod import *
 from ._adaptive_signal_pod import *
 from ._adaptive_hitmiss_pod import *
 from ._pod_summary import *
+from ._sobol_indices import *
 from ._math_tools import *
 
 __version__ = "0.1"
@@ -55,5 +56,6 @@ __all__ = (_univariate_linear_model_analysis.__all__ +
            _adaptive_signal_pod.__all__ +
            _adaptive_hitmiss_pod.__all__ +
            _pod_summary.__all__ +
+           _sobol_indices.__all__ +
            _math_tools.__all__)
 

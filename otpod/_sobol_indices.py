@@ -107,7 +107,7 @@ class SobolIndices():
         else:
             return self._sa
 
-    def drawIndices(self, label):
+    def drawIndices(self, label=None, name=None):
         """
         Plot the aggregated Sobol indices.
 
@@ -123,8 +123,11 @@ class SobolIndices():
         ax : `matplotlib.axes <http://matplotlib.org/api/axes_api.html>`_
             Matplotlib axes object.
         """
-        if len(label) != self._dim:
-            raise AttributeError("The label dimension must be {}.").format(self._dim)
+        if label is None:
+            label = ['X{}'.format(i+1) for i in range(self._dim)]
+        else:
+            if len(label) != self._dim:
+                raise AttributeError("The label dimension must be {}.").format(self._dim)
 
         graph = self._sa.draw()
         fig, ax = plt.subplots()
@@ -132,7 +135,10 @@ class SobolIndices():
         ax.set_xticks(np.array(range(self._dim))+1)
         ax.set_xlim(0.5, self._dim+0.5)
         ax.set_xticklabels(label)
-        fig.show()
+        ax.set_title(graph.getTitle())
+        if name is not None:
+            fig.savefig(name, bbox_inches='tight', transparent=True)
+
         return fig, ax
 
     def getSensitivityMethod(self):
@@ -183,6 +189,10 @@ class SobolIndices():
                              '{:0.4f} '.format(np.ceil(minMin*10000)/10000) + \
                              'and {:0.4f}.'.format(np.floor(maxMax*10000)/10000))
         self._defectNumber = self._defectSizes.shape[0]
+
+        # update the NumericalMathFunction
+        self._PODaggr = ot.NumericalMathFunction(PODaggr(self._krigingResult,
+                            self._dim, self._defectSizes, self._detectionBoxCox))
 
     def getDefectSizes(self):
         """

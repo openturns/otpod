@@ -34,6 +34,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.autosummary',
     'numpydoc',
+    'sphinx.ext.mathjax',
 ]
 
 autodoc_default_flags = ['members', 'inherited-members']

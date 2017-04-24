@@ -115,6 +115,10 @@ class SobolIndices():
         ----------
         label : sequence of float
             The name of the input parameters
+        name : string
+            name of the figure to be saved with *transparent* option sets to True
+            and *bbox_inches='tight'*. It can be only the file name or the 
+            full path name. Default is None.
 
         Returns
         -------

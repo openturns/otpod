@@ -518,11 +518,13 @@ class KrigingBase():
             # get sigma2 (covariance model scale parameters)
             sigma2 = krigingResult.getSigma2()
             K = sigma2 * R
-        elif ot.__version__ > '1.6':
+        elif ot.__version__ == '1.7':
             R = cov.discretize(normalized_inputSample)
             C = R.computeCholesky()
             sigma2 = krigingResult.getCovarianceModel().getAmplitude()[0]**2
             K = sigma2 * np.dot(C, C.transpose())
+        elif ot.__version__ == '1.8':
+            K = cov.discretize(normalized_inputSample)
 
         # get coefficient and compute trend
         basis = krigingResult.getBasisCollection()[0]

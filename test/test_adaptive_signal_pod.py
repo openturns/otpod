@@ -76,11 +76,11 @@ POD1.setSimulationSize(10)
 POD1.run()
 detectionSize1 = POD1.computeDetectionSize(0.9, 0.95)
 def test_1_a90():
-    np.testing.assert_almost_equal(detectionSize1[0], 4.599261030114589, decimal=2)
+    np.testing.assert_almost_equal(detectionSize1[0], 4.609940355445644, decimal=4)
 def test_1_a95():
-    np.testing.assert_almost_equal(detectionSize1[1], 4.644242837712604, decimal=3)
+    np.testing.assert_almost_equal(detectionSize1[1], 4.6501776747086945, decimal=4)
 def test_1_Q2_90():
-    np.testing.assert_almost_equal(POD1.getQ2(), 0.99655973759347671, decimal=3)
+    np.testing.assert_almost_equal(POD1.getQ2(), 0.9968293563682129, decimal=4)
 
 # Test kriging with censored data without Box Cox
 ot.RandomGenerator.SetSeed(0)
@@ -93,11 +93,11 @@ POD2.setSimulationSize(10)
 POD2.run()
 detectionSize2 = POD2.computeDetectionSize(0.9, 0.95)
 def test_2_a90():
-    np.testing.assert_almost_equal(detectionSize2[0], 4.608852965017486, decimal=3)
+    np.testing.assert_almost_equal(detectionSize2[0], 4.619794675991896, decimal=4)
 def test_2_a95():
-    np.testing.assert_almost_equal(detectionSize2[1], 4.6627205059813015, decimal=3)
+    np.testing.assert_almost_equal(detectionSize2[1], 4.656472936856077, decimal=4)
 def test_2_Q2_90():
-    np.testing.assert_almost_equal(POD2.getQ2(), 0.99460619211496437, decimal=3)
+    np.testing.assert_almost_equal(POD2.getQ2(), 0.99589611891810326, decimal=4)
 
 # # Test kriging with Box Cox
 # ot.RandomGenerator.SetSeed(0)

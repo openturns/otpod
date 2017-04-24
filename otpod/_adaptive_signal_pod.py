@@ -300,10 +300,12 @@ class AdaptiveSignalPOD(POD, KrigingBase):
 
             # update the kriging model without optimization
             algoKriging = self._buildKrigingAlgo(self._input, self._signals)
-            if ot.__version__ > '1.6':
+            if ot.__version__ == '1.7':
                 optimizer = algoKriging.getOptimizationSolver()
                 optimizer.setMaximumIterationNumber(0)
                 algoKriging.setOptimizationSolver(optimizer)
+            elif ot.__version__ == '1.8':
+                algoKriging.setOptimizeParameters(False)
 
             algoKriging.run()
 

@@ -15,12 +15,12 @@ class SobolIndices():
 
     **Available constructor:**
 
-    SobolIndices(*krigingPOD, N*)
+    SobolIndices(*POD, N*)
 
     Parameters
     ----------
-    krigingPOD : :class:`KrigingPOD` or :class:`AdaptiveSignalPOD`
-        The kriging POD object where the run method has been performed.
+    POD : :class:`KrigingPOD`, :class:`AdaptiveSignalPOD` or :class:`PolynomialChaosPOD`
+        The POD object where the run method has been performed.
     N : int
         Size of samples to generate
 
@@ -37,7 +37,7 @@ class SobolIndices():
 
     The sensitivity analysis allows to computed aggregated Sobol indices for
     the given range of defect sizes. The default defect sizes correspond with
-    those defined in the *krigingPod* object. It can be changed using
+    those defined in the *POD* object. It can be changed using
     :func:`setDefectSizes`.
 
     The four methods developed in OpenTURNS are availables and can be chosen
@@ -49,32 +49,35 @@ class SobolIndices():
     from which the sensitivity values are given using proper methods.
     """
 
-    def __init__(self, krigingPOD, N):
-        try:
-            self._krigingResult = krigingPOD.getKrigingResult()
-        except AttributeError:
+    def __init__(self, POD, N):
+
+        className = type(POD).__name__
+        if className == "PolynomialChaosPOD":
+            self._podResult = POD.getPolynomialChaosResult()
+            self._podType = "chaos"
+        elif className in ["KrigingPOD", "AdaptiveSignalPOD"]:
+            self._podResult = POD.getKrigingResult()
+            self._podType = "kriging"
+        else:
             raise Exception("Sobol indices can only be computed based on a " + \
-                            "POD built with kriging.")
+                            "POD built with Kriging or polynomial chaos.")
 
         # dimension is minus 1 to remove the defect parameter
-        self._dim = self._krigingResult.getMetaModel().getInputDimension() - 1
+        self._dim = self._podResult.getMetaModel().getInputDimension() - 1
         assert (self._dim >=2), "The number of parameters must be greater or " + \
                 "equal than 2 to be able to perform the sensitivity analysis."
-        self._defectSizes = krigingPOD.getDefectSizes()
+        self._POD = POD
+        self._defectSizes = POD.getDefectSizes()
         self._defectNumber = self._defectSizes.shape[0]
-        self._detectionBoxCox = krigingPOD._detectionBoxCox
+        self._detectionBoxCox = POD._detectionBoxCox
+        self._simulationSize = 100
 
         # the distribution of the parameters without the one of the defects.
-        tmpDistribution = krigingPOD.getDistribution()
+        tmpDistribution = POD.getDistribution()
         self._distribution = ot.ComposedDistribution([tmpDistribution.getMarginal(i) for i in range(1, self._dim+1)])
 
         # number of samples
         self._N = N
-
-        # build the NumericalMathFunction which computed the POD for a given
-        # realization and for all defect sizes.
-        self._PODaggr = ot.NumericalMathFunction(PODaggr(self._krigingResult,
-                            self._dim, self._defectSizes, self._detectionBoxCox))
 
         # initialize method parameter and sa attribute
         self._method = "Saltelli"
@@ -84,6 +87,16 @@ class SobolIndices():
         """
         Compute the Sobol indices with the chosen algorithm. 
         """
+
+        # create the NumericalMathFunction which computes the POD for a given
+        # realization and for all defect sizes.
+        if self._podType == "kriging":
+            self._PODaggr = ot.NumericalMathFunction(PODaggrKriging(self._POD,
+                            self._dim, self._defectSizes, self._detectionBoxCox))
+        elif self._podType == "chaos":
+            self._PODaggr = ot.NumericalMathFunction(PODaggrChaos(self._POD,
+                            self._dim, self._defectSizes, self._detectionBoxCox,
+                            self._simulationSize))
 
         if self._method == "Saltelli":
             self._sa = ot.SaltelliSensitivityAlgorithm(self._distribution, self._N, self._PODaggr, False)
@@ -186,17 +199,14 @@ class SobolIndices():
         size = np.hstack(np.array(size))
         size.sort()
         self._defectSizes = size.copy()
-        minMin = self._krigingResult.getInputSample()[:, 0].getMin()[0]
-        maxMax = self._krigingResult.getInputSample()[:, 0].getMax()[0]
+        minMin = self._podResult.getInputSample()[:, 0].getMin()[0]
+        maxMax = self._podResult.getInputSample()[:, 0].getMax()[0]
         if size.max() > maxMax or size.min() < minMin:
             raise ValueError('Defect sizes must range between ' + \
                              '{:0.4f} '.format(np.ceil(minMin*10000)/10000) + \
                              'and {:0.4f}.'.format(np.floor(maxMax*10000)/10000))
         self._defectNumber = self._defectSizes.shape[0]
 
-        # update the NumericalMathFunction
-        self._PODaggr = ot.NumericalMathFunction(PODaggr(self._krigingResult,
-                            self._dim, self._defectSizes, self._detectionBoxCox))
 
     def getDefectSizes(self):
         """
@@ -210,16 +220,69 @@ class SobolIndices():
         """
         return self._defectSizes
 
+    def setDistribution(self, distribution):
+        """
+        Accessor to the parameters distribution. 
 
-class PODaggr(ot.OpenTURNSPythonFunction):
+        Parameters
+        ----------
+        distribution : :py:class:`openturns.ComposedDistribution`
+            The input parameters distribution used for the Monte Carlo simulation.
+        """
+        try:
+            ot.ComposedDistribution(distribution)
+        except NotImplementedError:
+            raise Exception('The given parameter is not a ComposedDistribution.')
+
+        if distribution.getDimension() != self._dim:
+            raise AttributeError("The dimension of the distribution must be {}.".format(self._dim))
+        self._distribution = distribution
+
+    def getDistribution(self):
+        """
+        Accessor to the parameters distribution. 
+
+        Returns
+        -------
+        distribution : :py:class:`openturns.ComposedDistribution`
+            The input parameters distribution used for the Monte Carlo simulation.
+            Default is a Uniform distribution for all parameters.
+        """
+        return self._distribution
+
+    def getSimulationSize(self):
+        """
+        Accessor to the simulation size when using polynomial chaos.
+
+        Returns
+        ----------
+        size : int
+            The size of the simulation used to compute POD at a given point.
+        """
+        return self._simulationSize
+
+    def setSimulationSize(self, size):
+        """
+        Accessor to the simulation size when using polynomial chaos.
+
+        Parameters
+        ----------
+        size : int
+            The size of the simulation used to compute at a given point. Default
+            is 100.
+        """
+        self._simulationSize = size
+
+
+class PODaggrKriging(ot.OpenTURNSPythonFunction):
     """
     Aggregate function that compute the POD for a given points for all
     defect sizes given as parameter.
 
     Parameters
     ----------
-    krigingResult : :class:`~openturns.KrigingResult`
-        The kriging result object obtained after building the POD.
+    krigingPOD : :class:`KrigingPOD` or :class:`AdaptiveSignalPOD` 
+        The kriging POD object obtained after building the POD.
     dim : integer
         The number of input parameters of the function without the defect.
     defectSizes : sequence of float
@@ -228,15 +291,16 @@ class PODaggr(ot.OpenTURNSPythonFunction):
         Detection value of the signal after box cox if it was enabled : must
         be "detectionBoxCox" from the POD object.
     """
-    def __init__(self, krigingResult, dim, defectSizes, detection):
-        super(PODaggr, self).__init__(dim, defectSizes.shape[0])
-        self.krigingResult = krigingResult
+    def __init__(self, krigingPOD, dim, defectSizes, detection):
+
+        super(PODaggrKriging, self).__init__(dim, defectSizes.shape[0])
+        self.krigingResult = krigingPOD.getKrigingResult()
         self.defectNumber = len(defectSizes)
         self.defectSizes = defectSizes
         self.detection = detection
     
     def _exec(self, X):
-        # create sample with combining all defect size with the given X
+        # create sample combining all defect size with the given X
         x = np.array(X, ndmin=2)
         x = x.repeat(self.defectNumber, axis=0)
         xWitha = np.concatenate((np.vstack(self.defectSizes), x), axis=1)
@@ -264,3 +328,89 @@ class PODaggr(ot.OpenTURNSPythonFunction):
         quantile = np.vstack((self.detection - mean) / np.sqrt(var))
         prob = 1. - np.array([ot.DistFunc.pNormal(q[0]) for q in quantile])
         return prob
+
+
+class PODaggrChaos(ot.OpenTURNSPythonFunction):
+    """
+    Aggregate function based on the polynomial chaos that compute the POD for a
+    given points for all defect sizes given as parameter.
+
+    Parameters
+    ----------
+    chaosPOD : :class:`PolynomialChaosPOD`
+        The chaos POD object.
+    dim : int
+        The number of input parameters of the function without the defect.
+    defectSizes : sequence of float
+        The defect size values for which the POD is computed.
+    detection : float
+        Detection value of the signal after box cox if it was enabled : must
+        be "detectionBoxCox" from the POD object.
+    simulationSize : int
+        The size of the simulation used to compute the POD at a given point.
+    """
+    def __init__(self, chaosPOD, dim, defectSizes, detection, simulationSize):
+        super(PODaggrChaos, self).__init__(dim, defectSizes.shape[0])
+        self.chaosPOD = chaosPOD
+        self.dim = dim
+        self.defectSizes = defectSizes
+        self.defectNumber = len(defectSizes)
+        self.simulationSize = simulationSize
+        self.detection = detection
+
+        # get the sample of coefficient using the coef distribution 
+        # used to compute the POD for a given point
+        sampleCoefs = chaosPOD.getCoefficientDistribution().getSample(simulationSize)
+
+        # get some result from the polynomial chaos to build a vectoriel
+        # chaos function that return the signal values for all chaos with
+        # different coefficients for one specific point
+        chaosResult = chaosPOD.getPolynomialChaosResult()
+        reducedBasis = chaosResult.getReducedBasis()
+        transformation = chaosResult.getTransformation()
+        chaosFunctionCol = []
+        for i, coefs in enumerate(sampleCoefs):
+            standardChaosFunction = ot.NumericalMathFunction(reducedBasis, coefs)
+            chaosFunctionCol.append(ot.NumericalMathFunction(standardChaosFunction, transformation))
+        self.chaosFunction = ot.NumericalMathFunction(chaosFunctionCol)
+
+    def _exec(self, X):
+        # create sample combining all defect size with the given X
+        x = np.array(X, ndmin=2)
+        x = x.repeat(self.defectNumber, axis=0)
+        xWitha = np.concatenate((np.vstack(self.chaosPOD._defectSizes), x), axis=1)
+        # add randomness from the residual, identical for all defect size
+        residualsSample = np.hstack(self.chaosPOD._normalDist.getSample(self.simulationSize) * self.chaosPOD._stderr)
+        # compute the signal for all chaos
+        Y = self.chaosFunction(xWitha)
+        # compute the POD for all defect size
+        return np.mean((np.array(Y) + residualsSample) > self.detection, axis=1)
+
+    # vectorial way to compute the POD
+    def _exec_sample(self, X):
+        samplingSize = X.getSize()
+
+        # create sample containing all input combined with all defect sizes
+        fullX = ot.NumericalSample(samplingSize * self.defectNumber,self.dim+1)
+        for i, x in enumerate(X):
+            x = np.array(x, ndmin=2)
+            x = x.repeat(self.defectNumber, axis=0)
+            xWitha = np.concatenate((np.vstack(self.defectSizes), x), axis=1)
+            fullX[self.defectNumber*i:self.defectNumber*(i+1), :] = xWitha
+
+        # add randomness from the residual, identical for all defect size
+        residualsSample = ot.Normal(samplingSize).getSample(self.simulationSize) * self.chaosPOD._stderr
+        fullRes = ot.NumericalSample(self.simulationSize, samplingSize * self.defectNumber)
+        for i in range(samplingSize):
+            fullRes[:, self.defectNumber*i:self.defectNumber*(i+1)] = np.repeat(residualsSample[:, i], self.defectNumber, axis=1)
+        fullRes = np.transpose(fullRes)
+
+        # compute the signal
+        Y = np.array(self.chaosFunction(fullX))
+
+        # compute the POD
+        prob = np.mean((Y + fullRes) > self.detection, axis=1)
+        prob = prob.reshape(samplingSize, self.defectNumber)
+        return prob
+
+            

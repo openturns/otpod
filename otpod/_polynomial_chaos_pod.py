@@ -177,8 +177,8 @@ class PolynomialChaosPOD(POD):
         varEpsilon = (ot.ChiSquare(dof).inverse() * dof * self._stderr**2).getRealization()[0]
         gramBasis = ot.Matrix(self._basisFunction(self._input)).computeGram()
         covMatrix = gramBasis.solveLinearSystem(ot.IdentityMatrix(basisSize)) * varEpsilon
-        coefsDist = ot.Normal(np.hstack(self._chaosCoefs), ot.CovarianceMatrix(covMatrix.getImplementation()))
-        coefsRandom = coefsDist.getSample(self._simulationSize)
+        self._coefsDist = ot.Normal(np.hstack(self._chaosCoefs), ot.CovarianceMatrix(covMatrix.getImplementation()))
+        coefsRandom = self._coefsDist.getSample(self._simulationSize)
 
         self._PODPerDefect = ot.NumericalSample(self._simulationSize, self._defectNumber)
         for i, coefs in enumerate(coefsRandom):
@@ -592,6 +592,16 @@ class PolynomialChaosPOD(POD):
         else:
             self._verbose = verbose
 
+    def getCoefficientDistribution(self):
+        """
+        Accessor to the distribution of the polynomial chaos coefficients.
+
+        Returns
+        -------
+        dist : :class:`openturns.Distribution`
+            The distribution of the coefficients. 
+        """
+        return self._coefsDist
 
     def _buildChaosAlgo(self, inputSample, outputSample):
         """

@@ -139,3 +139,24 @@ def test_5_FA():
     np.testing.assert_almost_equal(firstAgg5, [0.925982,0.00618882,-0.00552557], decimal=2)
 def test_5_TA():
     np.testing.assert_almost_equal(totalAgg5, [1.08168,0.197624,0.00388355], decimal=2)
+
+
+################################################################################
+# Test 6 WITH CHAOS
+chaosPOD = otpod.PolynomialChaosPOD(inputSample, signals, detection)
+chaosPOD.setSamplingSize(200)
+chaosPOD.setSimulationSize(50)
+chaosPOD.run()
+N = 100
+# Test for default defect size
+sobolChaos = otpod.SobolIndices(chaosPOD, N)
+sobolChaos.setSimulationSize(100)
+ot.RandomGenerator.SetSeed(0)
+sobolChaos.run()
+sobol_result = sobolChaos.getSensitivityResult()
+firstAgg6 = sobol_result.getAggregatedFirstOrderIndices()
+totalAgg6 = sobol_result.getAggregatedTotalOrderIndices()
+def test_6_FA():
+    np.testing.assert_almost_equal(firstAgg6, [0.691873,0.0394016,9.98788e-05], decimal=2)
+def test_6_TA():
+    np.testing.assert_almost_equal(totalAgg6, [0.859487,0.24918,0.0108658], decimal=2)

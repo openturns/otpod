@@ -33,7 +33,14 @@ class SobolIndices():
     -----
     This class uses the :class:`openturns.SobolIndicesAlgorithm` class
     of OpenTURNS. The sensitivity analysis can be performed only with a POD
-    built with a Kriging metamodel.
+    built with a Kriging metamodel or a polynomial chaos where the input
+    dimension is greater than 3 (counting the defect).
+
+    When using Kriging, the POD at a given point is computed using the kriging 
+    mean and variance. For polynomial chaos, random coefficients are generated, 
+    the signal is computed for all coefficients and the POD is eventually
+    estimated. The default simulation size is set to 1000. This value can be
+    changed using :func:`setSimulationSize`.
 
     The sensitivity analysis allows to computed aggregated Sobol indices for
     the given range of defect sizes. The default defect sizes correspond with
@@ -70,7 +77,7 @@ class SobolIndices():
         self._defectSizes = POD.getDefectSizes()
         self._defectNumber = self._defectSizes.shape[0]
         self._detectionBoxCox = POD._detectionBoxCox
-        self._simulationSize = 100
+        self._simulationSize = 1000
 
         # the distribution of the parameters without the one of the defects.
         tmpDistribution = POD.getDistribution()
@@ -199,8 +206,8 @@ class SobolIndices():
         size = np.hstack(np.array(size))
         size.sort()
         self._defectSizes = size.copy()
-        minMin = self._podResult.getInputSample()[:, 0].getMin()[0]
-        maxMax = self._podResult.getInputSample()[:, 0].getMax()[0]
+        minMin = self._POD._input[:, 0].getMin()[0]
+        maxMax = self._POD._input[:, 0].getMax()[0]
         if size.max() > maxMax or size.min() < minMin:
             raise ValueError('Defect sizes must range between ' + \
                              '{:0.4f} '.format(np.ceil(minMin*10000)/10000) + \
@@ -269,7 +276,7 @@ class SobolIndices():
         ----------
         size : int
             The size of the simulation used to compute at a given point. Default
-            is 100.
+            is 1000.
         """
         self._simulationSize = size
 
@@ -319,7 +326,7 @@ class PODaggrKriging(ot.OpenTURNSPythonFunction):
                          "the kriging model may not be accurate enough.")
 
             if (var[var<0] < 1e-2).all():
-                raise ValueError("Variance values are lower than 1e-2. Please " +\
+                raise ValueError("Variance values are lower than -1e-2. Please " +\
                     "check the validity of the kriging model.")
             else:
                 var = np.abs(var)

@@ -80,7 +80,7 @@ def test_1_a90():
 def test_1_a95():
     np.testing.assert_almost_equal(detectionSize1[1], 4.6501776747086945, decimal=4)
 def test_1_Q2_90():
-    np.testing.assert_almost_equal(POD1.getQ2(), 0.9968293563682129, decimal=4)
+    np.testing.assert_almost_equal(POD1.getQ2(), 0.9968293563682129, decimal=3)
 
 # Test kriging with censored data without Box Cox
 ot.RandomGenerator.SetSeed(0)

@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/adumasphi/otpod.svg?branch=master
+    :target: https://travis-ci.org/adumasphi/otpod
+
 otpod module
 ============
 

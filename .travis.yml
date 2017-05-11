@@ -7,10 +7,7 @@ install:
   - sudo apt-get update
   - sudo apt-get -y install python-openturns texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra dvipng python-pip python-tk pandoc
   - sudo pip install jupyter matplotlib scikit-learn statsmodels numpy scipy logging decorator pytest numpydoc
-# sphinx >=1.2 is looking better
   - sudo pip install -U sphinx
-  - python setup.py install --user
-  - popd
 
 script:
   - python setup.py install --user

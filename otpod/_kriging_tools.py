@@ -373,7 +373,11 @@ class KrigingBase():
                     covColl[i]  = ot.SquaredExponential([1], [1.])
             self._covarianceModel = ot.ProductCovarianceModel(covColl)
 
-        algoKriging = ot.KrigingAlgorithm(inputSample, outputSample, self._basis,
+        if ot.__version__ == "1.9":
+            algoKriging = ot.KrigingAlgorithm(inputSample, outputSample,
+                                    self._covarianceModel, self._basis)
+        else:
+            algoKriging = ot.KrigingAlgorithm(inputSample, outputSample, self._basis,
                                                      self._covarianceModel, True)
         algoKriging.run()
         return algoKriging
@@ -446,7 +450,10 @@ class KrigingBase():
         krigingResult = algoKriging.getResult()
         covarianceModel = krigingResult.getCovarianceModel()
         basis = krigingResult.getBasisCollection()
-        llf = algoKriging.getLogLikelihoodFunction()
+        if ot.__version__ == '1.9':
+            llf = algoKriging.getReducedLogLikelihoodFunction()
+        else:
+            llf = algoKriging.getLogLikelihoodFunction()
 
         # create uniform distribution of the parameters bounds
         dim = len(lowerBound)
@@ -475,7 +482,10 @@ class KrigingBase():
             
         # Now the KrigingAlgorithm is used to optimize the likelihood using a
         # good starting point
-        algoKriging = ot.KrigingAlgorithm(X, Y, basis, covarianceModel, True)
+        if ot.__version__ == "1.9":
+            algoKriging = ot.KrigingAlgorithm(X, Y, covarianceModel, basis)
+        else:
+            algoKriging = ot.KrigingAlgorithm(X, Y, basis, covarianceModel, True)
 
         # set TNC optim
         searchInterval = ot.Interval(lowerBound, upperBound)
@@ -483,12 +493,14 @@ class KrigingBase():
             optimizer = ot.TNC()
             optimizer.setBoundConstraints(searchInterval)
             algoKriging.setOptimizer(optimizer)
-        elif ot.__version__ > '1.6':
+        elif ot.__version__  in ['1.7', '1.8']:
             optimizer = algoKriging.getOptimizationSolver()
             problem = optimizer.getProblem()
             problem.setBounds(searchInterval)
             optimizer.setProblem(problem)
             algoKriging.setOptimizationSolver(optimizer)
+        elif ot.__version__ == '1.9':
+            algoKriging.setOptimizationBounds(searchInterval)
 
         return algoKriging
 
@@ -523,7 +535,7 @@ class KrigingBase():
             C = R.computeCholesky()
             sigma2 = krigingResult.getCovarianceModel().getAmplitude()[0]**2
             K = sigma2 * np.dot(C, C.transpose())
-        elif ot.__version__ == '1.8':
+        elif ot.__version__ >= '1.8':
             K = cov.discretize(normalized_inputSample)
 
         # get coefficient and compute trend

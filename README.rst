@@ -11,7 +11,7 @@ Requirements
 
 This module is developped in python using several external modules :
 
-- openturns >= 1.6 (=1.8 to use the SobolIndices class)
+- openturns >= 1.6 (>=1.8 to use the SobolIndices class)
 - statsmodels >= 0.6
 - numpy >= 1.10
 - sklearn >= 0.17

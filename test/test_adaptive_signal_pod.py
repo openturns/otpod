@@ -54,7 +54,11 @@ if ot.__version__ == '1.6':
     covarianceModel = ot.ProductCovarianceModel(covColl)
 elif ot.__version__ > '1.6':
     covarianceModel = ot.SquaredExponential([5.03148,13.9442,20,20], [15.1697])
-krigingModel = ot.KrigingAlgorithm(inputSample, signals, basis, covarianceModel)
+
+if ot.__version__ == '1.9':
+    krigingModel = ot.KrigingAlgorithm(inputSample, signals, covarianceModel, basis)
+else:
+    krigingModel = ot.KrigingAlgorithm(inputSample, signals, basis, covarianceModel)
 krigingModel.run()
 physicalModel = krigingModel.getResult().getMetaModel()
 
@@ -76,11 +80,11 @@ POD1.setSimulationSize(10)
 POD1.run()
 detectionSize1 = POD1.computeDetectionSize(0.9, 0.95)
 def test_1_a90():
-    np.testing.assert_almost_equal(detectionSize1[0], 4.609940355445644, decimal=4)
+    np.testing.assert_almost_equal(detectionSize1[0], 4.5866655741261795, decimal=4)
 def test_1_a95():
-    np.testing.assert_almost_equal(detectionSize1[1], 4.6501776747086945, decimal=4)
+    np.testing.assert_almost_equal(detectionSize1[1], 4.613725936782039, decimal=4)
 def test_1_Q2_90():
-    np.testing.assert_almost_equal(POD1.getQ2(), 0.9968293563682129, decimal=3)
+    np.testing.assert_almost_equal(POD1.getQ2(), 0.99908183453149602, decimal=3)
 
 # Test kriging with censored data without Box Cox
 ot.RandomGenerator.SetSeed(0)
@@ -93,11 +97,11 @@ POD2.setSimulationSize(10)
 POD2.run()
 detectionSize2 = POD2.computeDetectionSize(0.9, 0.95)
 def test_2_a90():
-    np.testing.assert_almost_equal(detectionSize2[0], 4.619794675991896, decimal=4)
+    np.testing.assert_almost_equal(detectionSize2[0], 4.579793158859425, decimal=4)
 def test_2_a95():
-    np.testing.assert_almost_equal(detectionSize2[1], 4.656472936856077, decimal=4)
+    np.testing.assert_almost_equal(detectionSize2[1], 4.595462026141416, decimal=4)
 def test_2_Q2_90():
-    np.testing.assert_almost_equal(POD2.getQ2(), 0.99589611891810326, decimal=4)
+    np.testing.assert_almost_equal(POD2.getQ2(), 0.99855283085924362, decimal=4)
 
 # # Test kriging with Box Cox
 # ot.RandomGenerator.SetSeed(0)

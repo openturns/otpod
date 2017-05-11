@@ -55,7 +55,11 @@ if ot.__version__ == '1.6':
     covarianceModel = ot.ProductCovarianceModel(covColl)
 elif ot.__version__ > '1.6':
     covarianceModel = ot.SquaredExponential([5.03148,13.9442,20,20], [15.1697])
-krigingModel = ot.KrigingAlgorithm(inputSample, signals, basis, covarianceModel)
+
+if ot.__version__ == '1.9':
+    krigingModel = ot.KrigingAlgorithm(inputSample, signals, covarianceModel, basis)
+else:
+    krigingModel = ot.KrigingAlgorithm(inputSample, signals, basis, covarianceModel)
 krigingModel.run()
 physicalModel = krigingModel.getResult().getMetaModel()
 

@@ -176,9 +176,12 @@ class QuantileRegressionPOD(POD):
                     return ot.NumericalPoint(fit.predict(X))
                 model = ot.PythonFunction(1, 1, model)
                 # Solve the model == detectionBoxCox with defects 
-                # boundaries = [0, defectMax]
+                # boundaries = [-infinity, defectMax] : it allows negative defects
+                # when for small prob level, there is no intersection with
+                # the detection threshold
                 defectList.append(ot.Brent().solve(model, detectionBoxCox,
-                                                   0, defectMax))
+                                                   -ot.SpecFunc.MaxNumericalScalar,
+                                                   defectMax))
             # add the quantile in the numerical sample as the ith simulation
             self._defectsPerQuantile[i, :] = defectList
             if self._verbose:
@@ -264,8 +267,8 @@ class QuantileRegressionPOD(POD):
     @DocInherit # decorator to inherit the docstring from POD class
     @keepingArgs # decorator to keep the real signature
     def computeDetectionSize(self, probabilityLevel, confidenceLevel=None):
-        defectMin = self._inputSample.getMin()[0]
-        defectMax = self._inputSample.getMax()[0]
+        defectMin = self._defects.getMin()[0]
+        defectMax = self._defects.getMax()[0]
         # compute 'a90'
         model = self._buildModel(1. - probabilityLevel)
         detectionSize = ot.NumericalPointWithDescription(1, ot.Brent().solve(
@@ -287,6 +290,25 @@ class QuantileRegressionPOD(POD):
     @keepingArgs # decorator to keep the real signature
     def drawPOD(self, probabilityLevel=None, confidenceLevel=None, defectMin=None,
                 defectMax=None, nbPt=100, name=None):
+
+        if defectMin is None:
+            defectMin = np.min(self._defects)
+        else:
+            if defectMin < np.min(self._defects):
+                raise ValueError('DefectMin must be greater than the minimum ' + \
+                                 'of the given defect sizes.')
+            if defectMin > np.max(self._defects):
+                raise ValueError('DefectMin must be lower than the maximum ' + \
+                                 'of the given defect sizes.')
+        if defectMax is None:
+            defectMax = np.max(self._defects)
+        else:
+            if defectMax > np.max(self._defects):
+                raise ValueError('DefectMax must be lower than the maximum ' + \
+                                 'of the given defect sizes.')
+            if defectMax < np.min(self._defects):
+                raise ValueError('DefectMax must be greater than the maximum ' + \
+                                 'of the given defect sizes.')
 
         if confidenceLevel is None:
             fig, ax = self._drawPOD(self.getPODModel(), None,

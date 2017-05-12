@@ -12,6 +12,7 @@ from ._progress_bar import updateProgress
 from ._kriging_tools import KrigingBase
 import logging
 import matplotlib.pyplot as plt
+from distutils.version import LooseVersion
 
 class AdaptiveSignalPOD(POD, KrigingBase):
     """
@@ -190,7 +191,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             print('Building the kriging model')
             print('Optimization of the covariance model parameters...')
 
-        if ot.__version__ == '1.9':
+        if LooseVersion(ot.__version__) == '1.9':
             llDim = algoKriging.getReducedLogLikelihoodFunction().getInputDimension()
         else:
             llDim = algoKriging.getLogLikelihoodFunction().getInputDimension()
@@ -248,7 +249,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                 signalsAugmented.add(metamodel(candidate))
                 # create a temporary kriging model with the new doe and without
                 # updating the covariance model parameters
-                if ot.__version__ == '1.9':
+                if LooseVersion(ot.__version__) == '1.9':
                     algoKrigingTemp = ot.KrigingAlgorithm(inputAugmented, signalsAugmented,
                                                           self._covarianceModel,
                                                           self._basis,
@@ -258,7 +259,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                                                           self._basis,
                                                           self._covarianceModel,
                                                           True)
-                if ot.__version__ > '1.6':
+                if LooseVersion(ot.__version__) > '1.6':
                     optimizer = algoKrigingTemp.getOptimizationSolver()
                     optimizer.setMaximumIterationNumber(0)
                     algoKrigingTemp.setOptimizationSolver(optimizer)
@@ -310,11 +311,11 @@ class AdaptiveSignalPOD(POD, KrigingBase):
 
             # update the kriging model without optimization
             algoKriging = self._buildKrigingAlgo(self._input, self._signals)
-            if ot.__version__ == '1.7':
+            if LooseVersion(ot.__version__) == '1.7':
                 optimizer = algoKriging.getOptimizationSolver()
                 optimizer.setMaximumIterationNumber(0)
                 algoKriging.setOptimizationSolver(optimizer)
-            elif ot.__version__ == '1.8':
+            elif LooseVersion(ot.__version__) == '1.8':
                 algoKriging.setOptimizeParameters(False)
 
             algoKriging.run()
@@ -326,7 +327,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                 if self._verbose:
                     print('Optimization of the covariance model parameters...')
 
-                if ot.__version__ == '1.9':
+                if LooseVersion(ot.__version__) == '1.9':
                     llDim = algoKriging.getReducedLogLikelihoodFunction().getInputDimension()
                 else:
                     llDim = algoKriging.getLogLikelihoodFunction().getInputDimension()

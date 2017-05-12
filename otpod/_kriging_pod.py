@@ -10,6 +10,7 @@ from scipy.interpolate import interp1d
 from ._progress_bar import updateProgress
 from ._kriging_tools import KrigingBase
 import logging
+from distutils.version import LooseVersion
 
 class KrigingPOD(POD, KrigingBase):
     """
@@ -144,7 +145,7 @@ class KrigingPOD(POD, KrigingBase):
             algoKriging = self._buildKrigingAlgo(self._input, self._signals)
             # optimize the covariance model parameters and return the kriging
             # algorithm with the run launched
-            if ot.__version__ == '1.9':
+            if LooseVersion(ot.__version__) == '1.9':
                 llDim = algoKriging.getReducedLogLikelihoodFunction().getInputDimension()
             else:
                 llDim = algoKriging.getLogLikelihoodFunction().getInputDimension()

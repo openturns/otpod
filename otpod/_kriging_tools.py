@@ -5,7 +5,7 @@ import openturns as ot
 import numpy as np
 from scipy.interpolate import interp1d
 from ._decorator import DocInherit, keepingArgs
-
+from distutils.version import LooseVersion
 
 __all__ = []
 
@@ -367,13 +367,13 @@ class KrigingBase():
             # anisotropic squared exponential covariance model
             covColl = ot.CovarianceModelCollection(self._dim)
             for i in range(self._dim):
-                if ot.__version__ == '1.6':
+                if LooseVersion(ot.__version__) == '1.6':
                     covColl[i]  = ot.SquaredExponential(1, 1.)
-                elif ot.__version__ > '1.6':
+                elif LooseVersion(ot.__version__) > '1.6':
                     covColl[i]  = ot.SquaredExponential([1], [1.])
             self._covarianceModel = ot.ProductCovarianceModel(covColl)
 
-        if ot.__version__ == "1.9":
+        if LooseVersion(ot.__version__) == "1.9":
             algoKriging = ot.KrigingAlgorithm(inputSample, outputSample,
                                     self._covarianceModel, self._basis)
         else:
@@ -450,7 +450,7 @@ class KrigingBase():
         krigingResult = algoKriging.getResult()
         covarianceModel = krigingResult.getCovarianceModel()
         basis = krigingResult.getBasisCollection()
-        if ot.__version__ == '1.9':
+        if LooseVersion(ot.__version__) == '1.9':
             llf = algoKriging.getReducedLogLikelihoodFunction()
         else:
             llf = algoKriging.getLogLikelihoodFunction()
@@ -472,9 +472,9 @@ class KrigingBase():
             bestTheta = thetaStart[indexMax]
 
             # update theta after random search
-            if ot.__version__ == '1.6':
+            if LooseVersion(ot.__version__) == '1.6':
                 covarianceModel.setScale(bestTheta)
-            elif ot.__version__ > '1.6':
+            elif LooseVersion(ot.__version__) > '1.6':
                 # optimize theta and sigma in ot 1.8
                 covarianceModel.setScale(bestTheta[:-1])
                 covarianceModel.setAmplitude([bestTheta[-1]])
@@ -482,24 +482,24 @@ class KrigingBase():
             
         # Now the KrigingAlgorithm is used to optimize the likelihood using a
         # good starting point
-        if ot.__version__ == "1.9":
+        if LooseVersion(ot.__version__) == "1.9":
             algoKriging = ot.KrigingAlgorithm(X, Y, covarianceModel, basis)
         else:
             algoKriging = ot.KrigingAlgorithm(X, Y, basis, covarianceModel, True)
 
         # set TNC optim
         searchInterval = ot.Interval(lowerBound, upperBound)
-        if ot.__version__ == '1.6':
+        if LooseVersion(ot.__version__) == '1.6':
             optimizer = ot.TNC()
             optimizer.setBoundConstraints(searchInterval)
             algoKriging.setOptimizer(optimizer)
-        elif ot.__version__  in ['1.7', '1.8']:
+        elif LooseVersion(ot.__version__)  in ['1.7', '1.8']:
             optimizer = algoKriging.getOptimizationSolver()
             problem = optimizer.getProblem()
             problem.setBounds(searchInterval)
             optimizer.setProblem(problem)
             algoKriging.setOptimizationSolver(optimizer)
-        elif ot.__version__ == '1.9':
+        elif LooseVersion(ot.__version__) == '1.9':
             algoKriging.setOptimizationBounds(searchInterval)
 
         return algoKriging
@@ -523,19 +523,19 @@ class KrigingBase():
         else:
             normalized_inputSample = inputSample
 
-        if ot.__version__ == '1.6':
+        if LooseVersion(ot.__version__) == '1.6':
             # correlation matrix
             Rtrianglow = np.array(cov.discretize(normalized_inputSample))
             R = Rtrianglow + Rtrianglow.T - np.eye(Rtrianglow.shape[0])
             # get sigma2 (covariance model scale parameters)
             sigma2 = krigingResult.getSigma2()
             K = sigma2 * R
-        elif ot.__version__ == '1.7':
+        elif LooseVersion(ot.__version__) == '1.7':
             R = cov.discretize(normalized_inputSample)
             C = R.computeCholesky()
             sigma2 = krigingResult.getCovarianceModel().getAmplitude()[0]**2
             K = sigma2 * np.dot(C, C.transpose())
-        elif ot.__version__ >= '1.8':
+        elif LooseVersion(ot.__version__) >= '1.8':
             K = cov.discretize(normalized_inputSample)
 
         # get coefficient and compute trend

@@ -436,7 +436,7 @@ class AdaptiveHitMissPOD(POD):
                 raise ValueError('DefectMax must be lower than the maximum ' + \
                                  'of the given defect sizes.')
             if defectMax < np.min(self._defectSizes):
-                raise ValueError('DefectMax must be greater than the maximum ' + \
+                raise ValueError('DefectMax must be greater than the minimum ' + \
                                  'of the given defect sizes.')
 
         if confidenceLevel is None:

@@ -56,7 +56,7 @@ detectionSize2 = POD2.computeDetectionSize(0.9, 0.95)
 def test_2_a90():
     np.testing.assert_almost_equal(detectionSize2[0], 0.287014269172)
 def test_2_a95():
-    np.testing.assert_almost_equal(detectionSize2[1], 0.30527768851)
+    np.testing.assert_almost_equal(detectionSize2[1], 0.30527768851, decimal=5)
 def test_2_R2_90():
     np.testing.assert_almost_equal(POD2.getR2(0.9), 0.601476185955)
 

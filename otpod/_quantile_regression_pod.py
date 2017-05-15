@@ -178,7 +178,7 @@ class QuantileRegressionPOD(POD):
                 # Solve the model == detectionBoxCox with defects 
                 # boundaries = [-infinity, defectMax] : it allows negative defects
                 # when for small prob level, there is no intersection with
-                # the detection threshold
+                # the detection threshold for positive defects
                 defectList.append(ot.Brent().solve(model, detectionBoxCox,
                                                    -ot.SpecFunc.MaxNumericalScalar,
                                                    defectMax))
@@ -271,13 +271,22 @@ class QuantileRegressionPOD(POD):
         defectMax = self._defects.getMax()[0]
         # compute 'a90'
         model = self._buildModel(1. - probabilityLevel)
-        detectionSize = ot.NumericalPointWithDescription(1, ot.Brent().solve(
-                                    model, self._detectionBoxCox, 0, defectMax))
+        try:
+            detectionSize = ot.NumericalPointWithDescription(1, ot.Brent().solve(
+                                        model, self._detectionBoxCox, defectMin, defectMax))
+        except:
+            raise Exception('The POD model does not contain, for the given ' + \
+                             'defect interval, the wanted probability level.')
         description = ['a'+str(int(probabilityLevel*100))]
 
         # compute 'a90_95'
         if confidenceLevel is not None:
-            detectionSize.add(ot.Brent().solve(self.getPODCLModel(confidenceLevel),
+            modelCl = self.getPODCLModel(confidenceLevel)
+            if not (modelCl([defectMin])[0] <= probabilityLevel <= modelCl([defectMax])[0]):
+                raise Exception('The POD model at the confidence level does not '+\
+                                'contain, for the given defect interval, the '+\
+                                'wanted probability level.')
+            detectionSize.add(ot.Brent().solve(modelCl,
                                                probabilityLevel,
                                                defectMin, defectMax))
             description.append('a'+str(int(probabilityLevel*100))+'/'\
@@ -307,7 +316,7 @@ class QuantileRegressionPOD(POD):
                 raise ValueError('DefectMax must be lower than the maximum ' + \
                                  'of the given defect sizes.')
             if defectMax < np.min(self._defects):
-                raise ValueError('DefectMax must be greater than the maximum ' + \
+                raise ValueError('DefectMax must be greater than the minimum ' + \
                                  'of the given defect sizes.')
 
         if confidenceLevel is None:

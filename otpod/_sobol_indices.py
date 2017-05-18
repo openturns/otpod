@@ -127,7 +127,7 @@ class SobolIndices():
         else:
             return self._sa
 
-    def drawIndices(self, label=None, name=None):
+    def drawAggregatedIndices(self, label=None, name=None):
         """
         Plot the aggregated Sobol indices.
 
@@ -148,13 +148,13 @@ class SobolIndices():
             Matplotlib axes object.
         """
         if label is None:
-            label = ['X{}'.format(i+1) for i in range(self._dim)]
+            label = ot.Description.BuildDefault(self._dim, "X")
         else:
             if len(label) != self._dim:
                 raise AttributeError("The label dimension must be {}.").format(self._dim)
 
         graph = self._sa.draw()
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 6))
         View(graph, axes=[ax])
         ax.set_xticks(np.array(range(self._dim))+1)
         ax.set_xlim(0.5, self._dim+0.5)
@@ -163,6 +163,113 @@ class SobolIndices():
         if name is not None:
             fig.savefig(name, bbox_inches='tight', transparent=True)
 
+        return fig, ax
+
+    def drawFirstOrderIndices(self, label=None, name=None):
+        """
+        Plot the first Sobol indices for all defect values.
+
+        Parameters
+        ----------
+        label : sequence of float
+            The name of the input parameters
+        name : string
+            name of the figure to be saved with *transparent* option sets to True
+            and *bbox_inches='tight'*. It can be only the file name or the 
+            full path name. Default is None.
+
+        Returns
+        -------
+        fig : `matplotlib.figure <http://matplotlib.org/api/figure_api.html>`_
+            Matplotlib figure object.
+        ax : `matplotlib.axes <http://matplotlib.org/api/axes_api.html>`_
+            Matplotlib axes object.
+        """
+        fig, ax = self._drawIndices('first', label, name)
+        return fig, ax
+
+    def drawTotalOrderIndices(self, label=None, name=None):
+        """
+        Plot the total Sobol indices for all defect values.
+
+        Parameters
+        ----------
+        label : sequence of float
+            The name of the input parameters
+        name : string
+            name of the figure to be saved with *transparent* option sets to True
+            and *bbox_inches='tight'*. It can be only the file name or the 
+            full path name. Default is None.
+
+        Returns
+        -------
+        fig : `matplotlib.figure <http://matplotlib.org/api/figure_api.html>`_
+            Matplotlib figure object.
+        ax : `matplotlib.axes <http://matplotlib.org/api/axes_api.html>`_
+            Matplotlib axes object.
+        """
+        fig, ax = self._drawIndices('total', label, name)
+        return fig, ax
+
+    def _drawIndices(self, order, label, name):
+        """
+        Based method to plot the Sobol indices.
+
+        Parameters
+        ----------
+        order : string
+            Either first or total
+        label : sequence of float
+            The name of the input parameters
+        name : string
+            name of the figure to be saved with *transparent* option sets to True
+            and *bbox_inches='tight'*. It can be only the file name or the 
+            full path name. Default is None.
+
+        Returns
+        -------
+        fig : `matplotlib.figure <http://matplotlib.org/api/figure_api.html>`_
+            Matplotlib figure object.
+        ax : `matplotlib.axes <http://matplotlib.org/api/axes_api.html>`_
+            Matplotlib axes object.
+        """
+        if label is None:
+            label = ot.Description.BuildDefault(self._dim, "X")
+        else:
+            if len(label) != self._dim:
+                raise AttributeError("The label dimension must be {}.").format(self._dim)
+
+        # get the indices values that can be computed
+        xplot = ot.NumericalSample(0, 1)
+        yplot = ot.NumericalSample(0, self._dim)
+        for i, defect in enumerate(self._defectSizes):
+            try:
+                if order == 'first':
+                    yplot.add(self._sa.getFirstOrderIndices(i))
+                elif order == 'total':
+                    yplot.add(self._sa.getTotalOrderIndices(i))
+                xplot.add([defect])
+            except:
+                pass
+
+        # define different colors for each parameter
+        colors = ot.Drawable.BuildDefaultPalette(self._dim)
+
+        fig, ax = plt.subplots(figsize=(8, 2*self._dim))
+        for output in range(self._dim):
+            ax.plot(xplot, yplot[:, output], color=colors[output], marker='o',
+                                             ls='', label=label[output])
+        ax.set_xlabel('Defects')
+        ax.set_ylabel('Sensitivity indices')
+        if order == 'first':
+            ax.set_title('First order sensitivity indices - {} Algorithm'.format(self._method))
+        elif order == 'total':
+            ax.set_title('Total order sensitivity indices - {} Algorithm'.format(self._method))
+        ax.set_ylim(0, 1.2)
+        ax.grid()
+        ax.legend(loc='lower left')
+        if name is not None:
+            fig.savefig(name, bbox_inches='tight', transparent=True)
         return fig, ax
 
     def getSensitivityMethod(self):

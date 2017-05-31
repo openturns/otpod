@@ -9,8 +9,8 @@ python:
 install:
   - curl http://ubuntu.openturns.org/openturns.org-repo.key | sudo apt-key add -
   - echo deb http://ubuntu.openturns.org trusty main | sudo tee /etc/apt/sources.list.d/openturns.list
-  - apt-get update
-  - apt-get -y install python-openturns
+  - sudo apt-get update
+  - sudo apt-get -y install python-openturns
 
 script:
   - python setup.py install --user

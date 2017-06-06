@@ -1,4 +1,5 @@
 import openturns as ot
+ot.TBB.Disable()
 import otpod
 import numpy as np
 
@@ -36,6 +37,7 @@ saturationThres = 1700.
 
 ####### Test on the POD models ###################
 # Test linear regression with no hypothesis on residuals and Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD1 = otpod.UnivariateLinearModelPOD(defects, signals, detection, boxCox=True)
 POD1.run()
@@ -51,6 +53,7 @@ def test_1_PODModelCl09():
 
 
 # Test linear regression with no hypothesis on residuals, censored data and Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD2 = otpod.UnivariateLinearModelPOD(defects, signals, detection, noiseThres, saturationThres, boxCox=True)
 POD2.run()
@@ -82,6 +85,7 @@ def test_2_a9095():
 
 
 # Test linear regression with no hypothesis on residuals, low censored data and Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD3 = otpod.UnivariateLinearModelPOD(defects, signals, detection, noiseThres, None, boxCox=True)
 POD3.run()
@@ -93,6 +97,7 @@ def test_3_a9095():
 
 
 # Test linear regression with no hypothesis on residuals, high censored data and Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD4 = otpod.UnivariateLinearModelPOD(defects, signals, detection, None, saturationThres, boxCox=True)
 POD4.run()
@@ -104,6 +109,7 @@ def test_4_a9095():
 
 
 # Test without Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD7 = otpod.UnivariateLinearModelPOD(defects, signals, detection, boxCox=False)
 POD7.run()
@@ -114,6 +120,7 @@ def test_7_a9095():
     np.testing.assert_almost_equal(detectionSize7[1], 0.336508146999)
 
 # Test linear regression with no hypothesis on residuals, censored data
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD8 = otpod.UnivariateLinearModelPOD(defects, signals, detection, noiseThres, saturationThres, boxCox=False)
 POD8.run()
@@ -125,6 +132,7 @@ def test_8_a9095():
 
 
 # Test linear regression with no hypothesis on residuals, low censored data
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD9 = otpod.UnivariateLinearModelPOD(defects, signals, detection, noiseThres, None, boxCox=False)
 POD9.run()
@@ -136,6 +144,7 @@ def test_9_a9095():
 
 
 # Test linear regression with no hypothesis on residuals, high censored data
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD10 = otpod.UnivariateLinearModelPOD(defects, signals, detection, None, saturationThres, boxCox=False)
 POD10.run()
@@ -149,6 +158,7 @@ def test_10_a9095():
 ######### Test with the Linear regression and kernel smoothing #################
 resDistFact = ot.KernelSmoothing()
 # Test with Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD13 = otpod.UnivariateLinearModelPOD(defects, signals, detection, resDistFact=resDistFact, boxCox=True)
 POD13.setSimulationSize(100)
@@ -160,6 +170,7 @@ def test_13_a9095():
     np.testing.assert_almost_equal(detectionSize13[1], 0.331458994153)
 
 # Test with censored data and box cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD14 = otpod.UnivariateLinearModelPOD(defects, signals, detection, noiseThres, saturationThres, resDistFact=resDistFact, boxCox=True)
 POD14.setSimulationSize(100)
@@ -172,6 +183,7 @@ def test_14_a9095():
 
 
 # Test linear regression with no hypothesis on residuals, low censored data and Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD15 = otpod.UnivariateLinearModelPOD(defects, signals, detection, noiseThres, None, resDistFact=resDistFact, boxCox=True)
 POD15.setSimulationSize(100)
@@ -184,6 +196,7 @@ def test_15_a9095():
 
 
 # Test linear regression with no hypothesis on residuals, high censored data and Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD16 = otpod.UnivariateLinearModelPOD(defects, signals, detection, None, saturationThres, resDistFact=resDistFact, boxCox=True)
 POD16.setSimulationSize(100)
@@ -196,6 +209,7 @@ def test_16_a9095():
 
 
 # Test from the linear analysis
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, resDistFact=resDistFact, boxCox=True)
 ot.RandomGenerator.SetSeed(0)
@@ -210,6 +224,7 @@ def test_17_a9095():
 
 
 # Test from the linear analysis with censored data
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, saturationThres, resDistFact=resDistFact, boxCox=True)
 ot.RandomGenerator.SetSeed(0)
@@ -225,6 +240,7 @@ def test_18_a9095():
 
 
 # Test without Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD19 = otpod.UnivariateLinearModelPOD(defects, signals, detection, resDistFact=resDistFact, boxCox=False)
 POD19.setSimulationSize(100)
@@ -236,6 +252,7 @@ def test_19_a9095():
     np.testing.assert_almost_equal(detectionSize19[1], 0.339010405225)
 
 # Test linear regression with no hypothesis on residuals, censored data
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD20 = otpod.UnivariateLinearModelPOD(defects, signals, detection, noiseThres, saturationThres, resDistFact=resDistFact, boxCox=False)
 POD20.setSimulationSize(100)
@@ -248,6 +265,7 @@ def test_20_a9095():
 
 
 # Test linear regression with no hypothesis on residuals, low censored data
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD21 = otpod.UnivariateLinearModelPOD(defects, signals, detection, noiseThres, None, resDistFact=resDistFact, boxCox=False)
 POD21.setSimulationSize(100)
@@ -260,6 +278,7 @@ def test_21_a9095():
 
 
 # Test linear regression with no hypothesis on residuals, high censored data
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD22 = otpod.UnivariateLinearModelPOD(defects, signals, detection, None, saturationThres, resDistFact=resDistFact, boxCox=False)
 POD22.setSimulationSize(100)
@@ -272,6 +291,7 @@ def test_22_a9095():
 
 
 # Test from the linear analysis
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, resDistFact=resDistFact, boxCox=False)
 ot.RandomGenerator.SetSeed(0)
@@ -286,6 +306,7 @@ def test_23_a9095():
 
 
 # Test from the linear analysis
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, saturationThres, resDistFact=resDistFact, boxCox=False)
 ot.RandomGenerator.SetSeed(0)
@@ -303,6 +324,7 @@ def test_24_a9095():
 ######### Test with the Linear regression and Normal factory #################
 resDistFact = ot.NormalFactory()
 # Test with Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD25 = otpod.UnivariateLinearModelPOD(defects, signals, detection, resDistFact=resDistFact, boxCox=True)
 POD25.run()
@@ -313,6 +335,7 @@ def test_25_a9095():
     np.testing.assert_almost_equal(detectionSize25[1], 0.324672954397)
 
 # Test with censored data and box cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD26 = otpod.UnivariateLinearModelPOD(defects, signals, detection, noiseThres, saturationThres, resDistFact=resDistFact, boxCox=True)
 POD26.run()
@@ -324,6 +347,7 @@ def test_26_a9095():
 
 
 # Test linear regression with no hypothesis on residuals, low censored data and Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD27 = otpod.UnivariateLinearModelPOD(defects, signals, detection, noiseThres, None, resDistFact=resDistFact, boxCox=True)
 POD27.run()
@@ -335,6 +359,7 @@ def test_27_a9095():
 
 
 # Test linear regression with no hypothesis on residuals, high censored data and Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD28 = otpod.UnivariateLinearModelPOD(defects, signals, detection, None, saturationThres, resDistFact=resDistFact, boxCox=True)
 POD28.run()
@@ -346,8 +371,10 @@ def test_28_a9095():
 
 
 # Test from the linear analysis
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, resDistFact=resDistFact, boxCox=True)
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD29 = otpod.UnivariateLinearModelPOD(analysis=analysis, detection=detection)
 POD29.run()
@@ -359,8 +386,10 @@ def test_29_a9095():
 
 
 # Test from the linear analysis with censored data
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, saturationThres, resDistFact=resDistFact, boxCox=True)
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD30 = otpod.UnivariateLinearModelPOD(analysis=analysis, detection=detection)
 POD30.run()
@@ -372,6 +401,7 @@ def test_30_a9095():
 
 
 # Test without Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD31 = otpod.UnivariateLinearModelPOD(defects, signals, detection, resDistFact=resDistFact, boxCox=False)
 POD31.run()
@@ -382,6 +412,7 @@ def test_31_a9095():
     np.testing.assert_almost_equal(detectionSize31[1], 0.349279588446)
 
 # Test linear regression with no hypothesis on residuals, censored data
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD32 = otpod.UnivariateLinearModelPOD(defects, signals, detection, noiseThres, saturationThres, resDistFact=resDistFact, boxCox=False)
 POD32.run()
@@ -393,6 +424,7 @@ def test_32_a9095():
 
 
 # Test linear regression with no hypothesis on residuals, low censored data
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD33 = otpod.UnivariateLinearModelPOD(defects, signals, detection, noiseThres, None, resDistFact=resDistFact, boxCox=False)
 POD33.run()
@@ -404,6 +436,7 @@ def test_33_a9095():
 
 
 # Test linear regression with no hypothesis on residuals, high censored data
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD34 = otpod.UnivariateLinearModelPOD(defects, signals, detection, None, saturationThres, resDistFact=resDistFact, boxCox=False)
 POD34.run()
@@ -415,8 +448,10 @@ def test_34_a9095():
 
 
 # Test from the linear analysis
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, resDistFact=resDistFact, boxCox=False)
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD35 = otpod.UnivariateLinearModelPOD(analysis=analysis, detection=detection)
 POD35.run()
@@ -428,8 +463,10 @@ def test_35_a9095():
 
 
 # Test from the linear analysis
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, saturationThres, resDistFact=resDistFact, boxCox=False)
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD36 = otpod.UnivariateLinearModelPOD(analysis=analysis, detection=detection)
 POD36.run()
@@ -444,6 +481,7 @@ def test_36_a9095():
 dataFiltered = otpod.DataHandling.filterCensoredData(defects, signals,
                                                     noiseThres, saturationThres)
 # linear regression binomial
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD37 = otpod.UnivariateLinearModelPOD(dataFiltered[0], dataFiltered[3],
                             detection, resDistFact=None, boxCox=False)
@@ -455,6 +493,7 @@ def test_37_a9095():
     np.testing.assert_almost_equal(detectionSize37[1], 0.331276651014)
 
 # linear regression binomial with box cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD38 = otpod.UnivariateLinearModelPOD(dataFiltered[0], dataFiltered[3],
                             detection, resDistFact=None, boxCox=True)
@@ -466,6 +505,7 @@ def test_38_a9095():
     np.testing.assert_almost_equal(detectionSize38[1], 0.301444232939)
 
 # linear regression Gauss
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD39 = otpod.UnivariateLinearModelPOD(dataFiltered[0], dataFiltered[3],
                             detection, resDistFact=ot.NormalFactory(), boxCox=False)
@@ -477,6 +517,7 @@ def test_39_a9095():
     np.testing.assert_almost_equal(detectionSize39[1], 0.330683811473)
 
 # linear regression Gauss with box cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD40 = otpod.UnivariateLinearModelPOD(dataFiltered[0], dataFiltered[3],
                             detection, resDistFact=ot.NormalFactory(), boxCox=True)
@@ -488,6 +529,7 @@ def test_40_a9095():
     np.testing.assert_almost_equal(detectionSize40[1], 0.312151336843)
 
 # linear regression Kernel smoothing
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD41 = otpod.UnivariateLinearModelPOD(dataFiltered[0], dataFiltered[3],
                             detection, resDistFact=ot.KernelSmoothing(), boxCox=False)
@@ -500,6 +542,7 @@ def test_41_a9095():
     np.testing.assert_almost_equal(detectionSize41[1], 0.327902796622)
 
 # linear regression kernel smoothing with box cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD42 = otpod.UnivariateLinearModelPOD(dataFiltered[0], dataFiltered[3],
                             detection, resDistFact=ot.KernelSmoothing(), boxCox=True)

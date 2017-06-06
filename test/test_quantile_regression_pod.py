@@ -1,4 +1,5 @@
 import openturns as ot
+ot.TBB.Disable()
 import otpod
 import numpy as np
 
@@ -35,6 +36,7 @@ saturationThres = 1700.
 
 ####### Test on the POD models ###################
 # Test quantile regression without Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD1 = otpod.QuantileRegressionPOD(defects, signals, detection, boxCox=False)
 POD1.setSimulationSize(10)
@@ -48,6 +50,7 @@ def test_1_R2_90():
     np.testing.assert_almost_equal(POD1.getR2(0.9), 0.572190802359)
 
 # Test quantile regression with censored data without Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD2 = otpod.QuantileRegressionPOD(defects, signals, detection, noiseThres, saturationThres, boxCox=False)
 POD2.setSimulationSize(10)
@@ -62,6 +65,7 @@ def test_2_R2_90():
 
 
 # Test quantile regression with Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD3 = otpod.QuantileRegressionPOD(defects, signals, detection, boxCox=True)
 POD3.setSimulationSize(10)
@@ -75,6 +79,7 @@ def test_3_R2_90():
     np.testing.assert_almost_equal(POD3.getR2(0.9), 0.628868102499)
 
 # Test quantile regression with censored data with Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD4 = otpod.QuantileRegressionPOD(defects, signals, detection, noiseThres, saturationThres, boxCox=True)
 POD4.setSimulationSize(10)

@@ -1,5 +1,6 @@
 import numpy as np
 import openturns as ot
+ot.TBB.Disable()
 import otpod
 
 inputSample = ot.NumericalSample(

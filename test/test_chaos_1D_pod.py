@@ -1,4 +1,5 @@
 import openturns as ot
+ot.TBB.Disable()
 import otpod
 import numpy as np
 
@@ -35,6 +36,7 @@ saturationThres = 1700.
 
 ####### Test on the POD models ###################
 # Test polynomial chaos without Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD1 = otpod.PolynomialChaosPOD(defects, signals, detection, boxCox=False)
 POD1.setSamplingSize(300)
@@ -51,6 +53,7 @@ def test_1_Q2_90():
     np.testing.assert_almost_equal(POD1.getQ2(), 0.84004097148)
 
 # Test polynomial chaos with censored data without Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD2 = otpod.PolynomialChaosPOD(defects, signals, detection, noiseThres, saturationThres, boxCox=False)
 POD2.setSamplingSize(300)
@@ -68,6 +71,7 @@ def test_2_Q2_90():
 
 
 # Test polynomial chaos with Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD3 = otpod.PolynomialChaosPOD(defects, signals, detection, boxCox=True)
 POD3.setSamplingSize(300)
@@ -85,6 +89,7 @@ def test_3_Q2_90():
 
 
 # Test polynomial chaos with censored data with Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 POD4 = otpod.PolynomialChaosPOD(defects, signals, detection, noiseThres, saturationThres, boxCox=True)
 POD4.setSamplingSize(300)

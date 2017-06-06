@@ -1,4 +1,5 @@
 import openturns as ot
+ot.TBB.Disable()
 import otpod
 import numpy as np
 from distutils.version import LooseVersion

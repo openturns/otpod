@@ -40,6 +40,7 @@ detection = 38.
 
 
 ####### Test on the Sobol indices ###################
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
 POD = otpod.KrigingPOD(inputSample, signals, detection)
@@ -63,6 +64,7 @@ POD.run()
 N = 300
 # Test for default defect size
 sobol = otpod.SobolIndices(POD, N)
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 sobol.run()
 sobol_result = sobol.getSensitivityResult()
@@ -85,6 +87,7 @@ def test_1_TO_5():
 
 # Test 2 for one specific defect size
 sobol.setDefectSizes([4.5])
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 sobol.run()
 sobol_result = sobol.getSensitivityResult()
@@ -99,6 +102,7 @@ def test_2_TA():
 
 # Test 3 with Martinez method
 sobol.setSensitivityMethod("Martinez")
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 sobol.run()
 sobol_result = sobol.getSensitivityResult()
@@ -113,6 +117,7 @@ def test_3_TA():
 
 # Test 4 with Jansen method
 sobol.setSensitivityMethod("Jansen")
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 sobol.run()
 sobol_result = sobol.getSensitivityResult()
@@ -128,6 +133,7 @@ def test_4_TA():
 
 # Test 5 with Jansen method
 sobol.setSensitivityMethod("MauntzKucherenko")
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 sobol.run()
 sobol_result = sobol.getSensitivityResult()
@@ -144,6 +150,8 @@ def test_5_TA():
 ################################################################################
 # Test 6 WITH CHAOS
 chaosPOD = otpod.PolynomialChaosPOD(inputSample, signals, detection)
+np.random.seed(0)
+ot.RandomGenerator.SetSeed(0)
 chaosPOD.setSamplingSize(200)
 chaosPOD.setSimulationSize(50)
 chaosPOD.run()

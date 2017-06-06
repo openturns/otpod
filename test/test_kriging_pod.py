@@ -58,6 +58,7 @@ saturationThres=47.
 #     np.testing.assert_almost_equal(POD1.getQ2(), 0.99993575194237017, decimal=4)
 
 # Test kriging with censored data without Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
 POD2 = otpod.KrigingPOD(inputSample, signals, detection, noiseThres, saturationThres, boxCox=False)
@@ -101,6 +102,7 @@ def test_2_Q2_90():
 #     np.testing.assert_almost_equal(POD3.getQ2(), 0.999934930229, decimal=3)
 
 # Test kriging with censored data with Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
 POD4 = otpod.KrigingPOD(inputSample, signals, detection, noiseThres, saturationThres, boxCox=True)

@@ -60,12 +60,16 @@ if ot.__version__ == '1.9':
     krigingModel = ot.KrigingAlgorithm(inputSample, signals, covarianceModel, basis)
 else:
     krigingModel = ot.KrigingAlgorithm(inputSample, signals, basis, covarianceModel)
+
+ot.RandomGenerator.SetSeed(0)
+np.random.seed(0)
 krigingModel.run()
 physicalModel = krigingModel.getResult().getMetaModel()
 
 
 ####### Test on the POD models ###################
 # Test hitmiss without Box Cox with rf classifier
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
 POD1 = otpod.AdaptiveHitMissPOD(inputDOE, outputDOE, physicalModel, 20, detection)
@@ -80,6 +84,7 @@ def test_1_confusion_matrix():
 
 ####### Test on the POD models ###################
 # Test hitmiss without Box Cox with svc classifier
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
 POD2 = otpod.AdaptiveHitMissPOD(inputDOE, outputDOE, physicalModel, 10, detection)

@@ -61,6 +61,9 @@ if ot.__version__ == '1.9':
     krigingModel = ot.KrigingAlgorithm(inputSample, signals, covarianceModel, basis)
 else:
     krigingModel = ot.KrigingAlgorithm(inputSample, signals, basis, covarianceModel)
+
+np.random.seed(0)
+ot.RandomGenerator.SetSeed(0)
 krigingModel.run()
 physicalModel = krigingModel.getResult().getMetaModel()
 
@@ -72,6 +75,7 @@ nIteration = 1
 
 ####### Test on the POD models ###################
 # Test kriging without Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
 POD1 = otpod.AdaptiveSignalPOD(inputDOE, outputDOE, physicalModel, nIteration, detection)
@@ -97,6 +101,7 @@ elif LooseVersion(ot.__version__) == '1.8':
         np.testing.assert_almost_equal(POD1.getQ2(), 0.996829356368, decimal=3)
 
 # Test kriging with censored data without Box Cox
+np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
 POD2 = otpod.AdaptiveSignalPOD(inputDOE, outputDOE, physicalModel, nIteration, detection, noiseThres, saturationThres)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # -*- Python -*-
 
-__all__ = ['PLIMean', 'PLIVariance']
+__all__ = []
 
 
 import numpy as np
@@ -61,7 +61,10 @@ class PLI():
                                  "enabled before running it.")
 
         # the original distribution
-        self._distribution = distribution
+        if distribution.hasIndependentCopula():
+            self._distribution = distribution
+        else:
+            raise Exception("The distribution must have an independent copula.")
         self._dim = self._distribution.getDimension()
 
         # the 1d or 2d sequence of deltas
@@ -122,7 +125,13 @@ class PLI():
         """
         # get the input and output sample
         function = self._monteCarloResult.getEvent().getFunction()
-        inputSample = function.getHistoryInput().getSample()
+        try:
+            # for the case with parametric functions
+            inputSample = function.getInputPointHistory()
+        except NotYetImplementedException:
+            # else not parametric functions
+            inputSample = function.getHistoryInput().getSample()
+
         outputSample = function.getHistoryOutput().getSample()
         operator = self._monteCarloResult.getEvent().getOperator().getImplementation().getClassName()
         threshold = self._monteCarloResult.getEvent().getThreshold()
@@ -475,7 +484,7 @@ class PLI():
         return h
 
 
-class PLIMean(PLI):
+class PLIMeanBase(PLI):
     """
     PLI based on a mean perturbation.
 
@@ -489,7 +498,7 @@ class PLIMean(PLI):
         The joint distribution of the input parameters.
     delta : 1d or 2d sequence of float
         The new values of the mean. Either 1d if delta values are the same for
-        all marginals, or 2d if delta values are defined independantly for each
+        all marginals, or 2d if delta values are defined independently for each
         marginal.
     sigmaScaled : bool
         Change the type of the mean shifting applied for all the variables. 
@@ -545,7 +554,9 @@ class PLIMean(PLI):
 
                 a, b = marginalDist.getParameter()
                 # compute the optimal lambda solving the M'/M - delta = 0
-                optimalLambda = fsolve(MprimeOverM, 1, args=(a, b, delta))
+                optimalLambda = fsolve(MprimeOverM, 0, args=(a, b, delta),
+                            epsfcn=marginalDist.getStandardDeviation()[0]*0.01)
+
                 # return the analytical expression of the distribution
                 return optimalLambda/(np.exp(optimalLambda*b) - np.exp(optimalLambda*a)) * \
                        np.exp(optimalLambda*X) * np.logical_and(X<=b, X>=a)
@@ -561,7 +572,7 @@ class PLIMean(PLI):
         """
         return self._distribution.getMarginal(marginal).getMean()[0]
 
-class PLIVariance(PLI):
+class PLIVarianceBase(PLI):
     """
     PLI based on a variance perturbation.
 
@@ -575,7 +586,7 @@ class PLIVariance(PLI):
         The joint distribution of the input parameters.
     delta : 1d or 2d sequence of float
         The new values of the variance. Either 1d if delta values are the same for
-        all marginals, or 2d if delta values are defined independantly for each
+        all marginals, or 2d if delta values are defined independently for each
         marginal.
     """
     def __init__(self, monteCarloResult, distribution, delta):

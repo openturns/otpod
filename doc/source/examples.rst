@@ -17,3 +17,4 @@ Examples of the API
     examples/AdaptiveSignalPOD
     examples/adaptiveHitMissPOD
     examples/SobolIndices
+    examples/PLI

@@ -604,22 +604,24 @@ class PLIVarianceBase(PLI):
         The new values of the variance of coefficient. Either 1d if delta values
         are the same for all marginals, or 2d if delta values are defined
         independently for each marginal.
-    coefScaled : bool
+    covScaled : bool
         Change the type of the applied variance shifting for all the variables. 
         If False (default case), the given delta values are the new marginal variances.
-        If True, newVariance = variance x delta.
+        If True, newVariance = (mean x delta + std)^2, it corresponds with an
+        increase of the coefficient of variation by delta : newCov = cov + delta.
     """
-    def __init__(self, monteCarloResult, distribution, delta, coefScaled=False):
+    def __init__(self, monteCarloResult, distribution, delta, covScaled=False):
         PLI.__init__(self, monteCarloResult, distribution, delta)
 
         # check if the delta values are positive
-        if ~ (self._deltaValues > 0).all():
+        if ~ (self._deltaValues > 0).all() and not covScaled:
             raise AttributeError("The delta values must be positive.")
 
         # if activated, 
-        if coefScaled:
-            var = np.array(self._distribution.getStandardDeviation())**2
-            self._deltaValues = self._deltaValues * var
+        if covScaled:
+            std = np.array(self._distribution.getStandardDeviation())
+            mean = np.array(self._distribution.getMean())
+            self._deltaValues = (self._deltaValues * mean + std)**2
 
     def _perturbedMarginalPDF(self, X, marginal, delta):
         """
@@ -726,6 +728,8 @@ class PLIVarianceBase(PLI):
         Compute the gradient of the Lagrange function
         """
         expPsi = self.computeIntegral(marginal, lamb, 0)
+        if expPsi==0:
+            raise ZeroDivisionError('Exponential Psi = 0')
         r1 = self.computeIntegral(marginal, lamb, 1)
         r2 = self.computeIntegral(marginal, lamb, 2)
         gradH1 = r1 / expPsi - deltaRHS[0]

@@ -418,18 +418,18 @@ class PLIVariance(PLIBase):
         The new values of the mean. Either 1d if delta values are the same for
         all marginals, or 2d if delta values are defined independently for each
         marginal.
-    coefScaled : bool
+    covScaled : bool
         Change the type of the applied variance shifting for all the variables. 
         If False (default case), the given delta values are the new marginal variances.
         If True, newVariance = variance x delta.
     """
-    def __init__(self, POD, delta, coefScaled=True):
+    def __init__(self, POD, delta, covScaled=True):
         PLIBase.__init__(self, POD, delta)
-        self._coefScaled = coefScaled
+        self._covScaled = covScaled
 
     def _definePLIAlgorithm(self, resultMonteCarlo):
         return PLIVarianceBase(resultMonteCarlo, self._distribution, self._delta,
-                               coefScaled=self._coefScaled)
+                               covScaled=self._covScaled)
 
 
         

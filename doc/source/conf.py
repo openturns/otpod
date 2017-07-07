@@ -63,7 +63,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'otpod'
-copyright = u'2016'
+copyright = u'2017'
 author = u'Antoine Dumas'
 
 # The version info for the project you're documenting, acts as replacement for

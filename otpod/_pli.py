@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 # -*- Python -*-
 
-__all__ = []
-
+__all__ = ['PLI']
 
 import numpy as np
 import openturns as ot
@@ -10,48 +9,47 @@ from openturns.viewer import View
 import matplotlib.pyplot as plt
 from scipy.optimize import fsolve
 
-
 class PLI():
+    """
+    PLI base class.
+
+    Notes
+    -----
+    The Perturbation Law Indices are based upon the modification of the
+    probability density function (pdf) of the random inputs, when the
+    quantity of interest is a failure probability. An input is considered
+    influential if the input pdf modification leads to a broad change in the
+    failure probability. These sensitivity indices can be computed using the
+    sole set of simulations that has already been used to estimate the
+    failure probability, thus limiting the number of calls to the numerical
+    model. In this implementation, the sample must come from a Monte Carlo
+    simulation.
+
+    The input perturbation is defined to obtain the perturbed density
+    function as the closest to the original one, in the sense of the 
+    Kullback-Leibler divergence. The implemented perturbation includes a
+    mean shift and a variance shift, accessible through the derived class.
+    The current implementation only allows to modifiy Normal and Uniform
+    density functions.
+
+    In order to compare equivalently the indices when the input distributions
+    are not the same, it is possible to plot the indices with respect to the
+    Hellinger distance.
+
+    These indices have been developed by Paul Lemaitre:
+      - Paul Lemaître, Ekatarina Sergienko, Aurélie Arnaud, Nicolas Bousquet,
+        Fabrice Gamboa, et al.. Density modification based reliability
+        sensitivity analysis. 2012. 
+      - Paul Lemaitre. Analyse de sensibilité en fiabilité des structures.
+        Mécanique des structures [physics.class-ph]. Université de Bordeaux,
+        2014. Français.
+
+    See also
+    --------
+    PLIMean, PLIVariance
+    """
+
     def __init__(self, monteCarloResult, distribution, deltas):
-        """
-        PLI base class.
-
-        Notes
-        -----
-        The Perturbation Law Indices are based upon the modification of the
-        probability density function (pdf) of the random inputs, when the
-        quantity of interest is a failure probability. An input is considered
-        influential if the input pdf modification leads to a broad change in the
-        failure probability. These sensitivity indices can be computed using the
-        sole set of simulations that has already been used to estimate the
-        failure probability, thus limiting the number of calls to the numerical
-        model. In this implementation, the sample must come from a Monte Carlo
-        simulation.
-
-        The input perturbation is defined to obtain the perturbed density
-        function as the closest to the original one, in the sense of the 
-        Kullback-Leibler divergence. The implemented perturbation includes a
-        mean shift and a variance shift, accessible through the derived class.
-        The current implementation only allows to modifiy Normal and Uniform
-        density functions.
-
-        In order to compare equivalently the indices when the input distributions
-        are not the same, it is possible to plot the indices with respect to the
-        Hellinger distance.
-
-        These indices have been developed by Paul Lemaitre:
-        - Paul Lemaître, Ekatarina Sergienko, Aurélie Arnaud, Nicolas Bousquet,
-          Fabrice Gamboa, et al.. Density modification based reliability
-          sensitivity analysis. 2012. 
-        - Paul Lemaitre. Analyse de sensibilité en fiabilité des structures.
-          Mécanique des structures [physics.class-ph]. Université de Bordeaux,
-          2014. Français.
-
-        See also
-        --------
-        PLIMean, PLIVariance
-        """
-
         # the monte carlo result must have its underlying function with
         # the history enabled because the failure sample is obtained using it
         self._monteCarloResult = monteCarloResult
@@ -438,6 +436,14 @@ class PLI():
         raise Exception("Implemented in child class.")
 
     def getOriginalDelta(self, marginal):
+        """
+        Accessor to the original delta value
+
+        Parameters
+        ----------
+        marginal : int
+            The indice of the perturbed marginal.
+        """
         raise Exception("Implemented in child class.")
 
     def getGaussKronrod(self):
@@ -560,6 +566,9 @@ class PLIMeanBase(PLI):
                 # return the analytical expression of the distribution
                 return optimalLambda/(np.exp(optimalLambda*b) - np.exp(optimalLambda*a)) * \
                        np.exp(optimalLambda*X) * np.logical_and(X<=b, X>=a)
+            else:
+                raise NotImplementedError('Only Normal and Uniform distribution can be used.')
+
 
     def getOriginalDelta(self, marginal):
         """
@@ -635,6 +644,8 @@ class PLIVarianceBase(PLI):
                 psi = np.log(self.computeIntegral(marginal, optimalLambda, 0))
                 return np.exp(optimalLambda[0] * X + optimalLambda[1] * X**2 \
                        - psi) * marginalDist.computePDF(X)
+            else:
+                raise NotImplementedError('Only Normal and Uniform distribution can be used.')
 
     def getOriginalDelta(self, marginal):
         """

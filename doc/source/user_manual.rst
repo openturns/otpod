@@ -49,6 +49,9 @@ Sensitivity analysis
     :nosignatures:
 
     SobolIndices
+    PLI
+    PLIMean
+    PLIVariance
 
 Tools
 =====

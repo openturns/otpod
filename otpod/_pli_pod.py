@@ -12,6 +12,12 @@ __all__ = ['PLIMean', 'PLIVariance']
 
 class PLIBase():
     """
+    PLI base class.
+
+    Notes
+    -----
+    PLI specific base class for the POD. Compute the indices for each defect
+    size.
     """
     def __init__(self, POD, delta):
 
@@ -77,6 +83,18 @@ class PLIBase():
         return algo_MC.getResult()
 
     def run(self):
+        """
+        Compute the indices
+
+        Notes
+        -----
+        Run the analysis:
+            - run a Monte Carlo simulation
+            - compute the indices for each defect size
+
+        If, for a defect size, the probability estimate is less than 1e-3 or
+        greater than 0.999, then the indices are not computed.
+        """
         # initialize a list to store the indices for which the PLI are computed
         self._keepedDefect = np.arange(0, self._defectNumber, 1).tolist()
 
@@ -104,7 +122,7 @@ class PLIBase():
 
     def setDefectSizes(self, size):
         """
-        Accessor to the defect size where the POD is computed.
+        Accessor to the defect size where the indices are computed.
 
         Parameters
         ----------
@@ -129,7 +147,7 @@ class PLIBase():
 
     def getDefectSizes(self):
         """
-        Accessor to the defect size where the POD is computed.
+        Accessor to the defect size where the indices are computed.
 
         Returns
         -------
@@ -302,6 +320,21 @@ class PLIBase():
 
 class PLIMean(PLIBase):
     """
+    PLI based on a mean perturbation.
+
+    Parameters
+    ----------
+    POD : :class:`KrigingPOD`, :class:`AdaptiveSignalPOD` or :class:`PolynomialChaosPOD`
+        The POD object where the run method has been performed.
+    delta : 1d or 2d sequence of float
+        The new values of the mean. Either 1d if delta values are the same for
+        all marginals, or 2d if delta values are defined independently for each
+        marginal.
+    sigmaScaled : bool
+        Change the type of the mean shifting applied for all the variables. 
+        If False (default case), the given delta values are the new marginal means.
+        If True, newMean = mean + sigma x delta, where sigma
+        is the standard deviation of each marginals.
     """
     def __init__(self, POD, delta, sigmaScaled=True):
         PLIBase.__init__(self, POD, delta)
@@ -315,6 +348,16 @@ class PLIMean(PLIBase):
 
 class PLIVariance(PLIBase):
     """
+    PLI based on a mean perturbation.
+
+    Parameters
+    ----------
+    POD : :class:`KrigingPOD`, :class:`AdaptiveSignalPOD` or :class:`PolynomialChaosPOD`
+        The POD object where the run method has been performed.
+    delta : 1d or 2d sequence of float
+        The new values of the mean. Either 1d if delta values are the same for
+        all marginals, or 2d if delta values are defined independently for each
+        marginal.
     """
     def __init__(self, POD, delta):
         PLIBase.__init__(self, POD, delta)

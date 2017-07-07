@@ -45,6 +45,7 @@ from ._adaptive_hitmiss_pod import *
 from ._pod_summary import *
 from ._sobol_indices import *
 from ._pli_pod import *
+from ._pli import *
 from ._math_tools import *
 
 __version__ = "0.1"

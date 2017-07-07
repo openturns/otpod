@@ -211,7 +211,7 @@ class SobolIndices():
         fig, ax = self._drawIndices('total', label, name)
         return fig, ax
 
-    def _drawIndices(self, order, label, name):
+    def _drawIndices(self, order, label, name=None):
         """
         Based method to plot the Sobol indices.
 

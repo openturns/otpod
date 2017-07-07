@@ -51,6 +51,9 @@ class PLIBase():
 
         self._delta = np.vstack(np.array(delta))
 
+        self._gaussKronrod = ot.GaussKronrod(50, 1e-5,
+                        ot.GaussKronrodRule(ot.GaussKronrodRule.G7K15))
+
         # initialize result matrix
         self._initializeResultMatrix()
 
@@ -105,6 +108,7 @@ class PLIBase():
 
             if pf > 1e-3 and pf < 0.999:
                 self._pli[idefect] = self._definePLIAlgorithm(resultMonteCarlo)
+                self._pli[idefect].setGaussKronrod(self._gaussKronrod)
                 self._pli[idefect].run()
 
                 # store the result
@@ -181,6 +185,56 @@ class PLIBase():
         """
         self._samplingSize = size
 
+    def setDistribution(self, distribution):
+        """
+        Accessor to the parameters distribution. 
+
+        Parameters
+        ----------
+        distribution : :py:class:`openturns.ComposedDistribution`
+            The input parameters distribution used for the Monte Carlo simulation.
+        """
+        try:
+            ot.ComposedDistribution(distribution)
+        except NotImplementedError:
+            raise Exception('The given parameter is not a ComposedDistribution.')
+
+        if distribution.getDimension() != self._dim:
+            raise AttributeError("The dimension of the distribution must be {}.".format(self._dim))
+        self._distribution = distribution
+
+    def getDistribution(self):
+        """
+        Accessor to the parameters distribution. 
+
+        Returns
+        -------
+        distribution : :py:class:`openturns.ComposedDistribution`
+            The input parameters distribution used for the Monte Carlo simulation.
+            Default is a Uniform distribution for all parameters.
+        """
+        return self._distribution
+
+    def getGaussKronrod(self):
+        """
+        Accessor to the Gauss Kronrod algorithm used to compute integrals
+        """
+        return self._gaussKronrod
+
+    def setGaussKronrod(self, algo):
+        """
+        Accessor to the Gauss Kronrod algorithm used to compute integrals
+
+        Parameters
+        ----------
+        algo : :class:`~openturns.GaussKronrod`
+            The algorithm
+        """
+        try:
+            self._gaussKronrod = ot.GaussKronrod(algo)
+        except NotImplementedError:
+            raise AttributeError("The parameter must be a GaussKronrod algorithm.")
+
     def getPLIObject(self, idefect):
         """
         Accessor to the PLI object for a specific defect.
@@ -237,7 +291,8 @@ class PLIBase():
         else:
             return self._indices[idelta, marginal, idefect]
 
-    def drawIndices(self, idefect, confidenceLevel=.95, label=None, hellinger=True):
+    def drawIndices(self, idefect, confidenceLevel=.95, label=None,
+                    hellinger=True, name=None):
         """
         Draw the indices of all margins for a specific defect
 
@@ -265,14 +320,17 @@ class PLIBase():
         if idefect in self._keepedDefect:
             fig, ax = self._pli[idefect].drawIndices(confidenceLevel=confidenceLevel,
                                                      label=label,
-                                                     hellinger=hellinger)
+                                                     hellinger=hellinger,
+                                                     name=None)
             ax.set_title(self.__class__.__name__ + \
                          ' - defect = {:.3f}'.format(self._defectSizes[idefect]))
+            if name is not None:
+                fig.savefig(name, bbox_inches='tight', transparent=True)
             return fig, ax
         else:
             raise Exception("The indices have not been computed for this defect.")
 
-    def drawContourIndices(self, marginal, label=None):
+    def drawContourIndices(self, marginal, label=None, name=None):
         """
         Draw a contour plot of the indices for a specific marginal
 
@@ -314,6 +372,8 @@ class PLIBase():
         ax.set_title(self.__class__.__name__ + ' indices - ' + label)
         ax.set_xlabel('Defects')
         ax.set_ylabel('Delta')
+        if name is not None:
+            fig.savefig(name, bbox_inches='tight', transparent=True)
         return fig, ax
 
 
@@ -327,11 +387,11 @@ class PLIMean(PLIBase):
     POD : :class:`KrigingPOD`, :class:`AdaptiveSignalPOD` or :class:`PolynomialChaosPOD`
         The POD object where the run method has been performed.
     delta : 1d or 2d sequence of float
-        The new values of the mean. Either 1d if delta values are the same for
-        all marginals, or 2d if delta values are defined independently for each
-        marginal.
+        The new values of the mean or sigma coefficient. Either 1d if delta
+        values are the same for all marginals, or 2d if delta values are defined
+        independently for each marginal.
     sigmaScaled : bool
-        Change the type of the mean shifting applied for all the variables. 
+        Change the type of the applied  mean shiftingfor all the variables. 
         If False (default case), the given delta values are the new marginal means.
         If True, newMean = mean + sigma x delta, where sigma
         is the standard deviation of each marginals.
@@ -358,12 +418,18 @@ class PLIVariance(PLIBase):
         The new values of the mean. Either 1d if delta values are the same for
         all marginals, or 2d if delta values are defined independently for each
         marginal.
+    coefScaled : bool
+        Change the type of the applied variance shifting for all the variables. 
+        If False (default case), the given delta values are the new marginal variances.
+        If True, newVariance = variance x delta.
     """
-    def __init__(self, POD, delta):
+    def __init__(self, POD, delta, coefScaled=True):
         PLIBase.__init__(self, POD, delta)
+        self._coefScaled = coefScaled
 
     def _definePLIAlgorithm(self, resultMonteCarlo):
-        return PLIVarianceBase(resultMonteCarlo, self._distribution, self._delta)
+        return PLIVarianceBase(resultMonteCarlo, self._distribution, self._delta,
+                               coefScaled=self._coefScaled)
 
 
         

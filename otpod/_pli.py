@@ -66,7 +66,8 @@ class PLI():
         self._dim = self._distribution.getDimension()
 
         # the 1d or 2d sequence of deltas
-        self._deltaValues = np.vstack(np.array(deltas))
+        self._originalDelta = np.vstack(np.array(deltas))
+        self._deltaValues = self._originalDelta.copy()
         self._deltaSize = self._deltaValues.shape[0]
 
         if self._deltaValues.shape[1] != 1 and self._deltaValues.shape[1] != self._dim:
@@ -90,7 +91,7 @@ class PLI():
 
         # set the gaus Kronrod algorithm
         self._gaussKronrod = ot.GaussKronrod(50, 1e-5,
-                        ot.GaussKronrodRule(ot.GaussKronrodRule.G1K3))
+                        ot.GaussKronrodRule(ot.GaussKronrodRule.G7K15))
 
     def run(self):
         """
@@ -279,7 +280,8 @@ class PLI():
         return self._pfdelta
 
 
-    def drawIndices(self, confidenceLevel=.95, label=None, hellinger=False):
+    def drawIndices(self, confidenceLevel=.95, label=None, hellinger=False,
+                    name=None):
         """
         Draw all indices
 
@@ -322,7 +324,7 @@ class PLI():
 
             # define the abcsissa of the plot, either the delta values or the
             # hellinger distances if activated
-            x_support = self._deltaValues[:, marginal].copy()
+            x_support = np.hstack(self._originalDelta.copy())
             xLabel = 'Delta'
             if hellinger:
                 for i, d in enumerate(self._deltaValues[:, marginal]):
@@ -348,10 +350,13 @@ class PLI():
         # if hellinger distance, change the negative ticks label to be positive
         if hellinger:
             ax.set_xticklabels([str(t) for t in np.abs(ax.get_xticks())])
+
+        if name is not None:
+            fig.savefig(name, bbox_inches='tight', transparent=True)
         return fig, ax
 
     def drawMarginal1DPDF(self, marginal, idelta, showOriginal=True, label=None,
-                          xMin=None, xMax=None, pointNumber=None):
+                          xMin=None, xMax=None, pointNumber=None, name=None):
         """
         Draw the probability density function of a margin.
 
@@ -409,6 +414,8 @@ class PLI():
         ax.set_ylabel('PDF')
         ax.set_xlabel(label)
         ax.set_title(label + ' - PDF')
+        if name is not None:
+            fig.savefig(name, bbox_inches='tight', transparent=True)
         return fig, ax
 
     def _computePerturbedPDF(self, X, marginal, delta):
@@ -503,11 +510,11 @@ class PLIMeanBase(PLI):
     distribution : :class:`~openturns.Distribution`
         The joint distribution of the input parameters.
     delta : 1d or 2d sequence of float
-        The new values of the mean. Either 1d if delta values are the same for
-        all marginals, or 2d if delta values are defined independently for each
-        marginal.
+        The new values of the mean or sigma coefficient. Either 1d if delta
+        values are the same for all marginals, or 2d if delta values are defined
+        independently for each marginal.
     sigmaScaled : bool
-        Change the type of the mean shifting applied for all the variables. 
+        Change the type of the applied mean shifting for all the variables. 
         If False (default case), the given delta values are the new marginal means.
         If True, newMean = mean + sigma x delta, where sigma
         is the standard deviation of each marginals.
@@ -594,16 +601,25 @@ class PLIVarianceBase(PLI):
     distribution : :class:`~openturns.Distribution`
         The joint distribution of the input parameters.
     delta : 1d or 2d sequence of float
-        The new values of the variance. Either 1d if delta values are the same for
-        all marginals, or 2d if delta values are defined independently for each
-        marginal.
+        The new values of the variance of coefficient. Either 1d if delta values
+        are the same for all marginals, or 2d if delta values are defined
+        independently for each marginal.
+    coefScaled : bool
+        Change the type of the applied variance shifting for all the variables. 
+        If False (default case), the given delta values are the new marginal variances.
+        If True, newVariance = variance x delta.
     """
-    def __init__(self, monteCarloResult, distribution, delta):
+    def __init__(self, monteCarloResult, distribution, delta, coefScaled=False):
         PLI.__init__(self, monteCarloResult, distribution, delta)
 
         # check if the delta values are positive
         if ~ (self._deltaValues > 0).all():
             raise AttributeError("The delta values must be positive.")
+
+        # if activated, 
+        if coefScaled:
+            var = np.array(self._distribution.getStandardDeviation())**2
+            self._deltaValues = self._deltaValues * var
 
     def _perturbedMarginalPDF(self, X, marginal, delta):
         """

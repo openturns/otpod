@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/adumasphi/otpod.svg?branch=master
-    :target: https://travis-ci.org/adumasphi/otpod
+.. image:: https://travis-ci.org/openturns/otpod.svg?branch=master
+    :target: https://travis-ci.org/openturns/otpod
 
 otpod module
 ============
@@ -33,7 +33,7 @@ In a terminal, type in :
 
 Add the user option to install without administrator rights.
 
-Documentation is available `here <http://adumasphi.github.io/otpod/>`_.
+Documentation is available `here <http://openturns.github.io/otpod/master>`_.
 
 Test are available in the 'test' directory. They can be launched with pytest and
 the following command in a terminal in the otpod directory:

@@ -1,6 +1,9 @@
 .. image:: https://travis-ci.org/openturns/otpod.svg?branch=master
     :target: https://travis-ci.org/openturns/otpod
 
+.. image:: https://ci.appveyor.com/api/projects/status/j62doteuljm5cb8a?svg=true
+    :target: https://ci.appveyor.com/project/openturns/otpod
+
 otpod module
 ============
 

@@ -1,0 +1,13 @@
+install:
+  - set PATH=C:\Miniconda36;C:\Miniconda36\Scripts;%PATH%
+  - conda install -y -c conda-forge openturns matplotlib scikit-learn statsmodels numpy scipy decorator pytest
+
+build_script:
+  - python setup.py install
+  - py.test test/
+  # run tests with py2.7
+  - conda create -y -n py27 python=2.7
+  - activate py27
+  - conda install -y -c conda-forge openturns matplotlib scikit-learn statsmodels numpy scipy decorator pytest
+  - python setup.py install
+  - py.test test/

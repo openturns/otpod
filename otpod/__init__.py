@@ -8,25 +8,11 @@
 """
 
 def _initializing():
-    # check version of required modules
-    from importlib import import_module
-    def check_version(module, version, equal=False):
-        moduleImport = import_module(module)
-        if equal:
-            if moduleImport.__version__.split('.')[:2] != version.split('.')[:2]:
-                raise ImportError(module + ' version must be ' + version)
-        else:
-            if moduleImport.__version__.split('.')[:2] < version.split('.')[:2]:
-                raise ImportError(module + ' version must be at least ' + version)
-
-    check_version('openturns', '1.6')
-    check_version('statsmodels', '0.6.1')
-    check_version('numpy', '1.10.4')
-    check_version('sklearn', '0.17')
-    check_version('matplotlib', '1.5.1')
-    check_version('scipy', '0.17.0')
-    check_version('logging', '0.5.1.2')
-    check_version('decorator', '4.0.9')
+    # check openturns version
+    from distutils.version import LooseVersion
+    import openturns as ot
+    if LooseVersion(ot.__version__) < "1.6":
+        raise ImportError(ot.__name__ + ' version must be at least 1.6.')
 
     # initialize the logger to display informations and warnings
     import logging

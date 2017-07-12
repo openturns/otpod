@@ -11,7 +11,6 @@ with open('otpod/__init__.py') as fid:
             version = line.strip().split()[-1][1:-1]
             break
  
-
 setup(
  
     # library name
@@ -34,7 +33,13 @@ setup(
     long_description=open('README.rst').read(),
  
     # List of dependancies
-    # install_requires= []
+    install_requires= ['statsmodels',
+                       'numpy',
+                       'scikit-learn',
+                       'matplotlib',
+                       'scipy',
+                       'logging',
+                       'decorator']
  
     # Enable to take into account MANIFEST.in
     # include_package_data=True,

@@ -19,7 +19,7 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
-    examples
+    examples/examples.rst
 
 Indices and tables
 ------------------

@@ -26,7 +26,7 @@ install:
   # add channel for openturns
   - conda config --add channels conda-forge
   # install dependencies
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION openturns jupyter matplotlib scikit-learn statsmodels numpy scipy decorator pytest numpydoc sphinx pandoc
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION openturns jupyter matplotlib scikit-learn statsmodels numpy scipy decorator pytest numpydoc sphinx nbsphinx jupyter_client ipython pandoc
   - source activate test-environment
 
 script:

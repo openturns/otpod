@@ -37,9 +37,19 @@ extensions = [
     'sphinx.ext.mathjax',
 ]
 
+
+# notebook support
+extensions.append('nbsphinx')
+nbsphinx_execute = 'never'
+# dont add .txt suffix to notebook
+html_sourcelink_suffix = ''
+extensions.append('IPython.sphinxext.ipython_console_highlighting')
+
+
+
 autodoc_default_flags = ['members', 'inherited-members']
 
-intersphinx_mapping = {'openturns': ('http://doc.openturns.org/openturns-latest/sphinx/', None)}
+intersphinx_mapping = {'openturns': ('http://openturns.github.io/openturns/latest', None)}
 
 autosummary_generate = True
 

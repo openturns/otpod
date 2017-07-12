@@ -227,7 +227,7 @@ class PLIBase():
 
         Parameters
         ----------
-        algo : :class:`~openturns.GaussKronrod`
+        algo : :py:class:`openturns.GaussKronrod`
             The algorithm
         """
         try:

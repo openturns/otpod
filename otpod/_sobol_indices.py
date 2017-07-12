@@ -26,7 +26,7 @@ class SobolIndices():
 
     returns
     -------
-    sa : :class:`openturns.SobolIndicesAlgorithm`
+    sa : :py:class:`openturns.SobolIndicesAlgorithm`
         The openturns object that perform the sensitivity algorithm.
 
     Notes
@@ -120,7 +120,7 @@ class SobolIndices():
 
         Returns
         -------
-        sa : :class:`~openturns.SobolIndicesAlgorithm`
+        sa : :py:class:`openturns.SobolIndicesAlgorithm`
         """
         if self._sa is None:
             raise Exception("The run method must launched first.")

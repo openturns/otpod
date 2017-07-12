@@ -598,7 +598,7 @@ class PolynomialChaosPOD(POD):
 
         Returns
         -------
-        dist : :class:`openturns.Distribution`
+        dist : :py:class:`openturns.Distribution`
             The distribution of the coefficients. 
         """
         return self._coefsDist

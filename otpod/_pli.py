@@ -203,7 +203,7 @@ class PLI():
 
         Returns
         -------
-        dist : :class:`~openturns.Distribution`
+        dist ::py :class:`openturns.Distribution`
             The asymptotic distribution
         """
 
@@ -377,7 +377,7 @@ class PLI():
         n_points : int
             The number of points that is used for meshing the x-axis.
             Defaults uses `DistributionImplementation-DefaultPointNumber` from the
-            :class:`~openturns.ResourceMap`.
+            :py:class:`openturns.ResourceMap`.
 
         Returns
         -------
@@ -465,7 +465,7 @@ class PLI():
 
         Parameters
         ----------
-        algo : :class:`~openturns.GaussKronrod`
+        algo : :py:class:`openturns.GaussKronrod`
             The algorithm
         """
         try:
@@ -503,11 +503,11 @@ class PLIMeanBase(PLI):
 
     Parameters
     ----------
-    monteCarloResult : :class:`~openturns.SimulationResult`
+    monteCarloResult : :py:class:`openturns.SimulationResult`
         The OpenTURNS result object from a Monte Carlo simulation. The function
         used in the simulation must have its history enabled in order to be able
         to get the sample.
-    distribution : :class:`~openturns.Distribution`
+    distribution ::py :class:`openturns.Distribution`
         The joint distribution of the input parameters.
     delta : 1d or 2d sequence of float
         The new values of the mean or sigma coefficient. Either 1d if delta
@@ -594,11 +594,11 @@ class PLIVarianceBase(PLI):
 
     Parameters
     ----------
-    monteCarloResult : :class:`~openturns.SimulationResult`
+    monteCarloResult ::py :class:`openturns.SimulationResult`
         The OpenTURNS result object from a Monte Carlo simulation. The function
         used in the simulation must have its history enabled in order to be able
         to get the sample.
-    distribution : :class:`~openturns.Distribution`
+    distribution ::py :class:`openturns.Distribution`
         The joint distribution of the input parameters.
     delta : 1d or 2d sequence of float
         The new values of the variance of coefficient. Either 1d if delta values

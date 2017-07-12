@@ -33,7 +33,7 @@ class AdaptiveHitMissPOD(POD):
         defect sizes.
     outputDOE : 2-d sequence of float
         Vector of the signals, of dimension 1.
-    physicalModel : :py:class:`~openturns.NumericalMathFunction`
+    physicalModel : :py:class:`openturns.NumericalMathFunction`
         True model used to compute the real hit miss value of the signal value 
         to be added to the DOE.
     nMorePoints : positive int

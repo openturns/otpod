@@ -38,7 +38,7 @@ setup(
                        'scikit-learn>=0.17',
                        'matplotlib>=1.5.1',
                        'scipy>=0.17.0',
-                       'logging>=0.5.1.2',
+                       'logging>=0.5',
                        'decorator>=4.0.9']
  
     # Enable to take into account MANIFEST.in

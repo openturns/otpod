@@ -4,7 +4,12 @@
 from setuptools import setup, find_packages
  
 
-import otpod
+# Get the version from __init__.py
+with open('otpod/__init__.py') as fid:
+    for line in fid:
+        if line.startswith('__version__'):
+            version = line.strip().split()[-1][1:-1]
+            break
  
 
 setup(
@@ -13,7 +18,7 @@ setup(
     name='otpod',
  
     # code version
-    version=otpod.__version__,
+    version=version,
     
     # list libraries to be imported
     packages=find_packages(),

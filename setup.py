@@ -33,13 +33,13 @@ setup(
     long_description=open('README.rst').read(),
  
     # List of dependancies
-    install_requires= ['statsmodels',
-                       'numpy',
-                       'scikit-learn',
-                       'matplotlib',
-                       'scipy',
-                       'logging',
-                       'decorator']
+    install_requires= ['statsmodels>=0.6.1',
+                       'numpy>=1.10.4',
+                       'scikit-learn>=0.17',
+                       'matplotlib>=1.5.1',
+                       'scipy>=0.17.0',
+                       'logging>=0.5.1.2',
+                       'decorator>=4.0.9']
  
     # Enable to take into account MANIFEST.in
     # include_package_data=True,

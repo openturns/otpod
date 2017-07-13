@@ -29,7 +29,7 @@ setup(
     author_email="dumas@phimeca.com",
  
     # Descriptions
-    description="Build Probability of Detection",
+    description="Build Probability of Detection curve",
     long_description=open('README.rst').read(),
  
     # List of dependancies

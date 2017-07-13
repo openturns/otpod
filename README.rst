@@ -49,6 +49,7 @@ In a terminal, type in :
 Add the user option to install without administrator rights.
 
 Or you can install the module using Anaconda repository.
+
 .. code-block:: shell
 
     $ conda install -c conda-forge otpod

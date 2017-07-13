@@ -31,7 +31,7 @@ install:
 
 script:
   - python setup.py install
-  - py.test test/
+  - py.test test/ --notebook
   - pushd doc && make html BUILDDIR=~/.local/share/otpod/doc && popd
 
 after_success:

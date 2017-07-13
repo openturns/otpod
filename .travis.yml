@@ -6,6 +6,11 @@ python:
   - "2.7"
   - "3.6"
 
+before_script: # configure a headless display to test plot generation
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
+
 install:
   - sudo apt-get -y install texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra
   # We do this conditionally because it saves us some downloading if the
@@ -31,7 +36,7 @@ install:
 
 script:
   - python setup.py install
-  - py.test test/ --notebook
+  - pytest test/ --notebook
   - pushd doc && make html BUILDDIR=~/.local/share/otpod/doc && popd
 
 after_success:

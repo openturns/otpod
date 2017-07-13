@@ -6,6 +6,7 @@ import traceback
 import shutil
 import nbformat
 import nbconvert
+import matplotlib.pyplot as plt
 
 def notebook_run(ipynb):
     with open(ipynb) as fh:
@@ -22,6 +23,7 @@ def notebook_run(ipynb):
     source, meta = exporter.from_notebook_node(nb)
     try:
         exec(source.encode())
+        plt.close('all')
         shutil.rmtree('figure', ignore_errors=True)
         return []
     except:

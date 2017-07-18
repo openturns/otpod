@@ -36,7 +36,8 @@ install:
 
 script:
   - python setup.py install
-  - travis_wait 30 pytest test/ --notebook
+  - pytest test/
+  - travis_wait 30 pytest test/test_notebook.py --notebook
   - pushd doc && make html BUILDDIR=~/.local/share/otpod/doc && popd
 
 after_success:

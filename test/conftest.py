@@ -24,6 +24,6 @@ def pytest_addoption(parser):
 def pytest_generate_tests(metafunc):
     if 'notebook' in metafunc.fixturenames:
         if metafunc.config.option.notebook:
-            metafunc.parametrize("notebook", ipynbs)
+            metafunc.parametrize("notebook", [ipynbs[4], ipynbs[6]])
         else:
             metafunc.parametrize("notebook", [])

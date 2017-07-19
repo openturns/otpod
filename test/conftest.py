@@ -16,6 +16,10 @@ for root, dirnames, filenames in os.walk(ipynb_path):
         if not 'ipynb_checkpoints' in ipynb:  # exclude automatic backups
             ipynbs.append(ipynb)
 
+# remove heavy consuming notebook
+ipynbs.sort()
+ipynbs.pop(0)
+ipynbs.pop(-1)
 
 def pytest_addoption(parser):
     parser.addoption("--notebook", action="store_true",

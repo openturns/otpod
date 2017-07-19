@@ -16,6 +16,11 @@ for root, dirnames, filenames in os.walk(ipynb_path):
         if not 'ipynb_checkpoints' in ipynb:  # exclude automatic backups
             ipynbs.append(ipynb)
 
+# remove heavy consuming notebook
+ipynbs.sort()
+ipynbs.pop(0) ## adaptive signal pod
+ipynbs.pop(3) ## adaptive hit miss pod
+ipynbs.pop(-1) ## quantile regression pod
 
 def pytest_addoption(parser):
     parser.addoption("--notebook", action="store_true",

@@ -44,7 +44,6 @@ fit_train = reg.fit(X_train,y_train)
 reg =AdaBoostRegressor(RandomForestRegressor(),n_estimators=20) #, random_state=rng)
 fit_all = reg.fit(X,y)
 s = 33
-global fit_all, s
 
 #plt.plot(y,fit_all.predict(X),'.')
 #plt.plot(y,y,color="red",lw=2)

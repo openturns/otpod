@@ -260,9 +260,15 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                                                           self._covarianceModel,
                                                           True)
                 if LooseVersion(ot.__version__) > '1.6':
-                    optimizer = algoKrigingTemp.getOptimizationSolver()
+                    try:
+                        optimizer = algoKrigingTemp.getOptimizationAlgorithm()
+                    except:
+                        optimizer = algoKrigingTemp.getOptimizationSolver()
                     optimizer.setMaximumIterationNumber(0)
-                    algoKrigingTemp.setOptimizationSolver(optimizer)
+                    try:
+                        algoKrigingTemp.setOptimizationAlgorithm(optimizer)
+                    except:
+                        algoKrigingTemp.setOptimizationSolver(optimizer)
 
                 algoKrigingTemp.run()
                 krigingResultTemp = algoKrigingTemp.getResult()
@@ -315,7 +321,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                 optimizer = algoKriging.getOptimizationSolver()
                 optimizer.setMaximumIterationNumber(0)
                 algoKriging.setOptimizationSolver(optimizer)
-            elif LooseVersion(ot.__version__) == '1.8':
+            elif LooseVersion(ot.__version__) >= '1.8':
                 algoKriging.setOptimizeParameters(False)
 
             algoKriging.run()

@@ -2,6 +2,7 @@ import openturns as ot
 ot.TBB.Disable()
 import otpod
 import numpy as np
+from distutils.version import LooseVersion
 
 inputSample = ot.NumericalSample(
     [[4.59626812e+00, 7.46143339e-02, 1.02231538e+00, 8.60042277e+01],
@@ -45,7 +46,7 @@ np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
 POD = otpod.KrigingPOD(inputSample, signals, detection)
-if ot.__version__ == '1.6':
+if LooseVersion(ot.__version__) <= '1.6':
     covColl = ot.CovarianceModelCollection(4)
     scale = [5.03148,13.9442,20,20]
     for i in range(4):
@@ -53,7 +54,7 @@ if ot.__version__ == '1.6':
         c.setAmplitude([15.1697])
         covColl[i]  = c
     covarianceModel = ot.ProductCovarianceModel(covColl)
-elif ot.__version__ > '1.6':
+else:
     covarianceModel = ot.SquaredExponential([5.03148,13.9442,20,20], [15.1697])
 POD.setCovarianceModel(covarianceModel)
 POD.setInitialStartSize(0)

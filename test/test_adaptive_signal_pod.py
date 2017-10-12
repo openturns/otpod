@@ -2,6 +2,7 @@ import openturns as ot
 ot.TBB.Disable()
 import otpod
 import numpy as np
+from distutils.version import LooseVersion
 
 inputSample = ot.NumericalSample(
     [[4.59626812e+00, 7.46143339e-02, 1.02231538e+00, 8.60042277e+01],
@@ -45,7 +46,7 @@ outputDOE = signals[:10]
 # simulate the true physical model
 basis = ot.ConstantBasisFactory(4).build()
 basis = ot.ConstantBasisFactory(4).build()
-if ot.__version__ == '1.6':
+if LooseVersion(ot.__version__) <= '1.6':
     covColl = ot.CovarianceModelCollection(4)
     scale = [5.03148, 13.9442, 20, 20]
     for i in range(4):
@@ -53,11 +54,11 @@ if ot.__version__ == '1.6':
         c.setAmplitude([15.1697])
         covColl[i] = c
     covarianceModel = ot.ProductCovarianceModel(covColl)
-elif ot.__version__ > '1.6':
+else:
     covarianceModel = ot.SquaredExponential([5.03148, 13.9442, 20, 20],
                                             [15.1697])
 
-if ot.__version__ == '1.9':
+if LooseVersion(ot.__version__) >= '1.9':
     krigingModel = ot.KrigingAlgorithm(inputSample, signals, covarianceModel, basis)
 else:
     krigingModel = ot.KrigingAlgorithm(inputSample, signals, basis, covarianceModel)

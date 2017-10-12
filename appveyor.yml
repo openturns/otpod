@@ -1,5 +1,6 @@
 install:
   - set PATH=C:\Miniconda36;C:\Miniconda36\Scripts;%PATH%
+  - conda update -y conda
   - conda install -y -c conda-forge openturns matplotlib scikit-learn statsmodels numpy scipy decorator pytest nbformat nbconvert
 
 build_script:

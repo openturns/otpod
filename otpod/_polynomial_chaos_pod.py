@@ -637,7 +637,10 @@ class PolynomialChaosPOD(POD):
 
         if self._projectionStrategy is None:
             # sparse polynomial chaos
-            basis_sequence_factory = ot.LAR()
+            try:
+                basis_sequence_factory = ot.LARS()
+            except:
+                basis_sequence_factory = ot.LAR()
             fitting_algorithm = ot.KFold()
             approximation_algorithm = ot.LeastSquaresMetaModelSelectionFactory(
                                       basis_sequence_factory, fitting_algorithm)

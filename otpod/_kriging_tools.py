@@ -373,7 +373,7 @@ class KrigingBase():
                     covColl[i]  = ot.SquaredExponential([1], [1.])
             self._covarianceModel = ot.ProductCovarianceModel(covColl)
 
-        if LooseVersion(ot.__version__) == "1.9":
+        if LooseVersion(ot.__version__) >= '1.9':
             algoKriging = ot.KrigingAlgorithm(inputSample, outputSample,
                                     self._covarianceModel, self._basis)
         else:
@@ -450,7 +450,7 @@ class KrigingBase():
         krigingResult = algoKriging.getResult()
         covarianceModel = krigingResult.getCovarianceModel()
         basis = krigingResult.getBasisCollection()
-        if LooseVersion(ot.__version__) == '1.9':
+        if LooseVersion(ot.__version__) >= '1.9':
             llf = algoKriging.getReducedLogLikelihoodFunction()
         else:
             llf = algoKriging.getLogLikelihoodFunction()
@@ -482,7 +482,7 @@ class KrigingBase():
             
         # Now the KrigingAlgorithm is used to optimize the likelihood using a
         # good starting point
-        if LooseVersion(ot.__version__) == "1.9":
+        if LooseVersion(ot.__version__) >= '1.9':
             algoKriging = ot.KrigingAlgorithm(X, Y, covarianceModel, basis)
         else:
             algoKriging = ot.KrigingAlgorithm(X, Y, basis, covarianceModel, True)
@@ -499,7 +499,7 @@ class KrigingBase():
             problem.setBounds(searchInterval)
             optimizer.setProblem(problem)
             algoKriging.setOptimizationSolver(optimizer)
-        elif LooseVersion(ot.__version__) == '1.9':
+        elif LooseVersion(ot.__version__) >= '1.9':
             algoKriging.setOptimizationBounds(searchInterval)
 
         return algoKriging

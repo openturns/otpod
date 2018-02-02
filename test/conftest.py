@@ -18,9 +18,9 @@ for root, dirnames, filenames in os.walk(ipynb_path):
 
 # remove heavy consuming notebook
 ipynbs.sort()
-ipynbs.pop(0) ## adaptive signal pod
-ipynbs.pop(3) ## adaptive hit miss pod
-ipynbs.pop(-1) ## quantile regression pod
+ipynbs.remove(os.path.join(root,'AdaptiveSignalPOD.ipynb')) ## adaptive signal pod
+ipynbs.remove(os.path.join(root,'adaptiveHitMissPOD.ipynb')) ## adaptive hit miss pod
+ipynbs.remove(os.path.join(root,'quantileRegressionPOD.ipynb')) ## quantile regression pod
 
 def pytest_addoption(parser):
     parser.addoption("--notebook", action="store_true",

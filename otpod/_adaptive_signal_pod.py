@@ -30,7 +30,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         defect sizes.
     outputDOE : 2-d sequence of float
         Vector of the signals, of dimension 1.
-    physicalModel : :py:class:`openturns.NumericalMathFunction`
+    physicalModel : :py:class:`openturns.Function`
         True model used to compute the real signal value to be added to the DOE.
     nMorePoints : positive int
         The number of points to add to the DOE, computed by the *physicalModel*.

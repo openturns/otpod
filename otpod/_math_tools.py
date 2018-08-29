@@ -32,7 +32,7 @@ class ReducedLogLikelihood(ot.OpenTURNSPythonFunction):
         self.a_i_ = a_i
         self.Y_i_ = Y_i
         self.N_ = a_i.getSize()
-        self.sumLogY_i = ot.NumericalMathFunction("y", "log(y)")(Y_i).computeMean()[0] * self.N_
+        self.sumLogY_i = ot.SymbolicFunction(["y"], ["log(y)"])(Y_i).computeMean()[0] * self.N_
         
     def _exec(self, Lambda):
         Y_lambda = ot.BoxCoxTransform(Lambda)(self.Y_i_)
@@ -56,7 +56,7 @@ class LinearBoxCoxFactory:
         ot.Log.Show(ot.Log.NONE)
         
     def build(self, dataX, dataY):
-        logLikelihood = ot.NumericalMathFunction(ReducedLogLikelihood(dataX, dataY))
+        logLikelihood = ot.Function(ReducedLogLikelihood(dataX, dataY))
         xlb = np.linspace(self.lambdaMin_,self.lambdaMax_,num=500)
         lambdax = [logLikelihood([x])[0] for x in xlb]
         algo = ot.TNC(logLikelihood)

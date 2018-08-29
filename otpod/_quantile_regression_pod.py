@@ -172,8 +172,8 @@ class QuantileRegressionPOD(POD):
             for probLevel in self._quantile:
                 fit = algoQuantReg.fit(1. - probLevel, max_iter=300, p_tol=1e-2)
                 def model(x):
-                    X = ot.NumericalPoint([1, x[0]])
-                    return ot.NumericalPoint(fit.predict(X))
+                    X = ot.Point([1, x[0]])
+                    return ot.Point(fit.predict(X))
                 model = ot.PythonFunction(1, 1, model)
                 # Solve the model == detectionBoxCox with defects 
                 # boundaries = [-infinity, defectMax] : it allows negative defects
@@ -193,7 +193,7 @@ class QuantileRegressionPOD(POD):
 
         Returns
         -------
-        PODModel : :py:class:`openturns.NumericalMathFunction`
+        PODModel : :py:class:`openturns.Function`
             The function which computes the probability of detection for a given
             defect value.
         """
@@ -210,7 +210,7 @@ class QuantileRegressionPOD(POD):
 
         Returns
         -------
-        PODModelCl : :py:class:`openturns.NumericalMathFunction`
+        PODModelCl : :py:class:`openturns.Function`
             The function which computes the probability of detection for a given
             defect value at the confidence level given as parameter.
         """
@@ -272,7 +272,7 @@ class QuantileRegressionPOD(POD):
         # compute 'a90'
         model = self._buildModel(1. - probabilityLevel)
         try:
-            detectionSize = ot.NumericalPointWithDescription(1, ot.Brent().solve(
+            detectionSize = ot.PointWithDescription(1, ot.Brent().solve(
                                         model, self._detectionBoxCox, defectMin, defectMax))
         except:
             raise Exception('The POD model does not contain, for the given ' + \
@@ -291,7 +291,7 @@ class QuantileRegressionPOD(POD):
                                                defectMin, defectMax))
             description.append('a'+str(int(probabilityLevel*100))+'/'\
                                                 +str(int(confidenceLevel*100)))
-        # add description to the NumericalPoint
+        # add description to the Point
         detectionSize.setDescription(description)
         return detectionSize
 
@@ -403,12 +403,12 @@ class QuantileRegressionPOD(POD):
 
     def _buildModel(self, probabilityLevel):
         """
-        Build the NumericalMathFunction at the given probabilityLevel. It is
+        Build the Function at the given probabilityLevel. It is
         used in the run and in computeDetectionSize in order to do not use the
         interpolate function.
         """
         fit = self._algoQuantReg.fit(probabilityLevel, max_iter=300, p_tol=1e-2)
         def model(x):
-            X = ot.NumericalPoint([1, x[0]])
-            return ot.NumericalPoint(fit.predict(X))
+            X = ot.Point([1, x[0]])
+            return ot.Point(fit.predict(X))
         return ot.PythonFunction(1, 1, model)

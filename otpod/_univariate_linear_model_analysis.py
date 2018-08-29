@@ -842,18 +842,18 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        intercept : :py:class:`openturns.NumericalPoint`
+        intercept : :py:class:`openturns.Point`
             The intercept parameter for the uncensored and censored (if so) linear
             regression model.
         """
         if self._censored:
-            intercept = ot.NumericalPointWithDescription(
+            intercept = ot.PointWithDescription(
                         [('Intercept for uncensored case', 
                         self._resultsUnc.intercept),
                         ('Intercept for censored case',
                         self._resultsCens.intercept)])
         else:
-            intercept = ot.NumericalPointWithDescription(
+            intercept = ot.PointWithDescription(
                         [('Intercept for uncensored case', 
                         self._resultsUnc.intercept)])
 
@@ -865,18 +865,18 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        slope : :py:class:`openturns.NumericalPoint`
+        slope : :py:class:`openturns.Point`
             The slope parameter for the uncensored and censored (if so) linear
             regression model.
         """
         if self._censored:
-            slope = ot.NumericalPointWithDescription(
+            slope = ot.PointWithDescription(
                         [('Slope for uncensored case', 
                         self._resultsUnc.slope),
                         ('Slope for censored case',
                         self._resultsCens.slope)])
         else:
-            slope = ot.NumericalPointWithDescription(
+            slope = ot.PointWithDescription(
                         [('Slope for uncensored case', 
                         self._resultsUnc.slope)])
 
@@ -888,18 +888,18 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        stderr : :py:class:`openturns.NumericalPoint`
+        stderr : :py:class:`openturns.Point`
             The standard error of the estimate for the uncensored and censored
             (if so) linear regression model.
         """
         if self._censored:
-            stderr = ot.NumericalPointWithDescription(
+            stderr = ot.PointWithDescription(
                         [('Stderr for uncensored case', 
                         self._resultsUnc.stderr),
                         ('Stderr for censored case',
                         self._resultsCens.stderr)])
         else:
-            stderr = ot.NumericalPointWithDescription(
+            stderr = ot.PointWithDescription(
                         [('Stderr for uncensored case', 
                         self._resultsUnc.stderr)])
 
@@ -923,7 +923,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        R2 : :py:class:`openturns.NumericalPoint`
+        R2 : :py:class:`openturns.Point`
             Either the R2 for the uncensored case or for both cases.
         """
         return self._getResultValue('R2', 'R2')
@@ -934,7 +934,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        pValue : :py:class:`openturns.NumericalPoint`
+        pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
         return self._getResultValue('AndersonDarling', 'Anderson Darling p-value')
@@ -946,7 +946,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        pValue : :py:class:`openturns.NumericalPoint`
+        pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
         return self._getResultValue('CramerVonMises', 'Cramer Von Mises p-value')
@@ -957,7 +957,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        pValue : :py:class:`openturns.NumericalPoint`
+        pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
         return self._getResultValue('Kolmogorov', 'Kolmogorov p-value')
@@ -968,7 +968,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        pValue : :py:class:`openturns.NumericalPoint`
+        pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
         return self._getResultValue('ZeroMean', 'Zero Mean p-value')
@@ -979,7 +979,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        pValue : :py:class:`openturns.NumericalPoint`
+        pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
         return self._getResultValue('BreuschPagan', 'Breusch Pagan p-value')
@@ -990,7 +990,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        pValue : :py:class:`openturns.NumericalPoint`
+        pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
         return self._getResultValue('HarrisonMcCabe', 'Harrison McCabe p-value')
@@ -1001,7 +1001,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        pValue : :py:class:`openturns.NumericalPoint`
+        pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
         return self._getResultValue('DurbinWatson', 'Durbin Watson p-value')
@@ -1018,13 +1018,13 @@ class UnivariateLinearModelAnalysis():
             name the test to be displayed.
         """
         if self._censored:
-            pValue = ot.NumericalPointWithDescription(
+            pValue = ot.PointWithDescription(
                         [(description + ' for uncensored case', 
                         self._resultsUnc.testResults[test]),
                         (description + ' for censored case',
                         self._resultsCens.testResults[test])])
         else:
-            pValue = ot.NumericalPointWithDescription(
+            pValue = ot.PointWithDescription(
                         [(description + ' for uncensored case', 
                         self._resultsUnc.testResults[test])])
         return pValue

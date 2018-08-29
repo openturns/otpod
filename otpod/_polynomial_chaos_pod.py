@@ -150,7 +150,7 @@ class PolynomialChaosPOD(POD):
         self._chaosCoefs = self._chaosResult.getCoefficients()
         self._reducedBasis = self._chaosResult.getReducedBasis()
         self._transformation = self._chaosResult.getTransformation()
-        self._basisFunction = ot.NumericalMathFunction(ot.NumericalMathFunction(
+        self._basisFunction = ot.ComposedFunction(ot.Function(
                                 self._reducedBasis), self._transformation)
 
         # compute the residuals and stderr
@@ -193,7 +193,7 @@ class PolynomialChaosPOD(POD):
 
         Returns
         -------
-        PODModel : :py:class:`openturns.NumericalMathFunction`
+        PODModel : :py:class:`openturns.Function`
             The function which computes the probability of detection for a given
             defect value.
         """
@@ -210,7 +210,7 @@ class PolynomialChaosPOD(POD):
 
         Returns
         -------
-        PODModelCl : :py:class:`openturns.NumericalMathFunction`
+        PODModelCl : :py:class:`openturns.Function`
             The function which computes the probability of detection for a given
             defect value at the confidence level given as parameter.
         """
@@ -668,8 +668,8 @@ class PolynomialChaosPOD(POD):
         """
         Build the chaos metamodel with given coefficients.
         """
-        standardChaosFunction = ot.NumericalMathFunction(reducedBasis, coefs)
-        chaosFunction = ot.NumericalMathFunction(standardChaosFunction, transformation)
+        standardChaosFunction = ot.ComposedFunction(reducedBasis, coefs)
+        chaosFunction = ot.ComposedFunction(standardChaosFunction, transformation)
         return chaosFunction
 
 

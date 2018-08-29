@@ -199,7 +199,7 @@ class UnivariateLinearModelPOD(POD):
 
         Returns
         -------
-        PODModel : :py:class:`openturns.NumericalMathFunction`
+        PODModel : :py:class:`openturns.Function`
             The function which computes the probability of detection for a given
             defect value.
         """
@@ -217,7 +217,7 @@ class UnivariateLinearModelPOD(POD):
 
         Returns
         -------
-        PODModelCl : :py:class:`openturns.NumericalMathFunction`
+        PODModelCl : :py:class:`openturns.Function`
             The function which computes the probability of detection for a given
             defect value at the confidence level given as parameter.
         """
@@ -351,7 +351,7 @@ class UnivariateLinearModelPOD(POD):
         X = ot.Matrix(X)
         # compute the prediction variance of the linear regression model
         def predictionVariance(x):
-            Y = ot.NumericalPoint([1.0, x])
+            Y = ot.Point([1.0, x])
             gramX = X.computeGram()
             return stderr**2 * (1. + ot.dot(Y, gramX.solveLinearSystem(Y)))
         # function to compute the POD(defect)

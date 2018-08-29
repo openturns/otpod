@@ -94,8 +94,8 @@ class POD(object):
 
         Returns
         -------
-        result : collection of :py:class:`openturns.NumericalPointWithDescription`
-            A NumericalPointWithDescription containing the detection size
+        result : collection of :py:class:`openturns.PointWithDescription`
+            A PointWithDescription containing the detection size
             computed at the given probability level and confidence level if provided.
         """
 
@@ -108,7 +108,7 @@ class POD(object):
         if not (model([defectMin])[0] <= probabilityLevel <= model([defectMax])[0]):
             raise Exception('The POD model does not contain, for the given ' + \
                              'defect interval, the wanted probability level.')
-        detectionSize = ot.NumericalPointWithDescription(1, ot.Brent().solve(model,
+        detectionSize = ot.PointWithDescription(1, ot.Brent().solve(model,
                                         probabilityLevel, defectMin, defectMax))
         description = ['a'+str(int(probabilityLevel*100))]
 
@@ -122,7 +122,7 @@ class POD(object):
                                                defectMin, defectMax))
             description.append('a'+str(int(probabilityLevel*100))+'/'\
                                                 +str(int(confidenceLevel*100)))
-        # add description to the NumericalPoint
+        # add description to the Point
         detectionSize.setDescription(description)
         return detectionSize
 

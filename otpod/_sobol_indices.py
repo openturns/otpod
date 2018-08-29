@@ -95,13 +95,13 @@ class SobolIndices():
         Compute the Sobol indices with the chosen algorithm. 
         """
 
-        # create the NumericalMathFunction which computes the POD for a given
+        # create the Function which computes the POD for a given
         # realization and for all defect sizes.
         if self._podType == "kriging":
-            self._PODaggr = ot.NumericalMathFunction(PODaggrKriging(self._POD,
+            self._PODaggr = ot.Function(PODaggrKriging(self._POD,
                             self._dim, self._defectSizes, self._detectionBoxCox))
         elif self._podType == "chaos":
-            self._PODaggr = ot.NumericalMathFunction(PODaggrChaos(self._POD,
+            self._PODaggr = ot.Function(PODaggrChaos(self._POD,
                             self._dim, self._defectSizes, self._detectionBoxCox,
                             self._simulationSize))
 
@@ -484,9 +484,9 @@ class PODaggrChaos(ot.OpenTURNSPythonFunction):
         transformation = chaosResult.getTransformation()
         chaosFunctionCol = []
         for i, coefs in enumerate(sampleCoefs):
-            standardChaosFunction = ot.NumericalMathFunction(reducedBasis, coefs)
-            chaosFunctionCol.append(ot.NumericalMathFunction(standardChaosFunction, transformation))
-        self.chaosFunction = ot.NumericalMathFunction(chaosFunctionCol)
+            standardChaosFunction = ot.ComposedFunction(reducedBasis, coefs)
+            chaosFunctionCol.append(ot.ComposedFunction(standardChaosFunction, transformation))
+        self.chaosFunction = ot.AggregatedFunction(chaosFunctionCol)
 
     def _exec(self, X):
         # create sample combining all defect size with the given X

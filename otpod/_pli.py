@@ -770,8 +770,8 @@ class PLIVarianceBase(PLI):
 
         # define the optimization problem
         optimPb = ot.OptimizationProblem(optimFunc,
-                                         ot.NumericalMathFunction(),
-                                         ot.NumericalMathFunction(),
+                                         ot.Function(),
+                                         ot.Function(),
                                          ot.Interval())
 
         # solve the problem using SLSQP from NLopt

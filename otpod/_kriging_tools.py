@@ -23,7 +23,7 @@ class KrigingBase():
 
         Returns
         -------
-        PODModel : :py:class:`openturns.NumericalMathFunction`
+        PODModel : :py:class:`openturns.Function`
             The function which computes the probability of detection for a given
             defect value.
         """
@@ -40,7 +40,7 @@ class KrigingBase():
 
         Returns
         -------
-        PODModelCl : :py:class:`openturns.NumericalMathFunction`
+        PODModelCl : :py:class:`openturns.Function`
             The function which computes the probability of detection for a given
             defect value at the confidence level given as parameter.
         """
@@ -358,9 +358,9 @@ class KrigingBase():
             input = ['x'+str(i) for i in range(self._dim)]
             functions = []
             # constant
-            functions.append(ot.NumericalMathFunction(input, ['y'], ['1']))
+            functions.append(ot.SymbolicFunction(input, ['1']))
             # linear for the first parameter only
-            functions.append(ot.NumericalMathFunction(input, ['y'], [input[0]]))
+            functions.append(ot.SymbolicFunction(input, [input[0]]))
             self._basis = ot.Basis(functions)
 
         if self._covarianceModel is None:

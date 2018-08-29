@@ -70,7 +70,7 @@ class PLIBase():
 
     def _runMonteCarlo(self, defect):
         # set a parametric function where the first parameter = given defect
-        g = ot.NumericalMathFunction(self._metamodel, [0], [defect])
+        g = ot.ParametricFunction(self._metamodel, [0], [defect])
         g.enableHistory()
         g.clearHistory()
         g.clearCache()

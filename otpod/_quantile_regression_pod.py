@@ -180,7 +180,7 @@ class QuantileRegressionPOD(POD):
                 # when for small prob level, there is no intersection with
                 # the detection threshold for positive defects
                 defectList.append(ot.Brent().solve(model, detectionBoxCox,
-                                                   -ot.SpecFunc.MaxNumericalScalar,
+                                                   -ot.SpecFunc.MaxScalar,
                                                    defectMax))
             # add the quantile in the numerical sample as the ith simulation
             self._defectsPerQuantile[i, :] = defectList

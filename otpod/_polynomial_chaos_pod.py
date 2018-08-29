@@ -150,7 +150,7 @@ class PolynomialChaosPOD(POD):
         self._chaosCoefs = self._chaosResult.getCoefficients()
         self._reducedBasis = self._chaosResult.getReducedBasis()
         self._transformation = self._chaosResult.getTransformation()
-        self._basisFunction = ot.ComposedFunction(ot.Function(
+        self._basisFunction = ot.ComposedFunction(ot.LinearCombinationFunction(
                                 self._reducedBasis), self._transformation)
 
         # compute the residuals and stderr

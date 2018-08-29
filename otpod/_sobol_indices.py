@@ -484,7 +484,7 @@ class PODaggrChaos(ot.OpenTURNSPythonFunction):
         transformation = chaosResult.getTransformation()
         chaosFunctionCol = []
         for i, coefs in enumerate(sampleCoefs):
-            standardChaosFunction = ot.ComposedFunction(reducedBasis, coefs)
+            standardChaosFunction = ot.LinearCombinationFunction(reducedBasis, coefs)
             chaosFunctionCol.append(ot.ComposedFunction(standardChaosFunction, transformation))
         self.chaosFunction = ot.AggregatedFunction(chaosFunctionCol)
 

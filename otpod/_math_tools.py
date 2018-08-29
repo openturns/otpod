@@ -259,11 +259,11 @@ class DataHandling(object):
         signalsUnc = signals[np.hstack(np.logical_and(signals > noiseThres,
                                             signals < saturationThres))]
 
-        # transform in numericalSample
-        inputSampleUnc = ot.NumericalSample(inputSampleUnc)
-        inputSampleNoise = ot.NumericalSample(inputSampleNoise)
-        inputSampleSat = ot.NumericalSample(inputSampleSat)
-        signalsUnc = ot.NumericalSample(signalsUnc)
+        # transform in Sample
+        inputSampleUnc = ot.Sample(inputSampleUnc)
+        inputSampleNoise = ot.Sample(inputSampleNoise)
+        inputSampleSat = ot.Sample(inputSampleSat)
+        signalsUnc = ot.Sample(signalsUnc)
 
         return inputSampleUnc, inputSampleNoise, inputSampleSat, signalsUnc
 

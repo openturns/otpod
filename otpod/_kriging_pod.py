@@ -174,7 +174,7 @@ class KrigingPOD(POD, KrigingBase):
             self._distribution = ot.ComposedDistribution(marginals)
 
         # compute the sample containing the POD values for all defect 
-        self._PODPerDefect = ot.NumericalSample(self._simulationSize *
+        self._PODPerDefect = ot.Sample(self._simulationSize *
                                          self._samplingSize, self._defectNumber)
         for i, defect in enumerate(self._defectSizes):
             self._PODPerDefect[:, i] = self._computePODSamplePerDefect(defect,

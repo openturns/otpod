@@ -111,8 +111,8 @@ class UnivariateLinearModelAnalysis():
                  saturationThres=None, resDistFact=None,
                  boxCox=False):
 
-        self._inputSample = ot.NumericalSample(np.vstack(inputSample))
-        self._outputSample = ot.NumericalSample(np.vstack(outputSample))
+        self._inputSample = ot.Sample(np.vstack(inputSample))
+        self._outputSample = ot.Sample(np.vstack(outputSample))
         self._noiseThres = noiseThres
         self._saturationThres = saturationThres
         # Add flag to tell if censored data must taken into account or not.
@@ -209,7 +209,7 @@ class UnivariateLinearModelAnalysis():
         ######################### Linear Regression model ######################
         # Linear regression with statsmodels module
         # Create the X matrix : [1, inputSample]
-        X = ot.NumericalSample(defectsSize, [1, 0])
+        X = ot.Sample(defectsSize, [1, 0])
         X[:, 1] = defects
         self._algoLinear = OLS(np.array(signals), np.array(X)).fit()
 
@@ -233,7 +233,7 @@ class UnivariateLinearModelAnalysis():
 
         ############################ Residuals #################################
         # get residuals from algoLinear
-        self._resultsUnc.residuals = ot.NumericalSample(np.vstack(self._algoLinear.resid))
+        self._resultsUnc.residuals = ot.Sample(np.vstack(self._algoLinear.resid))
         # compute residuals distribution
         self._resultsUnc.resDist = self._resDistFact.build(self._resultsUnc.residuals)
 
@@ -760,7 +760,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        defects : :py:class:`openturns.NumericalSample`
+        defects : :py:class:`openturns.Sample`
             The input sample which is the defect values.
         """
         return self._inputSample
@@ -771,7 +771,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        signals : :py:class:`openturns.NumericalSample`
+        signals : :py:class:`openturns.Sample`
             The input sample which is the signal values.
         """
         return self._outputSample
@@ -804,13 +804,13 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        residuals : :py:class:`openturns.NumericalSample`
+        residuals : :py:class:`openturns.Sample`
             The residuals computed from the uncensored and censored linear
             regression model. The first column corresponds with the uncensored case.
         """
         size = self._resultsUnc.residuals.getSize()
         if self._censored:
-            residuals = ot.NumericalSample(size, 2)
+            residuals = ot.Sample(size, 2)
             residuals[:, 0] = self._resultsUnc.residuals
             residuals[:, 1] = self._resultsCens.residuals
             residuals.setDescription(['Residuals for uncensored case',

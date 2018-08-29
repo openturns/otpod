@@ -346,8 +346,8 @@ class AdaptiveHitMissPOD(POD):
                     fig.savefig(os.path.join(self._graphDirectory, 'AdaptiveHitMissPOD_')+str(algo_iteration),
                                 bbox_inches='tight', transparent=True)
 
-        self._input = ot.NumericalSample(self._input)
-        self._signals = ot.NumericalSample(np.vstack(self._signals))
+        self._input = ot.Sample(self._input)
+        self._signals = ot.Sample(np.vstack(self._signals))
         # Compute the sample predicted for each defect sizes
         self._PODPerDefect = self._computePOD(self._defectSizes, self._classifierModel)
         # compute the POD for all defect sizes
@@ -735,8 +735,8 @@ class AdaptiveHitMissPOD(POD):
         """
         size = X.getSize()
         dim = X.getDimension() + 1
-        samplePred = ot.NumericalSample(size, dim)
-        samplePred[:, 0] = ot.NumericalSample(size, [defect])
+        samplePred = ot.Sample(size, dim)
+        samplePred[:, 0] = ot.Sample(size, [defect])
         samplePred[:, 1:] = X
         return samplePred
 
@@ -746,7 +746,7 @@ class AdaptiveHitMissPOD(POD):
         """
         # create the input sample that must be computed by the metamodels
         samplePred = self._distribution.getSample(self._samplingSize)[:,1:]
-        fullSamplePred = ot.NumericalSample(self._samplingSize * self._defectNumber,
+        fullSamplePred = ot.Sample(self._samplingSize * self._defectNumber,
                                                                     self._dim)
         for i, defect in enumerate(defectSizes):
             fullSamplePred[self._samplingSize*i:self._samplingSize*(i+1), :] = \
@@ -755,4 +755,4 @@ class AdaptiveHitMissPOD(POD):
         classifierSample = algoClassifier(np.array(fullSamplePred))[:, 1]
         classifierSample = np.reshape(classifierSample, (self._samplingSize,
                                        self._defectNumber), 'F')
-        return ot.NumericalSample(classifierSample)
+        return ot.Sample(classifierSample)

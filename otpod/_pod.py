@@ -21,8 +21,8 @@ class POD(object):
 
 
         # inherited attributes
-        self._inputSample = ot.NumericalSample(np.vstack(inputSample))
-        self._outputSample = ot.NumericalSample(np.vstack(outputSample))
+        self._inputSample = ot.Sample(np.vstack(inputSample))
+        self._outputSample = ot.Sample(np.vstack(outputSample))
         self._detection = detection
         self._noiseThres = noiseThres
         self._saturationThres = saturationThres

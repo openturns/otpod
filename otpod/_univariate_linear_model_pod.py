@@ -230,7 +230,7 @@ class UnivariateLinearModelPOD(POD):
         else:
             # Linear regression model + gaussian residuals or + bootstrap
             def PODfunction(x):
-                samplePODDef = ot.NumericalSample(self._simulationSize, 1)
+                samplePODDef = ot.Sample(self._simulationSize, 1)
                 for i in range(self._simulationSize):
                     samplePODDef[i] = [self._PODcollDict[i](x[0])]
                 return samplePODDef.computeQuantilePerComponent(1. - confidenceLevel)
@@ -346,7 +346,7 @@ class UnivariateLinearModelPOD(POD):
 ################################################################################
 
     def _PODgaussModel(self, defects, stderr, linearModel):
-        X = ot.NumericalSample(defects.getSize(), [1, 0])
+        X = ot.Sample(defects.getSize(), [1, 0])
         X[:, 1] = defects
         X = ot.Matrix(X)
         # compute the prediction variance of the linear regression model
@@ -377,7 +377,7 @@ class UnivariateLinearModelPOD(POD):
                 return ot.DistFunc.pNormal(t,True)
 
         N = defects.getSize()
-        X = ot.NumericalSample(N, [1, 0])
+        X = ot.Sample(N, [1, 0])
         X[:, 1] = defects
         X = ot.Matrix(X)
         covMatrix = X.computeGram(True).solveLinearSystem(ot.IdentityMatrix(2))
@@ -429,7 +429,7 @@ class UnivariateLinearModelPOD(POD):
                 return self.resDist.computeComplementaryCDF(defectThres)
 
 
-        data = ot.NumericalSample(self._size, 2)
+        data = ot.Sample(self._size, 2)
         data[:, 0] = self._inputSample
         data[:, 1] = self._outputSample
         # bootstrap of the data
@@ -496,7 +496,7 @@ def _computeLinearModel(inputSample, outputSample, detection, noiseThres,
     ######################### Linear Regression model ######################
     # Linear regression with statsmodels module
     # Create the X matrix : [1, inputSample]
-    X = ot.NumericalSample(defectsSize, [1, 0])
+    X = ot.Sample(defectsSize, [1, 0])
     X[:, 1] = defects
     algoLinear = OLS(np.array(signals), np.array(X)).fit()
 
@@ -505,7 +505,7 @@ def _computeLinearModel(inputSample, outputSample, detection, noiseThres,
     # get standard error estimates (residuals standard deviation)
     stderr = np.sqrt(algoLinear.scale)
     # get residuals from algoLinear
-    residuals = ot.NumericalSample(np.vstack(algoLinear.resid))
+    residuals = ot.Sample(np.vstack(algoLinear.resid))
 
     if censored:
         # define initial starting point for MLE optimization

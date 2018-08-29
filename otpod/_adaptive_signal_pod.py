@@ -224,7 +224,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             # Monte Carlo for all defect sizes in a vectorized way.
             # get Sample for all parameters except the defect size
             samplePred = self._distribution.getSample(self._samplingSize)[:,1:]
-            fullSamplePred = ot.NumericalSample(self._samplingSize * self._defectNumber,
+            fullSamplePred = ot.Sample(self._samplingSize * self._defectNumber,
                                                 self._dim)
             # Add the defect sizes as first value 
             for i, defect in enumerate(self._defectSizes):
@@ -276,7 +276,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                 # compute the criterion for all defect size
                 crit = []
                 # save results, used to compute the PODModel et PODCLModel
-                PODPerDefect = ot.NumericalSample(self._simulationSize *
+                PODPerDefect = ot.Sample(self._simulationSize *
                                          self._samplingSize, self._defectNumber)
                 for idef, defect in enumerate(self._defectSizes):
                     podSample = self._computePODSamplePerDefect(defect,
@@ -372,7 +372,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         if self._verbose:
                 print('\nStart computing the POD with the last updated kriging model')
         # compute the sample containing the POD values for all defect 
-        self._PODPerDefect = ot.NumericalSample(self._simulationSize *
+        self._PODPerDefect = ot.Sample(self._simulationSize *
                                          self._samplingSize, self._defectNumber)
         for i, defect in enumerate(self._defectSizes):
             self._PODPerDefect[:, i] = self._computePODSamplePerDefect(defect,
@@ -477,7 +477,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         """
         size = X.getSize()
         dim = X.getDimension() + 1
-        samplePred = ot.NumericalSample(size, dim)
-        samplePred[:, 0] = ot.NumericalSample(size, [defect])
+        samplePred = ot.Sample(size, dim)
+        samplePred[:, 0] = ot.Sample(size, [defect])
         samplePred[:, 1:] = X
         return samplePred

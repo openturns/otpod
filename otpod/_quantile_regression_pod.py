@@ -114,7 +114,7 @@ class QuantileRegressionPOD(POD):
         defectsSize = self._defects.getSize()
 
         # create the quantile regression object
-        X = ot.NumericalSample(defectsSize, [1, 0])
+        X = ot.Sample(defectsSize, [1, 0])
         X[:, 1] = self._defects
         self._algoQuantReg = QuantReg(np.array(self._signals), np.array(X))
 
@@ -138,7 +138,7 @@ class QuantileRegressionPOD(POD):
 
         ############ Confidence interval with bootstrap ########################
         # Compute a NsimulationSize defect sizes for all quantiles
-        data = ot.NumericalSample(self._size, 2)
+        data = ot.Sample(self._size, 2)
         data[:, 0] = self._inputSample
         data[:, 1] = self._outputSample
         # bootstrap of the data
@@ -146,7 +146,7 @@ class QuantileRegressionPOD(POD):
         # create a numerical sample which contains for all simulations the 
         # defect quantile value. The goal is to compute the QuantilePerComponent
         # of the simulation for each defect quantile (columns)
-        self._defectsPerQuantile = ot.NumericalSample(self._simulationSize, self._quantile.size)
+        self._defectsPerQuantile = ot.Sample(self._simulationSize, self._quantile.size)
         for i in range(self._simulationSize):
             # generate a sample with replacement within data of the same size
             bootstrapData = bootstrapExp.generate()
@@ -162,7 +162,7 @@ class QuantileRegressionPOD(POD):
             defectsSize = defects.getSize()
 
             # new quantile regression algorithm
-            X = ot.NumericalSample(defectsSize, [1, 0])
+            X = ot.Sample(defectsSize, [1, 0])
             X[:, 1] = defects
             algoQuantReg = QuantReg(np.array(signals), np.array(X))
 

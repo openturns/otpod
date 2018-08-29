@@ -240,8 +240,8 @@ class SobolIndices():
                 raise AttributeError("The label dimension must be {}.").format(self._dim)
 
         # get the indices values that can be computed
-        xplot = ot.NumericalSample(0, 1)
-        yplot = ot.NumericalSample(0, self._dim)
+        xplot = ot.Sample(0, 1)
+        yplot = ot.Sample(0, self._dim)
         for i, defect in enumerate(self._defectSizes):
             try:
                 if order == 'first':
@@ -505,7 +505,7 @@ class PODaggrChaos(ot.OpenTURNSPythonFunction):
         samplingSize = X.getSize()
 
         # create sample containing all input combined with all defect sizes
-        fullX = ot.NumericalSample(samplingSize * self.defectNumber,self.dim+1)
+        fullX = ot.Sample(samplingSize * self.defectNumber,self.dim+1)
         for i, x in enumerate(X):
             x = np.array(x, ndmin=2)
             x = x.repeat(self.defectNumber, axis=0)
@@ -514,7 +514,7 @@ class PODaggrChaos(ot.OpenTURNSPythonFunction):
 
         # add randomness from the residual, identical for all defect size
         residualsSample = ot.Normal(samplingSize).getSample(self.simulationSize) * self.chaosPOD._stderr
-        fullRes = ot.NumericalSample(self.simulationSize, samplingSize * self.defectNumber)
+        fullRes = ot.Sample(self.simulationSize, samplingSize * self.defectNumber)
         for i in range(samplingSize):
             fullRes[:, self.defectNumber*i:self.defectNumber*(i+1)] = np.repeat(residualsSample[:, i], self.defectNumber, axis=1)
         fullRes = np.transpose(fullRes)

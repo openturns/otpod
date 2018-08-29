@@ -72,8 +72,8 @@ class PODSummary():
                  saturationThres=None, boxCox=False):
 
 
-        self._inputSample = ot.NumericalSample(np.vstack(inputSample))
-        self._signals = ot.NumericalSample(np.vstack(outputSample))
+        self._inputSample = ot.Sample(np.vstack(inputSample))
+        self._signals = ot.Sample(np.vstack(outputSample))
         self._detection = detection
         self._noiseThres = noiseThres
         self._saturationThres = saturationThres

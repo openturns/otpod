@@ -12,14 +12,14 @@ base_dir = base_dir + os.sep + 'doc' + os.sep + 'source' + os.sep + 'examples' +
 
 
 d = 4
-inputs = ot.NumericalSample.ImportFromTextFile(base_dir+'inputs.txt', '\t')
+inputs = ot.Sample.ImportFromTextFile(base_dir+'inputs.txt', '\t')
 X = np.array(inputs)
 X = X[:, :d]
 (i1,i2)=(0,1)
 
 x_min = np.min(np.array(X),axis=0)
 x_max = np.max(np.array(X),axis=0)
-outputs = ot.NumericalSample.ImportFromTextFile(base_dir+'outputs.txt', '\t')
+outputs = ot.Sample.ImportFromTextFile(base_dir+'outputs.txt', '\t')
 y = np.array(outputs).reshape((1,len(outputs)))[0]
 
 

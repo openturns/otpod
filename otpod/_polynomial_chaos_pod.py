@@ -180,7 +180,7 @@ class PolynomialChaosPOD(POD):
         self._coefsDist = ot.Normal(np.hstack(self._chaosCoefs), ot.CovarianceMatrix(covMatrix.getImplementation()))
         coefsRandom = self._coefsDist.getSample(self._simulationSize)
 
-        self._PODPerDefect = ot.NumericalSample(self._simulationSize, self._defectNumber)
+        self._PODPerDefect = ot.Sample(self._simulationSize, self._defectNumber)
         for i, coefs in enumerate(coefsRandom):
             self._PODPerDefect[i, :] = self._computePOD(self._defectSizes, coefs)
             if self._verbose:
@@ -610,7 +610,7 @@ class PolynomialChaosPOD(POD):
         if self._distribution is None:
             # create default distribution : Uniform between min and max of the 
             # input sample
-            inputSample = ot.NumericalSample(inputSample)
+            inputSample = ot.Sample(inputSample)
             inputMin = inputSample.getMin()
             inputMin[0] = np.min(self._defectSizes)
             inputMax = inputSample.getMax()
@@ -658,8 +658,8 @@ class PolynomialChaosPOD(POD):
         """
         size = X.getSize()
         dim = X.getDimension() + 1
-        samplePred = ot.NumericalSample(size, dim)
-        samplePred[:, 0] = ot.NumericalSample(size, [defect])
+        samplePred = ot.Sample(size, dim)
+        samplePred[:, 0] = ot.Sample(size, [defect])
         samplePred[:, 1:] = X
         return samplePred
 
@@ -679,7 +679,7 @@ class PolynomialChaosPOD(POD):
         """
         # create the input sample that must be computed by the metamodels
         samplePred = self._distribution.getSample(self._samplingSize)[:,1:]
-        fullSamplePred = ot.NumericalSample(self._samplingSize * self._defectNumber,
+        fullSamplePred = ot.Sample(self._samplingSize * self._defectNumber,
                                                                     self._dim)
         for i, defect in enumerate(defectSizes):
             fullSamplePred[self._samplingSize*i:self._samplingSize*(i+1), :] = \

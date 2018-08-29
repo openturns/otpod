@@ -502,7 +502,7 @@ class PODaggrChaos(ot.OpenTURNSPythonFunction):
 
     # vectorial way to compute the POD
     def _exec_sample(self, X):
-        samplingSize = X.getSize()
+        samplingSize = ot.Sample(X).getSize()
 
         # create sample containing all input combined with all defect sizes
         fullX = ot.Sample(samplingSize * self.defectNumber,self.dim+1)

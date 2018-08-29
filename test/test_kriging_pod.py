@@ -4,6 +4,9 @@ import otpod
 import numpy as np
 from distutils.version import LooseVersion
 
+if LooseVersion(ot.__version__) == '1.11':
+    ot.ResourceMap.Set('GeneralLinearModelAlgorithm-UseAnalyticalAmplitudeEstimate', 'false')
+
 inputSample = ot.Sample(
     [[4.59626812e+00, 7.46143339e-02, 1.02231538e+00, 8.60042277e+01],
     [4.14315790e+00, 4.20801346e-02, 1.05874908e+00, 2.65757364e+01],

@@ -71,6 +71,7 @@ class PLIBase():
     def _runMonteCarlo(self, defect):
         # set a parametric function where the first parameter = given defect
         g = ot.ParametricFunction(self._metamodel, [0], [defect])
+        g = ot.MemoizeFunction(g)
         g.enableHistory()
         g.clearHistory()
         g.clearCache()

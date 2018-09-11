@@ -351,14 +351,14 @@ class UnivariateLinearModelAnalysis():
             msg[0] = 'Some hypothesis tests failed : you may consider to use '+\
                         'the Box Cox transformation.'
             if disp:
-                logging.warn(msg[0])
+                logging.warning(msg[0])
                 # ot.Log.Warn(msg[0])
                 # ot.Log.Flush()
         elif testPValues and self._boxCox:
             msg[1] = 'Some hypothesis tests failed : you may consider to use '+\
                 'quantile regression or kriging (if input dimension > 1) to build POD.'
             if disp:
-                logging.warn(msg[1])
+                logging.warning(msg[1])
                 # ot.Log.Warn(msg[1])
                 # ot.Log.Flush()
 
@@ -367,7 +367,7 @@ class UnivariateLinearModelAnalysis():
                         'residual mean test are given assuming the residuals ' +\
                         'follow a Normal distribution.'
             if disp:
-                logging.warn(msg[2])
+                logging.warning(msg[2])
                 # ot.Log.Warn(msg[2])
                 # ot.Log.Flush()
         # return msg for the test with pytest and the method getResult()

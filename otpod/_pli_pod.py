@@ -120,7 +120,7 @@ class PLIBase():
                 self._indices[:, :, idefect] = np.zeros(self._indices[:, :, idefect].shape)*np.nan
 
         if len(self._keepedDefect) != self._defectNumber:
-            logging.warn('The indices were estimated only for the following defect: '+ \
+            logging.warning('The indices were estimated only for the following defect: '+ \
                   ''.join(('{:.2f}, ' * len(self._keepedDefect)).format(*self._defectSizes[self._keepedDefect])) + \
                   'because the probability estimate is too small or too big '+\
                   'for other defect values.') 

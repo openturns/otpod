@@ -429,7 +429,7 @@ class PODaggrKriging(ot.OpenTURNSPythonFunction):
         # check if the variance is positive of not, accept negative values
         # if they are > -1e-2, else raise an error. 
         if (var < 0).all():
-            logging.warn("Warning : some variance values are negatives, " + \
+            logging.warning("Warning : some variance values are negatives, " + \
                          "the kriging model may not be accurate enough.")
 
             if (var[var<0] < 1e-2).all():

@@ -12,7 +12,6 @@ from statsmodels.regression.linear_model import OLS
 import numpy as np
 import matplotlib.pyplot as plt
 import logging
-from distutils.version import LooseVersion
 
 
 class _Results():
@@ -284,11 +283,7 @@ class UnivariateLinearModelAnalysis():
         testResults['ZeroMean'] = computeZeroMeanTest(residuals)
 
         # compute Kolmogorov test (fitting test)
-        if LooseVersion(ot.__version__) == '1.6':
-            testKol = ot.FittingTest.Kolmogorov(residuals, resDist, 0.95,
-                                            resDist.getParametersNumber())
-        elif LooseVersion(ot.__version__) > '1.6':
-            testKol = ot.FittingTest.Kolmogorov(residuals, resDist, 0.95,
+        testKol = ot.FittingTest.Kolmogorov(residuals, resDist, 0.95,
                                             resDist.getParameterDimension())
 
         testResults['Kolmogorov'] = testKol.getPValue()
@@ -367,7 +362,7 @@ class UnivariateLinearModelAnalysis():
                 # ot.Log.Warn(msg[1])
                 # ot.Log.Flush()
 
-        if self._resultsUnc.resDist.getClassName() != 'Normal':
+        if self._resultsUnc.resDist.getImplementation().getClassName() != 'Normal':
             msg[2] = 'Confidence interval, Normality tests and zero ' + \
                         'residual mean test are given assuming the residuals ' +\
                         'follow a Normal distribution.'
@@ -635,17 +630,20 @@ class UnivariateLinearModelAnalysis():
 
         fig, ax = plt.subplots(figsize=(8, 8))
         graph = ot.VisualTest.DrawQQplot(residuals, distribution)
-        drawables = graph.getDrawables()
-        drawables[1].setPointStyle('dot')
-        drawables[1].setLineWidth(3)
-        drawables[1].setColor('blue')
-        graph = ot.Graph()
-        graph.add(drawables)
+        # drawables = graph.getDrawables()
+        # drawables[1].setPointStyle('dot')
+        # drawables[1].setLineWidth(3)
+        # drawables[1].setColor('blue')
+        # graph = ot.Graph()
+        # graph.add(drawables)
 
-        graph.setXTitle('Residuals empirical quantiles')
-        graph.setYTitle(distribution.__str__())
-        graph.setGrid(True)
-        View(graph, axes=[ax])
+        # graph.setXTitle('Residuals empirical quantiles')
+        # graph.setYTitle(distribution.__str__())
+        View(graph, axes=[ax], plot_kwargs={'marker':'.', ''
+                                            'color':'blue'})
+        ax.grid(True)
+        ax.set_xlabel('Residuals empirical quantiles')
+        ax.set_ylabel(distribution.__str__())
         if model == "uncensored":
             ax.set_title('QQ-plot of the residuals ')
         elif model == "censored":

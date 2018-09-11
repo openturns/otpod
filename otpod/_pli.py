@@ -53,10 +53,10 @@ class PLI():
         # the monte carlo result must have its underlying function with
         # the history enabled because the failure sample is obtained using it
         self._monteCarloResult = monteCarloResult
-        if not self._monteCarloResult.getEvent().getFunction().isHistoryEnabled():
+        self.function = ot.MemoizeFunction(self._monteCarloResult.getEvent().getFunction())
+        if self.function.getOutputHistory().getSize() == 0:
             raise AttributeError("The performance function of the Monte Carlo "+\
-                                 "simulation result should have had its history "+\
-                                 "enabled before running it.")
+                                 "simulation result should be a MemoizeFunction.")
 
         # the original distribution
         if distribution.hasIndependentCopula():
@@ -123,15 +123,8 @@ class PLI():
         Function history, the operator and threshold of the event 
         """
         # get the input and output sample
-        function = self._monteCarloResult.getEvent().getFunction()
-        try:
-            # for the case with parametric functions
-            inputSample = function.getInputPointHistory()
-        except NotYetImplementedException:
-            # else not parametric functions
-            inputSample = function.getHistoryInput().getSample()
-
-        outputSample = function.getHistoryOutput().getSample()
+        inputSample = self.function.getInputHistory()
+        outputSample = self.function.getOutputHistory()
         operator = self._monteCarloResult.getEvent().getOperator().getImplementation().getClassName()
         threshold = self._monteCarloResult.getEvent().getThreshold()
         if operator in ['Less', 'LessOrEqual']:
@@ -393,7 +386,7 @@ class PLI():
             qMax = 0.95
             xMax = self._distribution.getMarginal(marginal).computeQuantile(qMax)[0]
         if pointNumber is None:
-            pointNumber = ot.ResourceMap.GetAsNumericalScalar('Distribution-DefaultPointNumber')
+            pointNumber = ot.ResourceMap.GetAsScalar('Distribution-DefaultPointNumber')
         if label is None:
             label = 'X{}'.format(marginal)
 
@@ -550,12 +543,12 @@ class PLIMeanBase(PLI):
         if delta == marginalDist.getMean()[0]:
             return np.array(marginalDist.computePDF(X))
         else:
-            if marginalDist.getClassName() == 'Normal':
+            if marginalDist.getImplementation().getClassName() == 'Normal':
                 std = marginalDist.getStandardDeviation()[0]
                 return 1. /  (std * np.sqrt(2*np.pi)) * \
                         np.exp(-0.5 * ((X - delta)/std)**2)
 
-            elif marginalDist.getClassName() == 'Uniform':
+            elif marginalDist.getImplementation().getClassName() == 'Uniform':
                 # define the function Mx'/Mx - delta, must be = 0 to find optimal lambda
                 def MprimeOverM(lamb, a, b, delta):
                     a = float(a)
@@ -644,13 +637,13 @@ class PLIVarianceBase(PLI):
         if delta == marginalDist.getCovariance()[0, 0]:
             return np.array(marginalDist.computePDF(X))
         else:
-            if marginalDist.getClassName() == 'Normal':
+            if marginalDist.getImplementation().getClassName() == 'Normal':
                 mean = marginalDist.getMean()[0]
                 std = np.sqrt(delta)
                 return 1. /  (std * np.sqrt(2*np.pi)) * \
                         np.exp(-0.5 * ((X - mean)/std)**2)
 
-            elif marginalDist.getClassName() == 'Uniform':
+            elif marginalDist.getImplementation().getClassName() == 'Uniform':
 
                 # set the delta vector which the right hand of the constraints
                 # see eq 10 in Lemaitre paper

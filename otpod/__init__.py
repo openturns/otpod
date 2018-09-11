@@ -11,8 +11,8 @@ def _initializing():
     # check openturns version
     from distutils.version import LooseVersion
     import openturns as ot
-    if LooseVersion(ot.__version__) < "1.6":
-        raise ImportError(ot.__name__ + ' version must be at least 1.6.')
+    if LooseVersion(ot.__version__) < "1.11":
+        raise ImportError(ot.__name__ + ' version must be at least 1.11.')
 
     # initialize the logger to display informations and warnings
     import logging

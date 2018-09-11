@@ -2,10 +2,8 @@ import openturns as ot
 ot.TBB.Disable()
 import otpod
 import numpy as np
-from distutils.version import LooseVersion
 
-if LooseVersion(ot.__version__) == '1.11':
-    ot.ResourceMap.Set('GeneralLinearModelAlgorithm-UseAnalyticalAmplitudeEstimate', 'false')
+ot.ResourceMap.Set('GeneralLinearModelAlgorithm-UseAnalyticalAmplitudeEstimate', 'false')
 
 inputSample = ot.Sample(
     [[4.59626812e+00, 7.46143339e-02, 1.02231538e+00, 8.60042277e+01],
@@ -67,16 +65,7 @@ np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
 POD2 = otpod.KrigingPOD(inputSample, signals, detection, noiseThres, saturationThres, boxCox=False)
-if LooseVersion(ot.__version__) <= '1.6':
-    covColl = ot.CovarianceModelCollection(4)
-    scale = [5.03148,13.9442,20,20]
-    for i in range(4):
-        c = ot.SquaredExponential(1, scale[i])
-        c.setAmplitude([15.1697])
-        covColl[i]  = c
-    covarianceModel = ot.ProductCovarianceModel(covColl)
-else:
-    covarianceModel = ot.SquaredExponential([5.03148,13.9442,20,20], [15.1697])
+covarianceModel = ot.SquaredExponential([5.03148,13.9442,20,20], [15.1697])
 POD2.setCovarianceModel(covarianceModel)
 POD2.setInitialStartSize(0)
 POD2.setSamplingSize(100)
@@ -84,11 +73,11 @@ POD2.setSimulationSize(100)
 POD2.run()
 detectionSize2 = POD2.computeDetectionSize(0.6, 0.95)
 def test_2_a90():
-    np.testing.assert_almost_equal(detectionSize2[0], 4.423224253595858, decimal=4)
+    np.testing.assert_almost_equal(detectionSize2[0], 4.4233239809290, decimal=4)
 def test_2_a95():
-    np.testing.assert_almost_equal(detectionSize2[1], 4.459265407336185, decimal=4)
+    np.testing.assert_almost_equal(detectionSize2[1], 4.45940081, decimal=4)
 def test_2_Q2_90():
-    np.testing.assert_almost_equal(POD2.getQ2(), 0.999945898652, decimal=4)
+    np.testing.assert_almost_equal(POD2.getQ2(), 0.998992756, decimal=4)
 
 # Test kriging with Box Cox / Test not reproducible
 # ot.RandomGenerator.SetSeed(0)

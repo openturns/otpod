@@ -79,7 +79,7 @@ class PLIBase():
         event = ot.Event(output, ot.Greater(), self._detectionBoxCox)
 
         ##### Monte Carlo ########
-        algo_MC = ot.MonteCarlo(event)
+        algo_MC = ot.ProbabilitySimulationAlgorithm(event)
         algo_MC.setMaximumOuterSampling(self._samplingSize)
         # set negative coef of variation to be sure the stopping criterion is the sampling size
         algo_MC.setMaximumCoefficientOfVariation(-1)

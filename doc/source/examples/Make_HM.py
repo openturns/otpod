@@ -50,15 +50,16 @@ s = 33
 
 def MyHM_py(X):
     import numpy as np
-    return(np.array(fit_all.predict(X)> s,dtype='int'))
+    X = np.atleast_2d(X)
+    return np.atleast_2d(np.array(fit_all.predict(X)> s,dtype='int')).T
 
 
 def fit_all_py(X):
     import numpy as np
     return np.atleast_2d(fit_all.predict(X)).T
 
-MyHM = ot.PythonFunction(d, 1, MyHM_py)
-MyFit = ot.PythonFunction(d, 1, fit_all_py)
+MyHM = ot.PythonFunction(d, 1, func_sample=MyHM_py)
+MyFit = ot.PythonFunction(d, 1, func_sample=fit_all_py)
 
 print("-----------------------------------")
 print("The function 'MyHM' has been loaded")

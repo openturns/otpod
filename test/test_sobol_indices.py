@@ -64,10 +64,6 @@ firstAgg1 = sobol_result.getAggregatedFirstOrderIndices()
 totalAgg1 = sobol_result.getAggregatedTotalOrderIndices()
 firstOrder1 = sobol_result.getFirstOrderIndices(5)
 totalOrder1 = sobol_result.getTotalOrderIndices(5)
-print firstAgg1
-print totalAgg1
-print firstOrder1
-print totalOrder1
 def test_1_FA():
     np.testing.assert_almost_equal(firstAgg1, [0.828345,0.0416706,-0.00108512], decimal=2)
 def test_1_TA():
@@ -85,8 +81,6 @@ sobol.run()
 sobol_result = sobol.getSensitivityResult()
 firstAgg2 = sobol_result.getAggregatedFirstOrderIndices()
 totalAgg2 = sobol_result.getAggregatedTotalOrderIndices()
-print firstAgg2
-print totalAgg2
 def test_2_FA():
     np.testing.assert_almost_equal(firstAgg2, [0.90566,-0.0354556,-0.0490145], decimal=2)
 def test_2_TA():
@@ -100,8 +94,6 @@ sobol.run()
 sobol_result = sobol.getSensitivityResult()
 firstAgg3 = sobol_result.getAggregatedFirstOrderIndices()
 totalAgg3 = sobol_result.getAggregatedTotalOrderIndices()
-print firstAgg3
-print totalAgg3
 def test_3_FA():
     np.testing.assert_almost_equal(firstAgg3, [0.849301,-0.0342121,-0.0481013], decimal=2)
 def test_3_TA():
@@ -115,8 +107,6 @@ sobol.run()
 sobol_result = sobol.getSensitivityResult()
 firstAgg4 = sobol_result.getAggregatedFirstOrderIndices()
 totalAgg4 = sobol_result.getAggregatedTotalOrderIndices()
-print firstAgg4
-print totalAgg4
 def test_4_FA():
     np.testing.assert_almost_equal(firstAgg4, [0.836597,-0.0691443,-0.066833], decimal=2)
 def test_4_TA():
@@ -130,8 +120,6 @@ sobol.run()
 sobol_result = sobol.getSensitivityResult()
 firstAgg5 = sobol_result.getAggregatedFirstOrderIndices()
 totalAgg5 = sobol_result.getAggregatedTotalOrderIndices()
-print firstAgg5
-print totalAgg5
 def test_5_FA():
     np.testing.assert_almost_equal(firstAgg5, [0.943246,0.00213009,-0.0114289], decimal=2)
 def test_5_TA():
@@ -154,8 +142,6 @@ sobolChaos.run()
 sobol_result = sobolChaos.getSensitivityResult()
 firstAgg6 = sobol_result.getAggregatedFirstOrderIndices()
 totalAgg6 = sobol_result.getAggregatedTotalOrderIndices()
-print firstAgg6
-print totalAgg6
 def test_6_FA():
     np.testing.assert_almost_equal(firstAgg6, [0.765053,0.119978,0.0796234], decimal=2)
 def test_6_TA():

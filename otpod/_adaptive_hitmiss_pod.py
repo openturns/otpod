@@ -33,7 +33,7 @@ class AdaptiveHitMissPOD(POD):
         defect sizes.
     outputDOE : 2-d sequence of float
         Vector of the signals, of dimension 1.
-    physicalModel : :py:class:`openturns.NumericalMathFunction`
+    physicalModel : :py:class:`openturns.Function`
         True model used to compute the real hit miss value of the signal value 
         to be added to the DOE.
     nMorePoints : positive int
@@ -148,7 +148,7 @@ class AdaptiveHitMissPOD(POD):
             # case where the physical model returns a true signal value
             # the physical model is turned into a binary model with respect
             # to the detection value.
-            self._physicalModel = ot.NumericalMathFunction(physicalModel,
+            self._physicalModel = ot.IndicatorFunction(physicalModel,
                                                  ot.Greater(), self._detection)
             self._signals = np.array(np.array(self._signals) >
                                 self._detection, dtype='int')
@@ -346,8 +346,8 @@ class AdaptiveHitMissPOD(POD):
                     fig.savefig(os.path.join(self._graphDirectory, 'AdaptiveHitMissPOD_')+str(algo_iteration),
                                 bbox_inches='tight', transparent=True)
 
-        self._input = ot.NumericalSample(self._input)
-        self._signals = ot.NumericalSample(np.vstack(self._signals))
+        self._input = ot.Sample(self._input)
+        self._signals = ot.Sample(np.vstack(self._signals))
         # Compute the sample predicted for each defect sizes
         self._PODPerDefect = self._computePOD(self._defectSizes, self._classifierModel)
         # compute the POD for all defect sizes
@@ -367,7 +367,7 @@ class AdaptiveHitMissPOD(POD):
 
         Returns
         -------
-        PODModel : :py:class:`openturns.NumericalMathFunction`
+        PODModel : :py:class:`openturns.Function`
             The function which computes the probability of detection for a given
             defect value.
         """
@@ -384,7 +384,7 @@ class AdaptiveHitMissPOD(POD):
 
         Returns
         -------
-        PODModelCl : :py:class:`openturns.NumericalMathFunction`
+        PODModelCl : :py:class:`openturns.Function`
             The function which computes the probability of detection for a given
             defect value at the confidence level given as parameter.
         """
@@ -735,8 +735,8 @@ class AdaptiveHitMissPOD(POD):
         """
         size = X.getSize()
         dim = X.getDimension() + 1
-        samplePred = ot.NumericalSample(size, dim)
-        samplePred[:, 0] = ot.NumericalSample(size, [defect])
+        samplePred = ot.Sample(size, dim)
+        samplePred[:, 0] = ot.Sample(size, [defect])
         samplePred[:, 1:] = X
         return samplePred
 
@@ -746,7 +746,7 @@ class AdaptiveHitMissPOD(POD):
         """
         # create the input sample that must be computed by the metamodels
         samplePred = self._distribution.getSample(self._samplingSize)[:,1:]
-        fullSamplePred = ot.NumericalSample(self._samplingSize * self._defectNumber,
+        fullSamplePred = ot.Sample(self._samplingSize * self._defectNumber,
                                                                     self._dim)
         for i, defect in enumerate(defectSizes):
             fullSamplePred[self._samplingSize*i:self._samplingSize*(i+1), :] = \
@@ -755,4 +755,4 @@ class AdaptiveHitMissPOD(POD):
         classifierSample = algoClassifier(np.array(fullSamplePred))[:, 1]
         classifierSample = np.reshape(classifierSample, (self._samplingSize,
                                        self._defectNumber), 'F')
-        return ot.NumericalSample(classifierSample)
+        return ot.Sample(classifierSample)

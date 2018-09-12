@@ -12,14 +12,14 @@ base_dir = base_dir + os.sep + 'doc' + os.sep + 'source' + os.sep + 'examples' +
 
 
 d = 4
-inputs = ot.NumericalSample.ImportFromTextFile(base_dir+'inputs.txt', '\t')
+inputs = ot.Sample.ImportFromTextFile(base_dir+'inputs.txt', '\t')
 X = np.array(inputs)
 X = X[:, :d]
 (i1,i2)=(0,1)
 
 x_min = np.min(np.array(X),axis=0)
 x_max = np.max(np.array(X),axis=0)
-outputs = ot.NumericalSample.ImportFromTextFile(base_dir+'outputs.txt', '\t')
+outputs = ot.Sample.ImportFromTextFile(base_dir+'outputs.txt', '\t')
 y = np.array(outputs).reshape((1,len(outputs)))[0]
 
 
@@ -50,15 +50,16 @@ s = 33
 
 def MyHM_py(X):
     import numpy as np
-    return(np.array(fit_all.predict(X)> s,dtype='int'))
+    X = np.atleast_2d(X)
+    return np.atleast_2d(np.array(fit_all.predict(X)> s,dtype='int')).T
 
 
 def fit_all_py(X):
     import numpy as np
     return np.atleast_2d(fit_all.predict(X)).T
 
-MyHM = ot.PythonFunction(d, 1, MyHM_py)
-MyFit = ot.PythonFunction(d, 1, fit_all_py)
+MyHM = ot.PythonFunction(d, 1, func_sample=MyHM_py)
+MyFit = ot.PythonFunction(d, 1, func_sample=fit_all_py)
 
 print("-----------------------------------")
 print("The function 'MyHM' has been loaded")

@@ -95,13 +95,13 @@ class SobolIndices():
         Compute the Sobol indices with the chosen algorithm. 
         """
 
-        # create the NumericalMathFunction which computes the POD for a given
+        # create the Function which computes the POD for a given
         # realization and for all defect sizes.
         if self._podType == "kriging":
-            self._PODaggr = ot.NumericalMathFunction(PODaggrKriging(self._POD,
+            self._PODaggr = ot.Function(PODaggrKriging(self._POD,
                             self._dim, self._defectSizes, self._detectionBoxCox))
         elif self._podType == "chaos":
-            self._PODaggr = ot.NumericalMathFunction(PODaggrChaos(self._POD,
+            self._PODaggr = ot.Function(PODaggrChaos(self._POD,
                             self._dim, self._defectSizes, self._detectionBoxCox,
                             self._simulationSize))
 
@@ -240,8 +240,8 @@ class SobolIndices():
                 raise AttributeError("The label dimension must be {}.").format(self._dim)
 
         # get the indices values that can be computed
-        xplot = ot.NumericalSample(0, 1)
-        yplot = ot.NumericalSample(0, self._dim)
+        xplot = ot.Sample(0, 1)
+        yplot = ot.Sample(0, self._dim)
         for i, defect in enumerate(self._defectSizes):
             try:
                 if order == 'first':
@@ -429,7 +429,7 @@ class PODaggrKriging(ot.OpenTURNSPythonFunction):
         # check if the variance is positive of not, accept negative values
         # if they are > -1e-2, else raise an error. 
         if (var < 0).all():
-            logging.warn("Warning : some variance values are negatives, " + \
+            logging.warning("Warning : some variance values are negatives, " + \
                          "the kriging model may not be accurate enough.")
 
             if (var[var<0] < 1e-2).all():
@@ -484,9 +484,9 @@ class PODaggrChaos(ot.OpenTURNSPythonFunction):
         transformation = chaosResult.getTransformation()
         chaosFunctionCol = []
         for i, coefs in enumerate(sampleCoefs):
-            standardChaosFunction = ot.NumericalMathFunction(reducedBasis, coefs)
-            chaosFunctionCol.append(ot.NumericalMathFunction(standardChaosFunction, transformation))
-        self.chaosFunction = ot.NumericalMathFunction(chaosFunctionCol)
+            standardChaosFunction = ot.LinearCombinationFunction(reducedBasis, coefs)
+            chaosFunctionCol.append(ot.ComposedFunction(standardChaosFunction, transformation))
+        self.chaosFunction = ot.AggregatedFunction(chaosFunctionCol)
 
     def _exec(self, X):
         # create sample combining all defect size with the given X
@@ -502,10 +502,10 @@ class PODaggrChaos(ot.OpenTURNSPythonFunction):
 
     # vectorial way to compute the POD
     def _exec_sample(self, X):
-        samplingSize = X.getSize()
+        samplingSize = ot.Sample(X).getSize()
 
         # create sample containing all input combined with all defect sizes
-        fullX = ot.NumericalSample(samplingSize * self.defectNumber,self.dim+1)
+        fullX = ot.Sample(samplingSize * self.defectNumber,self.dim+1)
         for i, x in enumerate(X):
             x = np.array(x, ndmin=2)
             x = x.repeat(self.defectNumber, axis=0)
@@ -514,7 +514,7 @@ class PODaggrChaos(ot.OpenTURNSPythonFunction):
 
         # add randomness from the residual, identical for all defect size
         residualsSample = ot.Normal(samplingSize).getSample(self.simulationSize) * self.chaosPOD._stderr
-        fullRes = ot.NumericalSample(self.simulationSize, samplingSize * self.defectNumber)
+        fullRes = ot.Sample(self.simulationSize, samplingSize * self.defectNumber)
         for i in range(samplingSize):
             fullRes[:, self.defectNumber*i:self.defectNumber*(i+1)] = np.repeat(residualsSample[:, i], self.defectNumber, axis=1)
         fullRes = np.transpose(fullRes)

@@ -12,7 +12,6 @@ from statsmodels.regression.linear_model import OLS
 import numpy as np
 import matplotlib.pyplot as plt
 import logging
-from distutils.version import LooseVersion
 
 
 class _Results():
@@ -111,8 +110,8 @@ class UnivariateLinearModelAnalysis():
                  saturationThres=None, resDistFact=None,
                  boxCox=False):
 
-        self._inputSample = ot.NumericalSample(np.vstack(inputSample))
-        self._outputSample = ot.NumericalSample(np.vstack(outputSample))
+        self._inputSample = ot.Sample(np.vstack(inputSample))
+        self._outputSample = ot.Sample(np.vstack(outputSample))
         self._noiseThres = noiseThres
         self._saturationThres = saturationThres
         # Add flag to tell if censored data must taken into account or not.
@@ -209,7 +208,7 @@ class UnivariateLinearModelAnalysis():
         ######################### Linear Regression model ######################
         # Linear regression with statsmodels module
         # Create the X matrix : [1, inputSample]
-        X = ot.NumericalSample(defectsSize, [1, 0])
+        X = ot.Sample(defectsSize, [1, 0])
         X[:, 1] = defects
         self._algoLinear = OLS(np.array(signals), np.array(X)).fit()
 
@@ -233,7 +232,7 @@ class UnivariateLinearModelAnalysis():
 
         ############################ Residuals #################################
         # get residuals from algoLinear
-        self._resultsUnc.residuals = ot.NumericalSample(np.vstack(self._algoLinear.resid))
+        self._resultsUnc.residuals = ot.Sample(np.vstack(self._algoLinear.resid))
         # compute residuals distribution
         self._resultsUnc.resDist = self._resDistFact.build(self._resultsUnc.residuals)
 
@@ -284,11 +283,7 @@ class UnivariateLinearModelAnalysis():
         testResults['ZeroMean'] = computeZeroMeanTest(residuals)
 
         # compute Kolmogorov test (fitting test)
-        if LooseVersion(ot.__version__) == '1.6':
-            testKol = ot.FittingTest.Kolmogorov(residuals, resDist, 0.95,
-                                            resDist.getParametersNumber())
-        elif LooseVersion(ot.__version__) > '1.6':
-            testKol = ot.FittingTest.Kolmogorov(residuals, resDist, 0.95,
+        testKol = ot.FittingTest.Kolmogorov(residuals, resDist, 0.95,
                                             resDist.getParameterDimension())
 
         testResults['Kolmogorov'] = testKol.getPValue()
@@ -356,23 +351,23 @@ class UnivariateLinearModelAnalysis():
             msg[0] = 'Some hypothesis tests failed : you may consider to use '+\
                         'the Box Cox transformation.'
             if disp:
-                logging.warn(msg[0])
+                logging.warning(msg[0])
                 # ot.Log.Warn(msg[0])
                 # ot.Log.Flush()
         elif testPValues and self._boxCox:
             msg[1] = 'Some hypothesis tests failed : you may consider to use '+\
                 'quantile regression or kriging (if input dimension > 1) to build POD.'
             if disp:
-                logging.warn(msg[1])
+                logging.warning(msg[1])
                 # ot.Log.Warn(msg[1])
                 # ot.Log.Flush()
 
-        if self._resultsUnc.resDist.getClassName() != 'Normal':
+        if self._resultsUnc.resDist.getImplementation().getClassName() != 'Normal':
             msg[2] = 'Confidence interval, Normality tests and zero ' + \
                         'residual mean test are given assuming the residuals ' +\
                         'follow a Normal distribution.'
             if disp:
-                logging.warn(msg[2])
+                logging.warning(msg[2])
                 # ot.Log.Warn(msg[2])
                 # ot.Log.Flush()
         # return msg for the test with pytest and the method getResult()
@@ -635,17 +630,20 @@ class UnivariateLinearModelAnalysis():
 
         fig, ax = plt.subplots(figsize=(8, 8))
         graph = ot.VisualTest.DrawQQplot(residuals, distribution)
-        drawables = graph.getDrawables()
-        drawables[1].setPointStyle('dot')
-        drawables[1].setLineWidth(3)
-        drawables[1].setColor('blue')
-        graph = ot.Graph()
-        graph.add(drawables)
+        # drawables = graph.getDrawables()
+        # drawables[1].setPointStyle('dot')
+        # drawables[1].setLineWidth(3)
+        # drawables[1].setColor('blue')
+        # graph = ot.Graph()
+        # graph.add(drawables)
 
-        graph.setXTitle('Residuals empirical quantiles')
-        graph.setYTitle(distribution.__str__())
-        graph.setGrid(True)
-        View(graph, axes=[ax])
+        # graph.setXTitle('Residuals empirical quantiles')
+        # graph.setYTitle(distribution.__str__())
+        View(graph, axes=[ax], plot_kwargs={'marker':'.', ''
+                                            'color':'blue'})
+        ax.grid(True)
+        ax.set_xlabel('Residuals empirical quantiles')
+        ax.set_ylabel(distribution.__str__())
         if model == "uncensored":
             ax.set_title('QQ-plot of the residuals ')
         elif model == "censored":
@@ -760,7 +758,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        defects : :py:class:`openturns.NumericalSample`
+        defects : :py:class:`openturns.Sample`
             The input sample which is the defect values.
         """
         return self._inputSample
@@ -771,7 +769,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        signals : :py:class:`openturns.NumericalSample`
+        signals : :py:class:`openturns.Sample`
             The input sample which is the signal values.
         """
         return self._outputSample
@@ -804,13 +802,13 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        residuals : :py:class:`openturns.NumericalSample`
+        residuals : :py:class:`openturns.Sample`
             The residuals computed from the uncensored and censored linear
             regression model. The first column corresponds with the uncensored case.
         """
         size = self._resultsUnc.residuals.getSize()
         if self._censored:
-            residuals = ot.NumericalSample(size, 2)
+            residuals = ot.Sample(size, 2)
             residuals[:, 0] = self._resultsUnc.residuals
             residuals[:, 1] = self._resultsCens.residuals
             residuals.setDescription(['Residuals for uncensored case',
@@ -842,18 +840,18 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        intercept : :py:class:`openturns.NumericalPoint`
+        intercept : :py:class:`openturns.Point`
             The intercept parameter for the uncensored and censored (if so) linear
             regression model.
         """
         if self._censored:
-            intercept = ot.NumericalPointWithDescription(
+            intercept = ot.PointWithDescription(
                         [('Intercept for uncensored case', 
                         self._resultsUnc.intercept),
                         ('Intercept for censored case',
                         self._resultsCens.intercept)])
         else:
-            intercept = ot.NumericalPointWithDescription(
+            intercept = ot.PointWithDescription(
                         [('Intercept for uncensored case', 
                         self._resultsUnc.intercept)])
 
@@ -865,18 +863,18 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        slope : :py:class:`openturns.NumericalPoint`
+        slope : :py:class:`openturns.Point`
             The slope parameter for the uncensored and censored (if so) linear
             regression model.
         """
         if self._censored:
-            slope = ot.NumericalPointWithDescription(
+            slope = ot.PointWithDescription(
                         [('Slope for uncensored case', 
                         self._resultsUnc.slope),
                         ('Slope for censored case',
                         self._resultsCens.slope)])
         else:
-            slope = ot.NumericalPointWithDescription(
+            slope = ot.PointWithDescription(
                         [('Slope for uncensored case', 
                         self._resultsUnc.slope)])
 
@@ -888,18 +886,18 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        stderr : :py:class:`openturns.NumericalPoint`
+        stderr : :py:class:`openturns.Point`
             The standard error of the estimate for the uncensored and censored
             (if so) linear regression model.
         """
         if self._censored:
-            stderr = ot.NumericalPointWithDescription(
+            stderr = ot.PointWithDescription(
                         [('Stderr for uncensored case', 
                         self._resultsUnc.stderr),
                         ('Stderr for censored case',
                         self._resultsCens.stderr)])
         else:
-            stderr = ot.NumericalPointWithDescription(
+            stderr = ot.PointWithDescription(
                         [('Stderr for uncensored case', 
                         self._resultsUnc.stderr)])
 
@@ -923,7 +921,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        R2 : :py:class:`openturns.NumericalPoint`
+        R2 : :py:class:`openturns.Point`
             Either the R2 for the uncensored case or for both cases.
         """
         return self._getResultValue('R2', 'R2')
@@ -934,7 +932,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        pValue : :py:class:`openturns.NumericalPoint`
+        pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
         return self._getResultValue('AndersonDarling', 'Anderson Darling p-value')
@@ -946,7 +944,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        pValue : :py:class:`openturns.NumericalPoint`
+        pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
         return self._getResultValue('CramerVonMises', 'Cramer Von Mises p-value')
@@ -957,7 +955,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        pValue : :py:class:`openturns.NumericalPoint`
+        pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
         return self._getResultValue('Kolmogorov', 'Kolmogorov p-value')
@@ -968,7 +966,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        pValue : :py:class:`openturns.NumericalPoint`
+        pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
         return self._getResultValue('ZeroMean', 'Zero Mean p-value')
@@ -979,7 +977,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        pValue : :py:class:`openturns.NumericalPoint`
+        pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
         return self._getResultValue('BreuschPagan', 'Breusch Pagan p-value')
@@ -990,7 +988,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        pValue : :py:class:`openturns.NumericalPoint`
+        pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
         return self._getResultValue('HarrisonMcCabe', 'Harrison McCabe p-value')
@@ -1001,7 +999,7 @@ class UnivariateLinearModelAnalysis():
 
         Returns
         -------
-        pValue : :py:class:`openturns.NumericalPoint`
+        pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
         return self._getResultValue('DurbinWatson', 'Durbin Watson p-value')
@@ -1018,13 +1016,13 @@ class UnivariateLinearModelAnalysis():
             name the test to be displayed.
         """
         if self._censored:
-            pValue = ot.NumericalPointWithDescription(
+            pValue = ot.PointWithDescription(
                         [(description + ' for uncensored case', 
                         self._resultsUnc.testResults[test]),
                         (description + ' for censored case',
                         self._resultsCens.testResults[test])])
         else:
-            pValue = ot.NumericalPointWithDescription(
+            pValue = ot.PointWithDescription(
                         [(description + ' for uncensored case', 
                         self._resultsUnc.testResults[test])])
         return pValue

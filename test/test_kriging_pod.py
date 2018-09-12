@@ -2,9 +2,10 @@ import openturns as ot
 ot.TBB.Disable()
 import otpod
 import numpy as np
-from distutils.version import LooseVersion
 
-inputSample = ot.NumericalSample(
+ot.ResourceMap.SetAsBool('GeneralLinearModelAlgorithm-UseAnalyticalAmplitudeEstimate', False)
+
+inputSample = ot.Sample(
     [[4.59626812e+00, 7.46143339e-02, 1.02231538e+00, 8.60042277e+01],
     [4.14315790e+00, 4.20801346e-02, 1.05874908e+00, 2.65757364e+01],
     [4.76735111e+00, 3.72414824e-02, 1.05730385e+00, 5.76058433e+01],
@@ -31,7 +32,7 @@ inputSample = ot.NumericalSample(
     [5.32381954e+00, 4.33013582e-02, 9.90522007e-01, 6.56015973e+01],
     [4.35455857e+00, 1.23814619e-02, 1.01810539e+00, 1.10769534e+01]])
 
-signals = ot.NumericalSample(
+signals = ot.Sample(
     [[ 37.305445], [ 35.466919], [ 43.187991], [ 45.305165], [ 40.121222], [ 44.609524],
      [ 45.14552 ], [ 44.80595 ], [ 35.414039], [ 39.851778], [ 42.046049], [ 34.73469 ],
      [ 39.339349], [ 40.384559], [ 38.718623], [ 46.189709], [ 36.155737], [ 31.768369],
@@ -64,16 +65,7 @@ np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
 ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
 POD2 = otpod.KrigingPOD(inputSample, signals, detection, noiseThres, saturationThres, boxCox=False)
-if LooseVersion(ot.__version__) <= '1.6':
-    covColl = ot.CovarianceModelCollection(4)
-    scale = [5.03148,13.9442,20,20]
-    for i in range(4):
-        c = ot.SquaredExponential(1, scale[i])
-        c.setAmplitude([15.1697])
-        covColl[i]  = c
-    covarianceModel = ot.ProductCovarianceModel(covColl)
-else:
-    covarianceModel = ot.SquaredExponential([5.03148,13.9442,20,20], [15.1697])
+covarianceModel = ot.SquaredExponential([5.03148,13.9442,20,20], [15.1697])
 POD2.setCovarianceModel(covarianceModel)
 POD2.setInitialStartSize(0)
 POD2.setSamplingSize(100)
@@ -81,11 +73,11 @@ POD2.setSimulationSize(100)
 POD2.run()
 detectionSize2 = POD2.computeDetectionSize(0.6, 0.95)
 def test_2_a90():
-    np.testing.assert_almost_equal(detectionSize2[0], 4.423224253595858, decimal=4)
+    np.testing.assert_almost_equal(detectionSize2[0], 4.4233239809290, decimal=4)
 def test_2_a95():
-    np.testing.assert_almost_equal(detectionSize2[1], 4.459265407336185, decimal=4)
+    np.testing.assert_almost_equal(detectionSize2[1], 4.45940081, decimal=4)
 def test_2_Q2_90():
-    np.testing.assert_almost_equal(POD2.getQ2(), 0.999945898652, decimal=4)
+    np.testing.assert_almost_equal(POD2.getQ2(), 0.998992756, decimal=4)
 
 # Test kriging with Box Cox / Test not reproducible
 # ot.RandomGenerator.SetSeed(0)

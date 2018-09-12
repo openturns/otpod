@@ -12,7 +12,6 @@ from ._progress_bar import updateProgress
 from ._kriging_tools import KrigingBase
 import logging
 import matplotlib.pyplot as plt
-from distutils.version import LooseVersion
 
 class AdaptiveSignalPOD(POD, KrigingBase):
     """
@@ -30,7 +29,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         defect sizes.
     outputDOE : 2-d sequence of float
         Vector of the signals, of dimension 1.
-    physicalModel : :py:class:`openturns.NumericalMathFunction`
+    physicalModel : :py:class:`openturns.Function`
         True model used to compute the real signal value to be added to the DOE.
     nMorePoints : positive int
         The number of points to add to the DOE, computed by the *physicalModel*.
@@ -76,9 +75,8 @@ class AdaptiveSignalPOD(POD, KrigingBase):
 
     The default kriging model is built with a linear basis only for the defect
     size and constant otherwise. The covariance model is an anisotropic squared
-    exponential model. Parameters are estimated using the TNC algorithm, the
-    initial starting point of the TNC is found thanks to a quasi random search 
-    of the best loglikelihood value among 1000 computations.
+    exponential model. Parameters are estimated using the Mutli start TNC
+    algorithm with 100 computations.
 
     In the algorithm, when a point is added to the design of experiments, the kriging
     model is not always optimized. The covariance model scale coefficients are
@@ -116,7 +114,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         self._basis = None
         self._covarianceModel = None
         self._distribution = None
-        self._initialStartSize = 1000
+        self._initialStartSize = 100
         self._samplingSize = 5000 # Number of MC simulations to compute POD
         self._candidateSize = 1000
         self._nIteration = nMorePoints
@@ -191,10 +189,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             print('Building the kriging model')
             print('Optimization of the covariance model parameters...')
 
-        if LooseVersion(ot.__version__) >= '1.9':
-            llDim = algoKriging.getReducedLogLikelihoodFunction().getInputDimension()
-        else:
-            llDim = algoKriging.getLogLikelihoodFunction().getInputDimension()
+        llDim = algoKriging.getReducedLogLikelihoodFunction().getInputDimension()
         lowerBound = [0.001] * llDim
         upperBound = [50] * llDim               
         algoKriging = self._estimKrigingTheta(algoKriging,
@@ -224,7 +219,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             # Monte Carlo for all defect sizes in a vectorized way.
             # get Sample for all parameters except the defect size
             samplePred = self._distribution.getSample(self._samplingSize)[:,1:]
-            fullSamplePred = ot.NumericalSample(self._samplingSize * self._defectNumber,
+            fullSamplePred = ot.Sample(self._samplingSize * self._defectNumber,
                                                 self._dim)
             # Add the defect sizes as first value 
             for i, defect in enumerate(self._defectSizes):
@@ -249,34 +244,19 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                 signalsAugmented.add(metamodel(candidate))
                 # create a temporary kriging model with the new doe and without
                 # updating the covariance model parameters
-                if LooseVersion(ot.__version__) >= '1.9':
-                    algoKrigingTemp = ot.KrigingAlgorithm(inputAugmented, signalsAugmented,
-                                                          self._covarianceModel,
-                                                          self._basis,
-                                                          True)
-                else:
-                    algoKrigingTemp = ot.KrigingAlgorithm(inputAugmented, signalsAugmented,
-                                                          self._basis,
-                                                          self._covarianceModel,
-                                                          True)
-                if LooseVersion(ot.__version__) > '1.6':
-                    try:
-                        optimizer = algoKrigingTemp.getOptimizationAlgorithm()
-                    except:
-                        optimizer = algoKrigingTemp.getOptimizationSolver()
-                    optimizer.setMaximumIterationNumber(0)
-                    try:
-                        algoKrigingTemp.setOptimizationAlgorithm(optimizer)
-                    except:
-                        algoKrigingTemp.setOptimizationSolver(optimizer)
-
+                algoKrigingTemp = ot.KrigingAlgorithm(inputAugmented, signalsAugmented,
+                                                      self._covarianceModel,
+                                                      self._basis, True)
+                optimizer = algoKrigingTemp.getOptimizationAlgorithm()
+                optimizer.setMaximumIterationNumber(0)
+                algoKrigingTemp.setOptimizationAlgorithm(optimizer)
                 algoKrigingTemp.run()
                 krigingResultTemp = algoKrigingTemp.getResult()
 
                 # compute the criterion for all defect size
                 crit = []
                 # save results, used to compute the PODModel et PODCLModel
-                PODPerDefect = ot.NumericalSample(self._simulationSize *
+                PODPerDefect = ot.Sample(self._simulationSize *
                                          self._samplingSize, self._defectNumber)
                 for idef, defect in enumerate(self._defectSizes):
                     podSample = self._computePODSamplePerDefect(defect,
@@ -317,13 +297,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
 
             # update the kriging model without optimization
             algoKriging = self._buildKrigingAlgo(self._input, self._signals)
-            if LooseVersion(ot.__version__) == '1.7':
-                optimizer = algoKriging.getOptimizationSolver()
-                optimizer.setMaximumIterationNumber(0)
-                algoKriging.setOptimizationSolver(optimizer)
-            elif LooseVersion(ot.__version__) >= '1.8':
-                algoKriging.setOptimizeParameters(False)
-
+            algoKriging.setOptimizeParameters(False)
             algoKriging.run()
 
             self._Q2 = self._computeQ2(self._input, self._signals, algoKriging.getResult())
@@ -333,12 +307,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                 if self._verbose:
                     print('Optimization of the covariance model parameters...')
 
-                if LooseVersion(ot.__version__) >= '1.9':
-                    llDim = algoKriging.getReducedLogLikelihoodFunction().getInputDimension()
-                else:
-                    llDim = algoKriging.getLogLikelihoodFunction().getInputDimension()
-                lowerBound = [0.001] * llDim
-                upperBound = [50] * llDim               
+                algoKriging.setOptimizeParameters(True)
                 algoKriging = self._estimKrigingTheta(algoKriging,
                                                       lowerBound, upperBound,
                                                       self._initialStartSize)
@@ -365,6 +334,8 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                 plt.pause(0.001)
                 plt.show()
                 if self._graphDirectory is not None:
+                    if not os.path.exists(self._graphDirectory):
+                        os.makedirs(self._graphDirectory)
                     fig.savefig(os.path.join(self._graphDirectory, 'AdaptiveSignalPOD_')+str(iteration),
                                 bbox_inches='tight', transparent=True)
 
@@ -372,7 +343,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         if self._verbose:
                 print('\nStart computing the POD with the last updated kriging model')
         # compute the sample containing the POD values for all defect 
-        self._PODPerDefect = ot.NumericalSample(self._simulationSize *
+        self._PODPerDefect = ot.Sample(self._simulationSize *
                                          self._samplingSize, self._defectNumber)
         for i, defect in enumerate(self._defectSizes):
             self._PODPerDefect[:, i] = self._computePODSamplePerDefect(defect,
@@ -477,7 +448,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         """
         size = X.getSize()
         dim = X.getDimension() + 1
-        samplePred = ot.NumericalSample(size, dim)
-        samplePred[:, 0] = ot.NumericalSample(size, [defect])
+        samplePred = ot.Sample(size, dim)
+        samplePred[:, 0] = ot.Sample(size, [defect])
         samplePred[:, 1:] = X
         return samplePred

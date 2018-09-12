@@ -10,7 +10,6 @@ from scipy.interpolate import interp1d
 from ._progress_bar import updateProgress
 from ._kriging_tools import KrigingBase
 import logging
-from distutils.version import LooseVersion
 
 class KrigingPOD(POD, KrigingBase):
     """
@@ -57,9 +56,9 @@ class KrigingPOD(POD, KrigingBase):
 
     The default kriging model is built with a linear basis only for the defect
     size and constant otherwise. The covariance model is an anisotropic squared
-    exponential model. Parameters are estimated using the TNC algorithm, the
-    initial starting point of the TNC is found thanks to a quasi random search 
-    of the best loglikelihood value among 1000 computations.
+    exponential model. Parameters are estimated using a Multi Start TNC
+    algorithm, the 100 initial starting points are defined according to a Sobol
+    sequence .
 
     For advanced use, all parameters can be defined thanks to dedicated set 
     methods. Moreover, if the user has already built a kriging result, 
@@ -97,7 +96,7 @@ class KrigingPOD(POD, KrigingBase):
         self._basis = None
         self._covarianceModel = None
         self._samplingSize = 5000
-        self._initialStartSize = 1000
+        self._initialStartSize = 100
         self._verbose = True
 
         self._normalDist = ot.Normal()
@@ -145,10 +144,7 @@ class KrigingPOD(POD, KrigingBase):
             algoKriging = self._buildKrigingAlgo(self._input, self._signals)
             # optimize the covariance model parameters and return the kriging
             # algorithm with the run launched
-            if LooseVersion(ot.__version__) >= '1.9':
-                llDim = algoKriging.getReducedLogLikelihoodFunction().getInputDimension()
-            else:
-                llDim = algoKriging.getLogLikelihoodFunction().getInputDimension()
+            llDim = algoKriging.getReducedLogLikelihoodFunction().getInputDimension()
             lowerBound = [0.001] * llDim
             upperBound = [50] * llDim
             algoKriging = self._estimKrigingTheta(algoKriging,
@@ -174,7 +170,7 @@ class KrigingPOD(POD, KrigingBase):
             self._distribution = ot.ComposedDistribution(marginals)
 
         # compute the sample containing the POD values for all defect 
-        self._PODPerDefect = ot.NumericalSample(self._simulationSize *
+        self._PODPerDefect = ot.Sample(self._simulationSize *
                                          self._samplingSize, self._defectNumber)
         for i, defect in enumerate(self._defectSizes):
             self._PODPerDefect[:, i] = self._computePODSamplePerDefect(defect,

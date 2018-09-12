@@ -2,9 +2,9 @@ import openturns as ot
 ot.TBB.Disable()
 import otpod
 import numpy as np
-from distutils.version import LooseVersion
+ot.Log.Show(ot.Log.NONE)
 
-inputSample = ot.NumericalSample(
+inputSample = ot.Sample(
     [[4.59626812e+00, 7.46143339e-02, 1.02231538e+00, 8.60042277e+01],
      [4.14315790e+00, 4.20801346e-02, 1.05874908e+00, 2.65757364e+01],
      [4.76735111e+00, 3.72414824e-02, 1.05730385e+00, 5.76058433e+01],
@@ -31,7 +31,7 @@ inputSample = ot.NumericalSample(
      [5.32381954e+00, 4.33013582e-02, 9.90522007e-01, 6.56015973e+01],
      [4.35455857e+00, 1.23814619e-02, 1.01810539e+00, 1.10769534e+01]])
 
-signals = ot.NumericalSample(
+signals = ot.Sample(
     [[37.305445], [35.466919], [43.187991], [45.305165], [40.121222],
      [44.609524], [45.14552], [44.80595], [35.414039], [39.851778],
      [42.046049], [34.73469], [39.339349], [40.384559], [38.718623],
@@ -45,23 +45,8 @@ outputDOE = signals[:10]
 
 # simulate the true physical model
 basis = ot.ConstantBasisFactory(4).build()
-basis = ot.ConstantBasisFactory(4).build()
-if LooseVersion(ot.__version__) <= '1.6':
-    covColl = ot.CovarianceModelCollection(4)
-    scale = [5.03148, 13.9442, 20, 20]
-    for i in range(4):
-        c = ot.SquaredExponential(1, scale[i])
-        c.setAmplitude([15.1697])
-        covColl[i] = c
-    covarianceModel = ot.ProductCovarianceModel(covColl)
-else:
-    covarianceModel = ot.SquaredExponential([5.03148, 13.9442, 20, 20],
-                                            [15.1697])
-
-if LooseVersion(ot.__version__) >= '1.9':
-    krigingModel = ot.KrigingAlgorithm(inputSample, signals, covarianceModel, basis)
-else:
-    krigingModel = ot.KrigingAlgorithm(inputSample, signals, basis, covarianceModel)
+covarianceModel = ot.SquaredExponential([5.03148, 13.9442, 20, 20], [15.1697])
+krigingModel = ot.KrigingAlgorithm(inputSample, signals, covarianceModel, basis)
 
 np.random.seed(0)
 ot.RandomGenerator.SetSeed(0)
@@ -73,11 +58,9 @@ noiseThres=34.
 saturationThres=45.
 nIteration = 1
 
-
 ####### Test on the POD models ###################
 # Test kriging without Box Cox
 np.random.seed(0)
-ot.RandomGenerator.SetSeed(0)
 ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
 POD1 = otpod.AdaptiveSignalPOD(inputDOE, outputDOE, physicalModel, nIteration, detection)
 POD1.setDefectSizes([4.2, 4.35, 4.5, 4.6, 4.7, 4.8])
@@ -87,15 +70,14 @@ POD1.setSimulationSize(10)
 POD1.run()
 detectionSize1 = POD1.computeDetectionSize(0.9, 0.95)
 def test_1_a90():
-    np.testing.assert_almost_equal(detectionSize1[0], 4.5866655741261795, decimal=4)
+    np.testing.assert_almost_equal(detectionSize1[0], 4.62948, decimal=4)
 def test_1_a95():
-    np.testing.assert_almost_equal(detectionSize1[1], 4.613725936782039, decimal=4)
+    np.testing.assert_almost_equal(detectionSize1[1], 4.67283, decimal=4)
 def test_1_Q2_90():
-    np.testing.assert_almost_equal(POD1.getQ2(), 0.99908183453149602, decimal=3)
+    assert(POD1.getQ2() > 0.95)
 
 # Test kriging with censored data without Box Cox
 np.random.seed(0)
-ot.RandomGenerator.SetSeed(0)
 ot.RandomGenerator.SetState(ot.RandomGeneratorState(ot.Indices([0]*768), 0))
 POD2 = otpod.AdaptiveSignalPOD(inputDOE, outputDOE, physicalModel, nIteration, detection, noiseThres, saturationThres)
 POD2.setDefectSizes([4.2, 4.35, 4.5, 4.6, 4.7, 4.8])
@@ -105,41 +87,39 @@ POD2.setSimulationSize(10)
 POD2.run()
 detectionSize2 = POD2.computeDetectionSize(0.9, 0.95)
 def test_2_a90():
-    np.testing.assert_almost_equal(detectionSize2[0], 4.579793158859425, decimal=4)
+    np.testing.assert_almost_equal(detectionSize2[0], 4.62244, decimal=4)
 def test_2_a95():
-    np.testing.assert_almost_equal(detectionSize2[1], 4.595462026141416, decimal=4)
+    np.testing.assert_almost_equal(detectionSize2[1], 4.6682, decimal=4)
 def test_2_Q2_90():
-    np.testing.assert_almost_equal(POD2.getQ2(), 0.99855283085924362, decimal=4)
+    assert(POD2.getQ2() > 0.90)
 
-# # Test kriging with Box Cox
-# ot.RandomGenerator.SetSeed(0)
-# POD3 = otpod.AdaptiveSignalPOD(inputDOE, outputDOE, physicalModel, nIteration, detection, boxCox=True)
-# POD3.setDefectSizes([4.2, 4.35, 4.5, 4.6, 4.7, 4.8])
-# POD3.setCandidateSize(10)
-# POD3.setSamplingSize(50)
-# POD3.setSimulationSize(10)
-# POD3.run()
-# detectionSize3 = POD3.computeDetectionSize(0.9, 0.95)
-# def test_3_a90():
-#     np.testing.assert_almost_equal(detectionSize3[0], 4.602049333183321, decimal=2)
-# def test_3_a95():
-#     np.testing.assert_almost_equal(detectionSize3[1], 4.65561537523831, decimal=2)
-# def test_3_Q2_90():
-#     np.testing.assert_almost_equal(POD3.getQ2(), 0.95507342009913487, decimal=2)
+# Test kriging with Box Cox
+POD3 = otpod.AdaptiveSignalPOD(inputDOE, outputDOE, physicalModel, nIteration, detection, boxCox=True)
+POD3.setDefectSizes([4.2, 4.35, 4.5, 4.6, 4.7, 4.8])
+POD3.setCandidateSize(10)
+POD3.setSamplingSize(50)
+POD3.setSimulationSize(10)
+POD3.run()
+detectionSize3 = POD3.computeDetectionSize(0.9, 0.95)
+def test_3_a90():
+    np.testing.assert_almost_equal(detectionSize3[0], 4.64637, decimal=2)
+def test_3_a95():
+    np.testing.assert_almost_equal(detectionSize3[1], 4.70014, decimal=2)
+def test_3_Q2_90():
+    assert(POD3.getQ2() > 0.90)
 
 
-# # Test kriging with censored data with Box Cox
-# ot.RandomGenerator.SetSeed(0)
-# POD4 = otpod.AdaptiveSignalPOD(inputDOE, outputDOE, physicalModel, nIteration, detection, noiseThres, saturationThres, boxCox=True)
-# POD4.setDefectSizes([4.2, 4.35, 4.5, 4.6, 4.7, 4.8])
-# POD4.setCandidateSize(10)
-# POD4.setSamplingSize(50)
-# POD4.setSimulationSize(10)
-# POD4.run()
-# detectionSize4 = POD4.computeDetectionSize(0.9, 0.95)
-# def test_4_a90():
-#     np.testing.assert_almost_equal(detectionSize4[0], 4.580531065769642, decimal=2)
-# def test_4_a95():
-#     np.testing.assert_almost_equal(detectionSize4[1], 4.5962462686661425, decimal=2)
-# def test_4_Q2_90():
-#     np.testing.assert_almost_equal(POD4.getQ2(), 0.99954328919440949, decimal=2)
+# Test kriging with censored data with Box Cox
+POD4 = otpod.AdaptiveSignalPOD(inputDOE, outputDOE, physicalModel, nIteration, detection, noiseThres, saturationThres, boxCox=True)
+POD4.setDefectSizes([4.2, 4.35, 4.5, 4.6, 4.7, 4.8])
+POD4.setCandidateSize(10)
+POD4.setSamplingSize(50)
+POD4.setSimulationSize(10)
+POD4.run()
+detectionSize4 = POD4.computeDetectionSize(0.9, 0.95)
+def test_4_a90():
+    np.testing.assert_almost_equal(detectionSize4[0], 4.63664, decimal=2)
+def test_4_a95():
+    np.testing.assert_almost_equal(detectionSize4[1], 4.65919, decimal=2)
+def test_4_Q2_90():
+    assert(POD4.getQ2() > 0.95)

@@ -45,7 +45,7 @@ detectionSize1 = POD1.computeDetectionSize(0.9, 0.95)
 def test_1_a90():
     np.testing.assert_almost_equal(detectionSize1[0], 0.287376656987)
 def test_1_a95():
-    np.testing.assert_almost_equal(detectionSize1[1], 0.301003492258)
+    np.testing.assert_almost_equal(detectionSize1[1], 0.302782872277)
 def test_1_R2_90():
     np.testing.assert_almost_equal(POD1.getR2(0.9), 0.572190802359)
 
@@ -59,7 +59,7 @@ detectionSize2 = POD2.computeDetectionSize(0.9, 0.95)
 def test_2_a90():
     np.testing.assert_almost_equal(detectionSize2[0], 0.287014269172)
 def test_2_a95():
-    np.testing.assert_almost_equal(detectionSize2[1], 0.30527768851, decimal=5)
+    np.testing.assert_almost_equal(detectionSize2[1], 0.31470276646, decimal=5)
 def test_2_R2_90():
     np.testing.assert_almost_equal(POD2.getR2(0.9), 0.601476185955)
 
@@ -74,7 +74,7 @@ detectionSize3 = POD3.computeDetectionSize(0.9, 0.95)
 def test_3_a90():
     np.testing.assert_almost_equal(detectionSize3[0], 0.314034473666, decimal=4)
 def test_3_a95():
-    np.testing.assert_almost_equal(detectionSize3[1], 0.332226916607, decimal=5)
+    np.testing.assert_almost_equal(detectionSize3[1], 0.344053946523, decimal=5)
 def test_3_R2_90():
     np.testing.assert_almost_equal(POD3.getR2(0.9), 0.628868102499)
 
@@ -88,6 +88,6 @@ detectionSize4 = POD4.computeDetectionSize(0.9, 0.95)
 def test_4_a90():
     np.testing.assert_almost_equal(detectionSize4[0], 0.285941338048)
 def test_4_a95():
-    np.testing.assert_almost_equal(detectionSize4[1], 0.291970898846)
+    np.testing.assert_almost_equal(detectionSize4[1], 0.317139410914)
 def test_4_R2_90():
     np.testing.assert_almost_equal(POD4.getR2(0.9), 0.565484415155)

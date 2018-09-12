@@ -114,7 +114,7 @@ class QuantileRegressionPOD(POD):
         defectsSize = self._defects.getSize()
 
         # create the quantile regression object
-        X = ot.NumericalSample(defectsSize, [1, 0])
+        X = ot.Sample(defectsSize, [1, 0])
         X[:, 1] = self._defects
         self._algoQuantReg = QuantReg(np.array(self._signals), np.array(X))
 
@@ -138,7 +138,7 @@ class QuantileRegressionPOD(POD):
 
         ############ Confidence interval with bootstrap ########################
         # Compute a NsimulationSize defect sizes for all quantiles
-        data = ot.NumericalSample(self._size, 2)
+        data = ot.Sample(self._size, 2)
         data[:, 0] = self._inputSample
         data[:, 1] = self._outputSample
         # bootstrap of the data
@@ -146,7 +146,7 @@ class QuantileRegressionPOD(POD):
         # create a numerical sample which contains for all simulations the 
         # defect quantile value. The goal is to compute the QuantilePerComponent
         # of the simulation for each defect quantile (columns)
-        self._defectsPerQuantile = ot.NumericalSample(self._simulationSize, self._quantile.size)
+        self._defectsPerQuantile = ot.Sample(self._simulationSize, self._quantile.size)
         for i in range(self._simulationSize):
             # generate a sample with replacement within data of the same size
             bootstrapData = bootstrapExp.generate()
@@ -162,7 +162,7 @@ class QuantileRegressionPOD(POD):
             defectsSize = defects.getSize()
 
             # new quantile regression algorithm
-            X = ot.NumericalSample(defectsSize, [1, 0])
+            X = ot.Sample(defectsSize, [1, 0])
             X[:, 1] = defects
             algoQuantReg = QuantReg(np.array(signals), np.array(X))
 
@@ -172,15 +172,15 @@ class QuantileRegressionPOD(POD):
             for probLevel in self._quantile:
                 fit = algoQuantReg.fit(1. - probLevel, max_iter=300, p_tol=1e-2)
                 def model(x):
-                    X = ot.NumericalPoint([1, x[0]])
-                    return ot.NumericalPoint(fit.predict(X))
+                    X = ot.Point([1, x[0]])
+                    return ot.Point(fit.predict(X))
                 model = ot.PythonFunction(1, 1, model)
                 # Solve the model == detectionBoxCox with defects 
                 # boundaries = [-infinity, defectMax] : it allows negative defects
                 # when for small prob level, there is no intersection with
                 # the detection threshold for positive defects
                 defectList.append(ot.Brent().solve(model, detectionBoxCox,
-                                                   -ot.SpecFunc.MaxNumericalScalar,
+                                                   -ot.SpecFunc.MaxScalar,
                                                    defectMax))
             # add the quantile in the numerical sample as the ith simulation
             self._defectsPerQuantile[i, :] = defectList
@@ -193,7 +193,7 @@ class QuantileRegressionPOD(POD):
 
         Returns
         -------
-        PODModel : :py:class:`openturns.NumericalMathFunction`
+        PODModel : :py:class:`openturns.Function`
             The function which computes the probability of detection for a given
             defect value.
         """
@@ -210,7 +210,7 @@ class QuantileRegressionPOD(POD):
 
         Returns
         -------
-        PODModelCl : :py:class:`openturns.NumericalMathFunction`
+        PODModelCl : :py:class:`openturns.Function`
             The function which computes the probability of detection for a given
             defect value at the confidence level given as parameter.
         """
@@ -272,7 +272,7 @@ class QuantileRegressionPOD(POD):
         # compute 'a90'
         model = self._buildModel(1. - probabilityLevel)
         try:
-            detectionSize = ot.NumericalPointWithDescription(1, ot.Brent().solve(
+            detectionSize = ot.PointWithDescription(1, ot.Brent().solve(
                                         model, self._detectionBoxCox, defectMin, defectMax))
         except:
             raise Exception('The POD model does not contain, for the given ' + \
@@ -291,7 +291,7 @@ class QuantileRegressionPOD(POD):
                                                defectMin, defectMax))
             description.append('a'+str(int(probabilityLevel*100))+'/'\
                                                 +str(int(confidenceLevel*100)))
-        # add description to the NumericalPoint
+        # add description to the Point
         detectionSize.setDescription(description)
         return detectionSize
 
@@ -403,12 +403,12 @@ class QuantileRegressionPOD(POD):
 
     def _buildModel(self, probabilityLevel):
         """
-        Build the NumericalMathFunction at the given probabilityLevel. It is
+        Build the Function at the given probabilityLevel. It is
         used in the run and in computeDetectionSize in order to do not use the
         interpolate function.
         """
         fit = self._algoQuantReg.fit(probabilityLevel, max_iter=300, p_tol=1e-2)
         def model(x):
-            X = ot.NumericalPoint([1, x[0]])
-            return ot.NumericalPoint(fit.predict(X))
+            X = ot.Point([1, x[0]])
+            return ot.Point(fit.predict(X))
         return ot.PythonFunction(1, 1, model)

@@ -5,7 +5,6 @@ import openturns as ot
 import numpy as np
 from scipy.interpolate import interp1d
 from ._decorator import DocInherit, keepingArgs
-from distutils.version import LooseVersion
 
 __all__ = []
 
@@ -23,7 +22,7 @@ class KrigingBase():
 
         Returns
         -------
-        PODModel : :py:class:`openturns.NumericalMathFunction`
+        PODModel : :py:class:`openturns.Function`
             The function which computes the probability of detection for a given
             defect value.
         """
@@ -40,7 +39,7 @@ class KrigingBase():
 
         Returns
         -------
-        PODModelCl : :py:class:`openturns.NumericalMathFunction`
+        PODModelCl : :py:class:`openturns.Function`
             The function which computes the probability of detection for a given
             defect value at the confidence level given as parameter.
         """
@@ -175,27 +174,25 @@ class KrigingBase():
 
     def getInitialStartSize(self):
         """
-        Accessor to the initial random search size.
+        Accessor to the size of the multi start algorithm.
 
         Returns
         -------
         size : int
-            The size of the initial random search to find the best loglikelihood
-            value to start the TNC algorithm to optimize the covariance model
-            parameters. Default is 1000.
+            The number of multi start using the TNC algorithm to find the 
+            covariance parameters. Default is 100.
         """
         return self._initialStartSize
 
     def setInitialStartSize(self, size):
         """
-        Accessor to the initial random search size.
+        Accessor to the size of the multi start algorithm.
 
         Parameters
         ----------
         size : int
-            The size of the initial random search to find the best loglikelihood
-            value to start the TNC algorithm to optimize the covariance model
-            parameters.
+            The number of multi start using the TNC algorithm to find the 
+            covariance parameters.
         """
         self._initialStartSize = size
 
@@ -315,7 +312,7 @@ class KrigingBase():
         -------
         covarianceModel : :py:class:`openturns.CovarianceModel`
             The covariance model in the kriging model. Default is an anisotropic
-            squared exponential covariance model.
+            Squared exponential covariance model.
         """
         if self._covarianceModel is None:
             print('The run method must be launched first.')
@@ -358,27 +355,17 @@ class KrigingBase():
             input = ['x'+str(i) for i in range(self._dim)]
             functions = []
             # constant
-            functions.append(ot.NumericalMathFunction(input, ['y'], ['1']))
+            functions.append(ot.SymbolicFunction(input, ['1']))
             # linear for the first parameter only
-            functions.append(ot.NumericalMathFunction(input, ['y'], [input[0]]))
+            functions.append(ot.SymbolicFunction(input, [input[0]]))
             self._basis = ot.Basis(functions)
 
         if self._covarianceModel is None:
             # anisotropic squared exponential covariance model
-            covColl = ot.CovarianceModelCollection(self._dim)
-            for i in range(self._dim):
-                if LooseVersion(ot.__version__) == '1.6':
-                    covColl[i]  = ot.SquaredExponential(1, 1.)
-                elif LooseVersion(ot.__version__) > '1.6':
-                    covColl[i]  = ot.SquaredExponential([1], [1.])
-            self._covarianceModel = ot.ProductCovarianceModel(covColl)
+            self._covarianceModel = ot.SquaredExponential([1] * self._dim)
 
-        if LooseVersion(ot.__version__) >= '1.9':
-            algoKriging = ot.KrigingAlgorithm(inputSample, outputSample,
-                                    self._covarianceModel, self._basis)
-        else:
-            algoKriging = ot.KrigingAlgorithm(inputSample, outputSample, self._basis,
-                                                     self._covarianceModel, True)
+        algoKriging = ot.KrigingAlgorithm(inputSample, outputSample,
+                                          self._covarianceModel, self._basis, True)
         algoKriging.run()
         return algoKriging
 
@@ -442,18 +429,6 @@ class KrigingBase():
         Estimate the kriging theta values with an initial random search using
         a Sobol sequence of size samples.
         """
-        # get input parameters of the kriging algorithm
-        X = algoKriging.getInputSample()
-        Y = algoKriging.getOutputSample()
-        
-        algoKriging.run()
-        krigingResult = algoKriging.getResult()
-        covarianceModel = krigingResult.getCovarianceModel()
-        basis = krigingResult.getBasisCollection()
-        if LooseVersion(ot.__version__) >= '1.9':
-            llf = algoKriging.getReducedLogLikelihoodFunction()
-        else:
-            llf = algoKriging.getLogLikelihoodFunction()
 
         # create uniform distribution of the parameters bounds
         dim = len(lowerBound)
@@ -462,45 +437,15 @@ class KrigingBase():
             distBoundCol += [ot.Uniform(lowerBound[i], upperBound[i])]
         distBound = ot.ComposedDistribution(distBoundCol)
 
+        # set the bounds
+        searchInterval = ot.Interval(lowerBound, upperBound)
+        algoKriging.setOptimizationBounds(searchInterval)
         if size > 0:
             # Generate starting points with a low discrepancy sequence
-            thetaStart = ot.LowDiscrepancyExperiment(ot.SobolSequence(), distBound,
-                                                                    size).generate()
-            # Get the best theta from the maximum llf value
-            llfValue = llf(thetaStart)
-            indexMax = int(np.argmax(llfValue))
-            bestTheta = thetaStart[indexMax]
+            startingPoint = ot.LowDiscrepancyExperiment(ot.SobolSequence(),
+                                                        distBound, size).generate()
 
-            # update theta after random search
-            if LooseVersion(ot.__version__) == '1.6':
-                covarianceModel.setScale(bestTheta)
-            elif LooseVersion(ot.__version__) > '1.6':
-                # optimize theta and sigma in ot 1.8
-                covarianceModel.setScale(bestTheta[:-1])
-                covarianceModel.setAmplitude([bestTheta[-1]])
-
-            
-        # Now the KrigingAlgorithm is used to optimize the likelihood using a
-        # good starting point
-        if LooseVersion(ot.__version__) >= '1.9':
-            algoKriging = ot.KrigingAlgorithm(X, Y, covarianceModel, basis)
-        else:
-            algoKriging = ot.KrigingAlgorithm(X, Y, basis, covarianceModel, True)
-
-        # set TNC optim
-        searchInterval = ot.Interval(lowerBound, upperBound)
-        if LooseVersion(ot.__version__) == '1.6':
-            optimizer = ot.TNC()
-            optimizer.setBoundConstraints(searchInterval)
-            algoKriging.setOptimizer(optimizer)
-        elif LooseVersion(ot.__version__)  in ['1.7', '1.8']:
-            optimizer = algoKriging.getOptimizationSolver()
-            problem = optimizer.getProblem()
-            problem.setBounds(searchInterval)
-            optimizer.setProblem(problem)
-            algoKriging.setOptimizationSolver(optimizer)
-        elif LooseVersion(ot.__version__) >= '1.9':
-            algoKriging.setOptimizationBounds(searchInterval)
+            algoKriging.setOptimizationAlgorithm(ot.MultiStart(ot.TNC(), startingPoint))
 
         return algoKriging
 
@@ -523,21 +468,7 @@ class KrigingBase():
         else:
             normalized_inputSample = inputSample
 
-        if LooseVersion(ot.__version__) == '1.6':
-            # correlation matrix
-            Rtrianglow = np.array(cov.discretize(normalized_inputSample))
-            R = Rtrianglow + Rtrianglow.T - np.eye(Rtrianglow.shape[0])
-            # get sigma2 (covariance model scale parameters)
-            sigma2 = krigingResult.getSigma2()
-            K = sigma2 * R
-        elif LooseVersion(ot.__version__) == '1.7':
-            R = cov.discretize(normalized_inputSample)
-            C = R.computeCholesky()
-            sigma2 = krigingResult.getCovarianceModel().getAmplitude()[0]**2
-            K = sigma2 * np.dot(C, C.transpose())
-        elif LooseVersion(ot.__version__) >= '1.8':
-            K = cov.discretize(normalized_inputSample)
-
+        K = cov.discretize(normalized_inputSample)
         # get coefficient and compute trend
         basis = krigingResult.getBasisCollection()[0]
         F1 = krigingResult.getTrendCoefficients()[0]

@@ -72,8 +72,8 @@ class PODSummary():
                  saturationThres=None, boxCox=False):
 
 
-        self._inputSample = ot.NumericalSample(np.vstack(inputSample))
-        self._signals = ot.NumericalSample(np.vstack(outputSample))
+        self._inputSample = ot.Sample(np.vstack(inputSample))
+        self._signals = ot.Sample(np.vstack(outputSample))
         self._detection = detection
         self._noiseThres = noiseThres
         self._saturationThres = saturationThres
@@ -535,7 +535,7 @@ class PODSummary():
                     detectSize = self._PODgauss.computeDetectionSize(probabilityLevel, confidenceLevel)
                 except:
                     detectSize = [-1, -1]
-                    logging.warn('Detection size for linear model with Gaussian '+\
+                    logging.warning('Detection size for linear model with Gaussian '+\
                                  'residuals cannot be computed.')
                 self._dataPOD.append(["Gaussian residuals :", round(detectSize[0], n_digits),
                                                 round(detectSize[1], n_digits)])
@@ -545,7 +545,7 @@ class PODSummary():
                     detectSize = self._PODbin.computeDetectionSize(probabilityLevel, confidenceLevel)
                 except:
                     detectSize = [-1, -1]
-                    logging.warn('Detection size for linear model with no '+\
+                    logging.warning('Detection size for linear model with no '+\
                                  'hypothesis on the residuals cannot be computed.')
                 self._dataPOD.append(["No residuals hypothesis :", round(detectSize[0], n_digits),
                                                 round(detectSize[1], n_digits)])
@@ -555,7 +555,7 @@ class PODSummary():
                     detectSize = self._PODks.computeDetectionSize(probabilityLevel, confidenceLevel)
                 except:
                     detectSize = [-1, -1]
-                    logging.warn('Detection size for linear model with kernel '+\
+                    logging.warning('Detection size for linear model with kernel '+\
                                  'smoothing on the residuals cannot be computed.')
                 self._dataPOD.append(["Kernel smoothing on residuals :", round(detectSize[0], n_digits),
                                                 round(detectSize[1], n_digits)])
@@ -574,7 +574,7 @@ class PODSummary():
                 detectSize = self._PODqr.computeDetectionSize(probabilityLevel, confidenceLevel)
             except:
                 detectSize = [-1, -1]
-                logging.warn('Detection size for quantile regression cannot be computed.')
+                logging.warning('Detection size for quantile regression cannot be computed.')
             self._dataPOD.append(["Quantile Regression :", round(detectSize[0], n_digits),
                                             round(detectSize[1], n_digits)])
 
@@ -589,7 +589,7 @@ class PODSummary():
                 detectSize = self._PODchaos.computeDetectionSize(probabilityLevel, confidenceLevel)
             except:
                 detectSize = [-1, -1]
-                logging.warn('Detection size for polynomial chaos cannot be computed.')
+                logging.warning('Detection size for polynomial chaos cannot be computed.')
             self._dataPOD.append(["Polynomial chaos :", round(detectSize[0], n_digits),
                                                  round(detectSize[1], n_digits)])
 
@@ -604,7 +604,7 @@ class PODSummary():
                 detectSize = self._PODkriging.computeDetectionSize(probabilityLevel, confidenceLevel)
             except:
                 detectSize = [-1, -1]
-                logging.warn('Detection size for kriging cannot be computed.')
+                logging.warning('Detection size for kriging cannot be computed.')
             self._dataPOD.append(["Kriging :", round(detectSize[0], n_digits),
                                                  round(detectSize[1], n_digits)])
 
@@ -671,7 +671,7 @@ class PODSummary():
                     name=os.path.join(directory,'POD_Gauss.') + extension)
                 fig.append(f)
             except:
-                logging.warn('POD for linear model with Gaussian residuals '+\
+                logging.warning('POD for linear model with Gaussian residuals '+\
                              'cannot be drawn for the given parameters.')
         if self._activeMethods['LinearBinomial']:
             try:
@@ -679,7 +679,7 @@ class PODSummary():
                     name=os.path.join(directory,'POD_Binomial.') + extension)
                 fig.append(f)
             except:
-                logging.warn('POD for linear model with no hypothesis on the '+\
+                logging.warning('POD for linear model with no hypothesis on the '+\
                              'residuals cannot be drawn for the given parameters.')
         if self._activeMethods['LinearKernelSmoothing']:
             try:
@@ -687,7 +687,7 @@ class PODSummary():
                     name=os.path.join(directory,'POD_Kernel_Smoothing.') + extension)
                 fig.append(f)
             except:
-                logging.warn('POD for linear model with kernel smoothing on the '+\
+                logging.warning('POD for linear model with kernel smoothing on the '+\
                              'residuals cannot be drawn for the given parameters.')
         if self._activeMethods['QuantileRegression']:
             try:
@@ -695,7 +695,7 @@ class PODSummary():
                     name=os.path.join(directory,'POD_Quantile_Regression.') + extension)
                 fig.append(f)
             except:
-                logging.warn('POD for quantile regression cannot be drawn for the given parameters.')
+                logging.warning('POD for quantile regression cannot be drawn for the given parameters.')
             f, ax = self._PODqr.drawLinearModel(probabilityLevel, name=os.path.join(directory,
                                                 'Quantile_regression_model.') + extension)
             fig.append(f)
@@ -705,7 +705,7 @@ class PODSummary():
                     name=os.path.join(directory,'POD_Polynomial_chaos.') + extension)
                 fig.append(f)
             except:
-                logging.warn('POD for polynomial chaos cannot be drawn for the given parameters.')
+                logging.warning('POD for polynomial chaos cannot be drawn for the given parameters.')
             f, ax = self._PODchaos.drawValidationGraph(name=os.path.join(directory,
                                     'Validation_graph_Polynomial_chaos.') + extension)
             fig.append(f)
@@ -715,7 +715,7 @@ class PODSummary():
                     name=os.path.join(directory,'POD_Kriging.') + extension)
                 fig.append(f)
             except:
-                logging.warn('POD for kriging cannot be drawn for the given parameters.')
+                logging.warning('POD for kriging cannot be drawn for the given parameters.')
             f, ax = self._PODkriging.drawValidationGraph(name=os.path.join(directory,
                                     'Validation_graph_Kriging.') + extension)
             fig.append(f)

@@ -70,7 +70,8 @@ class PLIBase():
 
     def _runMonteCarlo(self, defect):
         # set a parametric function where the first parameter = given defect
-        g = ot.NumericalMathFunction(self._metamodel, [0], [defect])
+        g = ot.ParametricFunction(self._metamodel, [0], [defect])
+        g = ot.MemoizeFunction(g)
         g.enableHistory()
         g.clearHistory()
         g.clearCache()
@@ -78,7 +79,7 @@ class PLIBase():
         event = ot.Event(output, ot.Greater(), self._detectionBoxCox)
 
         ##### Monte Carlo ########
-        algo_MC = ot.MonteCarlo(event)
+        algo_MC = ot.ProbabilitySimulationAlgorithm(event)
         algo_MC.setMaximumOuterSampling(self._samplingSize)
         # set negative coef of variation to be sure the stopping criterion is the sampling size
         algo_MC.setMaximumCoefficientOfVariation(-1)
@@ -119,7 +120,7 @@ class PLIBase():
                 self._indices[:, :, idefect] = np.zeros(self._indices[:, :, idefect].shape)*np.nan
 
         if len(self._keepedDefect) != self._defectNumber:
-            logging.warn('The indices were estimated only for the following defect: '+ \
+            logging.warning('The indices were estimated only for the following defect: '+ \
                   ''.join(('{:.2f}, ' * len(self._keepedDefect)).format(*self._defectSizes[self._keepedDefect])) + \
                   'because the probability estimate is too small or too big '+\
                   'for other defect values.') 

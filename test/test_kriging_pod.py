@@ -3,7 +3,7 @@ ot.TBB.Disable()
 import otpod
 import numpy as np
 
-ot.ResourceMap.Set('GeneralLinearModelAlgorithm-UseAnalyticalAmplitudeEstimate', 'false')
+ot.ResourceMap.SetAsBool('GeneralLinearModelAlgorithm-UseAnalyticalAmplitudeEstimate', 'False')
 
 inputSample = ot.Sample(
     [[4.59626812e+00, 7.46143339e-02, 1.02231538e+00, 8.60042277e+01],

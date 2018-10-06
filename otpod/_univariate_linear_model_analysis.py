@@ -12,7 +12,7 @@ from statsmodels.regression.linear_model import OLS
 import numpy as np
 import matplotlib.pyplot as plt
 import logging
-
+from distutils.version import LooseVersion
 
 class _Results():
     """
@@ -283,8 +283,11 @@ class UnivariateLinearModelAnalysis():
         testResults['ZeroMean'] = computeZeroMeanTest(residuals)
 
         # compute Kolmogorov test (fitting test)
-        testKol = ot.FittingTest.Kolmogorov(residuals, resDist, 0.95,
-                                            resDist.getParameterDimension())
+        if LooseVersion(ot.__version__) >= "1.12":
+            testKol = ot.FittingTest.Kolmogorov(residuals, resDist, 0.05)
+        else:
+            testKol = ot.FittingTest.Kolmogorov(residuals, resDist, 0.95,
+                                                resDist.getParameterDimension())
 
         testResults['Kolmogorov'] = testKol.getPValue()
 

@@ -386,7 +386,7 @@ class PLI():
             qMax = 0.95
             xMax = self._distribution.getMarginal(marginal).computeQuantile(qMax)[0]
         if pointNumber is None:
-            pointNumber = ot.ResourceMap.GetAsScalar('Distribution-DefaultPointNumber')
+            pointNumber = ot.ResourceMap.GetAsUnsignedInteger('Distribution-DefaultPointNumber')
         if label is None:
             label = 'X{}'.format(marginal)
 

@@ -481,8 +481,9 @@ class PLI():
 
         def fun(x, marginal, delta):
             x = np.atleast_2d(x)
-            return np.sqrt(np.array(self._distribution.getMarginal(marginal).computePDF(x)) * \
-                           np.array(self._perturbedMarginalPDF(x, marginal, delta)))
+            res = np.sqrt(np.array(self._distribution.getMarginal(marginal).computePDF(x)) * \
+                          np.array(self._perturbedMarginalPDF(x, marginal, delta)))
+            return res[0]
 
         func = ot.PythonFunction(1, 1, lambda X : fun(X, marginal, delta))
         h = 2 - 2 * self._gaussKronrod.integrate(func,

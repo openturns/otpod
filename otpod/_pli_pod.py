@@ -75,7 +75,7 @@ class PLIBase():
         g.enableHistory()
         g.clearHistory()
         g.clearCache()
-        output = ot.RandomVector(g, ot.RandomVector(self._distribution))
+        output = ot.CompositeRandomVector(g, ot.RandomVector(self._distribution))
         event = ot.Event(output, ot.Greater(), self._detectionBoxCox)
 
         ##### Monte Carlo ########

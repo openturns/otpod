@@ -12,7 +12,6 @@ from statsmodels.regression.linear_model import OLS
 import numpy as np
 import matplotlib.pyplot as plt
 import logging
-from distutils.version import LooseVersion
 
 class _Results():
     """
@@ -283,12 +282,7 @@ class UnivariateLinearModelAnalysis():
         testResults['ZeroMean'] = computeZeroMeanTest(residuals)
 
         # compute Kolmogorov test (fitting test)
-        if LooseVersion(ot.__version__) >= "1.12":
-            testKol = ot.FittingTest.Kolmogorov(residuals, resDist, 0.05)
-        else:
-            testKol = ot.FittingTest.Kolmogorov(residuals, resDist, 0.95,
-                                                resDist.getParameterDimension())
-
+        testKol = ot.FittingTest.Kolmogorov(residuals, resDist, 0.05)
         testResults['Kolmogorov'] = testKol.getPValue()
 
         # compute Breusch Pagan test (homoskedasticity : constant variance)

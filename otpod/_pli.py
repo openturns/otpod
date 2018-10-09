@@ -364,7 +364,7 @@ class PLI():
         x_min : float
             The starting value that is used for meshing the x-axis.
             Defaults uses the quantile associated to the probability level 0.05.
-        x_max : float, :math:`x_{\max} > x_{\min}`
+        x_max : float, :math:`x_{max} > x_{min}`
             The ending value that is used for meshing the x-axis.
             Defaults uses the quantile associated to the probability level 0.95.
         n_points : int
@@ -386,7 +386,7 @@ class PLI():
             qMax = 0.95
             xMax = self._distribution.getMarginal(marginal).computeQuantile(qMax)[0]
         if pointNumber is None:
-            pointNumber = ot.ResourceMap.GetAsScalar('Distribution-DefaultPointNumber')
+            pointNumber = ot.ResourceMap.GetAsUnsignedInteger('Distribution-DefaultPointNumber')
         if label is None:
             label = 'X{}'.format(marginal)
 
@@ -481,8 +481,9 @@ class PLI():
 
         def fun(x, marginal, delta):
             x = np.atleast_2d(x)
-            return np.sqrt(np.array(self._distribution.getMarginal(marginal).computePDF(x)) * \
-                           np.array(self._perturbedMarginalPDF(x, marginal, delta)))
+            res = np.sqrt(np.array(self._distribution.getMarginal(marginal).computePDF(x)) * \
+                          np.array(self._perturbedMarginalPDF(x, marginal, delta)))
+            return res[0]
 
         func = ot.PythonFunction(1, 1, lambda X : fun(X, marginal, delta))
         h = 2 - 2 * self._gaussKronrod.integrate(func,

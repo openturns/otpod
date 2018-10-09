@@ -364,7 +364,7 @@ class PLI():
         x_min : float
             The starting value that is used for meshing the x-axis.
             Defaults uses the quantile associated to the probability level 0.05.
-        x_max : float, :math:`x_{\max} > x_{\min}`
+        x_max : float, :math:`x_{max} > x_{min}`
             The ending value that is used for meshing the x-axis.
             Defaults uses the quantile associated to the probability level 0.95.
         n_points : int

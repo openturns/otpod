@@ -105,14 +105,40 @@ class SobolIndices():
                             self._dim, self._defectSizes, self._detectionBoxCox,
                             self._simulationSize))
 
+        input_design = ot.SobolIndicesExperiment(self._distribution, self._N, False).generate()
+        output_design = self._PODaggr(input_design)
+
+        # remove the output marginal when the variance is null because it causes
+        # a failure. Must remove also the associated defect sizes.
+        selected_marginal_index = []
+        for index_output in range(output_design.getDimension()):
+            if output_design.getMarginal(index_output)[:self._N].computeCovariance()[0, 0] != 0:
+                selected_marginal_index.append(index_output)
+
+        if len(selected_marginal_index) != output_design.getDimension():
+            self.setDefectSizes(self._defectSizes[selected_marginal_index])
+            selected_output_design = np.array(output_design)[:, selected_marginal_index]
+
+            logging.warning("Warning : some output variances are null. " + \
+                         "Only the following defect sizes are taken into " + \
+                         "account : {}".format(self._defectSizes))
+        else:
+            selected_output_design = output_design
+
         if self._method == "Saltelli":
-            self._sa = ot.SaltelliSensitivityAlgorithm(self._distribution, self._N, self._PODaggr, False)
+            self._sa = ot.SaltelliSensitivityAlgorithm(input_design,
+                                            selected_output_design, self._N)
         elif self._method == "Martinez":
-            self._sa = ot.MartinezSensitivityAlgorithm(self._distribution, self._N, self._PODaggr, False)
+            self._sa = ot.MartinezSensitivityAlgorithm(input_design,
+                                            selected_output_design, self._N)
         elif self._method == "Jansen":
-            self._sa = ot.JansenSensitivityAlgorithm(self._distribution, self._N, self._PODaggr, False)
+            self._sa = ot.JansenSensitivityAlgorithm(input_design,
+                                            selected_output_design, self._N)
         elif self._method == "MauntzKucherenko":
-            self._sa = ot.MauntzKucherenkoSensitivityAlgorithm(self._distribution, self._N, self._PODaggr, False)
+            self._sa = ot.MauntzKucherenkoSensitivityAlgorithm(input_design,
+                                            selected_output_design, self._N)
+
+        self._sa.setUseAsymptoticDistribution(True)
 
     def getSensitivityResult(self):
         """

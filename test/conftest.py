@@ -16,6 +16,8 @@ for root, dirnames, filenames in os.walk(ipynb_path):
         if not 'ipynb_checkpoints' in ipynb:  # exclude automatic backups
             ipynbs.append(ipynb)
 
+print(ipynbs)
+print(root)
 # remove heavy consuming notebook
 ipynbs.sort()
 ipynbs.remove(os.path.join(root,'AdaptiveSignalPOD.ipynb')) ## adaptive signal pod

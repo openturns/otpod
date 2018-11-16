@@ -1,5 +1,9 @@
+2018-11-16 - release 0.6
+- update code for openturns 1.12
+- Sobol : remove output marginal before computing Sobol if the variance is null
+
 2018-09-12
-Update code only for openturns 1.11
+- Update code only for openturns 1.11
 
 2016-04-04
-Initial creation of package
+- Initial creation of package

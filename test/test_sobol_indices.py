@@ -69,9 +69,9 @@ def test_1_FA():
 def test_1_TA():
     np.testing.assert_almost_equal(totalAgg1, [0.9934,0.189972,0.008838], decimal=2)
 def test_1_FO_5():
-    np.testing.assert_almost_equal(firstOrder1, [0.910628,-0.033643,-0.0400193], decimal=2)
+    np.testing.assert_almost_equal(firstOrder1, [0.914345,-0.0343184,-0.0574818], decimal=2)
 def test_1_TO_5():
-    np.testing.assert_almost_equal(totalOrder1, [1.02308,0.124702,0.00304918], decimal=2)
+    np.testing.assert_almost_equal(totalOrder1, [1.0782,0.185921,0.00436307], decimal=2)
 
 # Test 2 for one specific defect size
 sobol.setDefectSizes([4.5])

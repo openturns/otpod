@@ -185,19 +185,22 @@ class UnivariateLinearModelAnalysis():
         ###################### Box Cox transformation ##########################
         # Compute Box Cox if enabled
         if self._boxCox:
+            if signals.getMin()[0] < 0:
+                shift = - signals.getMin()[0] + 100
+
             if self._lambdaBoxCox is None:
                 # optimization required, get optimal lambda and graph
-                self._lambdaBoxCox, self._graphBoxCox = computeBoxCox(defects, signals)
+                self._lambdaBoxCox, self._graphBoxCox = computeBoxCox(defects, signals, shift)
 
             # Transformation of data
             boxCoxTransform = ot.BoxCoxTransform([self._lambdaBoxCox])
-            signals = boxCoxTransform(signals)
+            signals = boxCoxTransform(signals + shift)
             if self._noiseThres is not None:
-                noiseThres = boxCoxTransform([self._noiseThres])[0]
+                noiseThres = boxCoxTransform([self._noiseThres + shift])[0]
             else:
                 noiseThres = self._noiseThres
             if self._saturationThres is not None:
-                saturationThres = boxCoxTransform([self._saturationThres])[0]
+                saturationThres = boxCoxTransform([self._saturationThres + shift])[0]
             else:
                 saturationThres = self._saturationThres
         else:

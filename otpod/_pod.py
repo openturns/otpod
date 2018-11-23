@@ -243,25 +243,28 @@ class POD(object):
 
         ###################### Box Cox transformation ##########################
         # Compute Box Cox if enabled
+        shift = 0.
         if boxCox:
+            if signals.getMin()[0] < 0:
+                shift = - signals.getMin()[0] + 100
             # optimization required, get optimal lambda without graph
-            self._lambdaBoxCox, self._graphBoxCox = computeBoxCox(inputSample, signals)
+            self._lambdaBoxCox, self._graphBoxCox = computeBoxCox(inputSample, signals, shift)
 
             # Transformation of data
             boxCoxTransform = ot.BoxCoxTransform([self._lambdaBoxCox])
-            signals = boxCoxTransform(signals)
+            signals = boxCoxTransform(signals + shift)
             if censored:
                 if noiseThres is not None:
-                    noiseThres = boxCoxTransform([noiseThres])[0]
+                    noiseThres = boxCoxTransform([noiseThres + shift])[0]
                 if saturationThres is not None:
-                    saturationThres = boxCoxTransform([saturationThres])[0]
-            detectionBoxCox = boxCoxTransform([detection])[0]
+                    saturationThres = boxCoxTransform([saturationThres + shift])[0]
+            detectionBoxCox = boxCoxTransform([detection + shift])[0]
         else:
             detectionBoxCox = detection
             self._lambdaBoxCox = None
             boxCoxTransform = None
 
-        return {'inputSample':inputSample, 'signals':signals,
+        return {'inputSample':inputSample, 'signals':signals, 'shift':shift,
                 'detectionBoxCox':detectionBoxCox, 'boxCoxTransform':boxCoxTransform}
 
     def drawBoxCoxLikelihood(self, name=None):

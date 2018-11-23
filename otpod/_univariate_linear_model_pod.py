@@ -476,18 +476,20 @@ def _computeLinearModel(inputSample, outputSample, detection, noiseThres,
     ###################### Box Cox transformation ##########################
     # Compute Box Cox if enabled
     if boxCox:
+        if signals.getMin()[0] < 0:
+            shift = - signals.getMin()[0] + 100
         # optimization required, get optimal lambda without graph
-        lambdaBoxCox, graphBoxCox = computeBoxCox(defects, signals)
+        lambdaBoxCox, graphBoxCox = computeBoxCox(defects, signals, shift)
 
         # Transformation of data
         boxCoxTransform = ot.BoxCoxTransform([lambdaBoxCox])
-        signals = boxCoxTransform(signals)
+        signals = boxCoxTransform(signals + shift)
         if censored:
             if noiseThres is not None:
-                noiseThres = boxCoxTransform([noiseThres])[0]
+                noiseThres = boxCoxTransform([noiseThres + shift])[0]
             if saturationThres is not None:
-                saturationThres = boxCoxTransform([saturationThres])[0]
-        detectionBoxCox = boxCoxTransform([detection])[0]
+                saturationThres = boxCoxTransform([saturationThres + shift])[0]
+        detectionBoxCox = boxCoxTransform([detection + shift])[0]
     else:
         detectionBoxCox = detection
         lambdaBoxCox = None

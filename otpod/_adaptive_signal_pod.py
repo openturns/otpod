@@ -140,6 +140,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         self._signals = result['signals']
         self._detectionBoxCox = result['detectionBoxCox']
         self._boxCoxTransform = result['boxCoxTransform']
+        self._shift = result['shift']
 
         # define the defect sizes for the interpolation function if not defined
         self._defectNumber = 10
@@ -285,7 +286,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             self._input.add(candidateOpt)
             # add the signal computed by the physical model
             if self._boxCox:
-                self._signals.add(self._boxCoxTransform(self._physicalModel(candidateOpt)))
+                self._signals.add(self._boxCoxTransform(self._physicalModel(candidateOpt) + self._shift))
             else:
                 self._signals.add(self._physicalModel(candidateOpt))
             # remove added candidate from the doeCandidate
@@ -369,7 +370,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         """
         if self._boxCox:
             invBoxCox = self._boxCoxTransform.getInverse()
-            return invBoxCox(self._signals)
+            return invBoxCox(self._signals) - self._shift
         else:
             return self._signals
 

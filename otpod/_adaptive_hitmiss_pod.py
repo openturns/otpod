@@ -134,6 +134,7 @@ class AdaptiveHitMissPOD(POD):
         self._signals = result['signals']
         self._detectionBoxCox = result['detectionBoxCox']
         self._boxCoxTransform = result['boxCoxTransform']
+        self._shift = result['shift']
 
         # define the defect sizes for the interpolation function if not defined
         self._defectNumber = 20
@@ -530,7 +531,7 @@ class AdaptiveHitMissPOD(POD):
         """
         if self._boxCox:
             invBoxCox = self._boxCoxTransform.getInverse()
-            return invBoxCox(self._signals)
+            return invBoxCox(self._signals) - self._shift
         else:
             return self._signals
 

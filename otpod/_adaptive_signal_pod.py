@@ -286,7 +286,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             self._input.add(candidateOpt)
             # add the signal computed by the physical model
             if self._boxCox:
-                self._signals.add(self._boxCoxTransform(self._physicalModel(candidateOpt) + self._shift))
+                self._signals.add(self._boxCoxTransform(self._physicalModel(candidateOpt) + [self._shift]))
             else:
                 self._signals.add(self._physicalModel(candidateOpt))
             # remove added candidate from the doeCandidate

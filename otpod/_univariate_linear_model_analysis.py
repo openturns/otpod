@@ -187,6 +187,8 @@ class UnivariateLinearModelAnalysis():
         if self._boxCox:
             if signals.getMin()[0] < 0:
                 shift = - signals.getMin()[0] + 100
+            else:
+                shift = 0.
 
             if self._lambdaBoxCox is None:
                 # optimization required, get optimal lambda and graph

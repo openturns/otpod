@@ -478,6 +478,9 @@ def _computeLinearModel(inputSample, outputSample, detection, noiseThres,
     if boxCox:
         if signals.getMin()[0] < 0:
             shift = - signals.getMin()[0] + 100
+        else:
+            shift = 0.
+
         # optimization required, get optimal lambda without graph
         lambdaBoxCox, graphBoxCox = computeBoxCox(defects, signals, shift)
 

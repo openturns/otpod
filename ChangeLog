@@ -1,3 +1,6 @@
+2018-11-26 - release 0.6.1
+- bug fix : use shifted output signals to get strictly positive values when using box cox
+
 2018-11-16 - release 0.6
 - update code for openturns 1.12
 - Sobol : remove output marginal before computing Sobol if the variance is null

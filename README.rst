@@ -26,7 +26,7 @@ Requirements
 
 This module is developped in python using several external modules :
 
-- openturns = 1.11
+- openturns >= 1.12
 - statsmodels >= 0.6
 - numpy >= 1.10
 - sklearn >= 0.17

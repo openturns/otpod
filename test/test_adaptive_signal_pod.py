@@ -66,13 +66,19 @@ POD1 = otpod.AdaptiveSignalPOD(inputDOE, outputDOE, physicalModel, nIteration, d
 POD1.setDefectSizes([4.2, 4.35, 4.5, 4.6, 4.7, 4.8])
 POD1.setCandidateSize(10)
 POD1.setSamplingSize(50)
-POD1.setSimulationSize(10) 
+POD1.setSimulationSize(10)
+POD1.setCovarianceModel(ot.SquaredExponential([3.03338162, 5.84920629, 22.28954134, 50.], [6.08656776]))
+POD1.setInitialStartSize(0)
 POD1.run()
 detectionSize1 = POD1.computeDetectionSize(0.9, 0.95)
+def test_1_kriging_parameter():
+    np.testing.assert_almost_equal(np.array(POD1.getKrigingResult().getCovarianceModel().getFullParameter()),
+                                   [3.03338162, 5.84920629, 22.28954134, 50., 6.08656776],
+                                   decimal=3)
 def test_1_a90():
-    np.testing.assert_almost_equal(detectionSize1[0], 4.62948, decimal=4)
+    np.testing.assert_almost_equal(detectionSize1[0], 4.6371577, decimal=4)
 def test_1_a95():
-    np.testing.assert_almost_equal(detectionSize1[1], 4.67283, decimal=4)
+    np.testing.assert_almost_equal(detectionSize1[1], 4.6610618, decimal=4)
 def test_1_Q2_90():
     assert(POD1.getQ2() > 0.95)
 
@@ -84,12 +90,18 @@ POD2.setDefectSizes([4.2, 4.35, 4.5, 4.6, 4.7, 4.8])
 POD2.setCandidateSize(10)
 POD2.setSamplingSize(50)
 POD2.setSimulationSize(10)
+POD2.setCovarianceModel(ot.SquaredExponential([50., 0.71426707, 6.6615503, 50.], [1.7646711]))
+POD2.setInitialStartSize(0)
 POD2.run()
 detectionSize2 = POD2.computeDetectionSize(0.9, 0.95)
+def test_2_kriging_parameter():
+    np.testing.assert_almost_equal(np.array(POD2.getKrigingResult().getCovarianceModel().getFullParameter()),
+                                   [50., 0.71426707, 6.6615503, 50., 1.7646711],
+                                   decimal=3)
 def test_2_a90():
-    np.testing.assert_almost_equal(detectionSize2[0], 4.62244, decimal=4)
+    np.testing.assert_almost_equal(detectionSize2[0], 4.6398075, decimal=4)
 def test_2_a95():
-    np.testing.assert_almost_equal(detectionSize2[1], 4.6682, decimal=4)
+    np.testing.assert_almost_equal(detectionSize2[1], 4.7387325, decimal=4)
 def test_2_Q2_90():
     assert(POD2.getQ2() > 0.90)
 
@@ -99,8 +111,14 @@ POD3.setDefectSizes([4.2, 4.35, 4.5, 4.6, 4.7, 4.8])
 POD3.setCandidateSize(10)
 POD3.setSamplingSize(50)
 POD3.setSimulationSize(10)
+POD3.setCovarianceModel(ot.SquaredExponential([5.83907, 1.68711, 12.4126, 50], [71569.031508]))
+POD3.setInitialStartSize(0)
 POD3.run()
 detectionSize3 = POD3.computeDetectionSize(0.9, 0.95)
+def test_3_kriging_parameter():
+    np.testing.assert_almost_equal(np.array(POD3.getKrigingResult().getCovarianceModel().getFullParameter()),
+                                   [5.83907, 1.68711, 12.4126, 50., 71569.031508],
+                                   decimal=4)
 def test_3_a90():
     np.testing.assert_almost_equal(detectionSize3[0], 4.64637, decimal=2)
 def test_3_a95():
@@ -115,9 +133,15 @@ POD4.setDefectSizes([4.2, 4.35, 4.5, 4.6, 4.7, 4.8])
 POD4.setCandidateSize(10)
 POD4.setSamplingSize(50)
 POD4.setSimulationSize(10)
+POD4.setCovarianceModel(ot.SquaredExponential([2.077, 2.569, 8.214, 50.], [0.317]))
+POD4.setInitialStartSize(0)
 POD4.run()
 detectionSize4 = POD4.computeDetectionSize(0.9, 0.95)
 # only 1 decimal for these (TNC c++ flags?)
+def test_4_kriging_parameter():
+    np.testing.assert_almost_equal(np.array(POD4.getKrigingResult().getCovarianceModel().getFullParameter()),
+                                   [2.077, 2.569, 8.214, 50., 0.317],
+                                   decimal=3)
 def test_4_a90():
     np.testing.assert_almost_equal(detectionSize4[0], 4.63664, decimal=1)
 def test_4_a95():

@@ -366,7 +366,6 @@ class KrigingBase():
 
         algoKriging = ot.KrigingAlgorithm(inputSample, outputSample,
                                           self._covarianceModel, self._basis, True)
-        algoKriging.run()
         return algoKriging
 
     def _computePODSamplePerDefect(self, defect, detection, krigingResult,
@@ -430,22 +429,24 @@ class KrigingBase():
         a Sobol sequence of size samples.
         """
 
-        # create uniform distribution of the parameters bounds
-        dim = len(lowerBound)
-        distBoundCol = []
-        for i in range(dim):
-            distBoundCol += [ot.Uniform(lowerBound[i], upperBound[i])]
-        distBound = ot.ComposedDistribution(distBoundCol)
-
-        # set the bounds
-        searchInterval = ot.Interval(lowerBound, upperBound)
-        algoKriging.setOptimizationBounds(searchInterval)
         if size > 0:
+            # create uniform distribution of the parameters bounds
+            dim = len(lowerBound)
+            distBoundCol = []
+            for i in range(dim):
+                distBoundCol += [ot.Uniform(lowerBound[i], upperBound[i])]
+            distBound = ot.ComposedDistribution(distBoundCol)
+
+            # set the bounds
+            searchInterval = ot.Interval(lowerBound, upperBound)
+            algoKriging.setOptimizationBounds(searchInterval)
             # Generate starting points with a low discrepancy sequence
             startingPoint = ot.LowDiscrepancyExperiment(ot.SobolSequence(),
                                                         distBound, size).generate()
 
             algoKriging.setOptimizationAlgorithm(ot.MultiStart(ot.TNC(), startingPoint))
+        else:
+            algoKriging.setOptimizeParameters(False)
 
         return algoKriging
 

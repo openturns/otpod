@@ -77,7 +77,7 @@ def test_2_a90():
 def test_2_a95():
     np.testing.assert_almost_equal(detectionSize2[1], 4.45940081, decimal=4)
 def test_2_Q2_90():
-    np.testing.assert_almost_equal(POD2.getQ2(), 0.998992756, decimal=4)
+    np.testing.assert_almost_equal(POD2.getQ2(), 0.9999215767709045, decimal=4)
 
 # Test kriging with Box Cox / Test not reproducible
 # ot.RandomGenerator.SetSeed(0)

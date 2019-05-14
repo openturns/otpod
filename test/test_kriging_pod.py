@@ -103,6 +103,8 @@ POD4 = otpod.KrigingPOD(inputSample, signals, detection, noiseThres, saturationT
 POD4.setInitialStartSize(50)
 POD4.setSamplingSize(500)
 POD4.setSimulationSize(100)
+POD4.setCovarianceModel(ot.SquaredExponential([5.83956,11.2139,27.9423,28.5219], [32.6326]))
+POD4.setInitialStartSize(0)
 POD4.run()
 detectionSize4 = POD4.computeDetectionSize(0.9, 0.95)
 def test_4_a90():

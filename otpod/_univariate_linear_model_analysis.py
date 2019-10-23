@@ -98,7 +98,7 @@ class UnivariateLinearModelAnalysis():
 
     Run analysis with a Weibull distribution hypothesis on the residuals
 
-    >>> analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, 60., 1700., ot.WeibullFactory(), boxCox=True)
+    >>> analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, 60., 1700., ot.WeibullMinFactory(), boxCox=True)
     >>> print analysis.getIntercept() # get intercept value for uncensored and censored case
     [Intercept for uncensored case : 4.28758, Intercept for censored case : 3.11243]
     >>> print analysis.getKolmogorovPValue()
@@ -693,7 +693,7 @@ class UnivariateLinearModelAnalysis():
             raise NameError("model can be 'uncensored' or 'censored'.")
 
         fig, ax = plt.subplots(figsize=(8, 6))
-        graphHist = ot.VisualTest.DrawHistogram(residuals)
+        graphHist = ot.HistogramFactory().build(residuals).drawPDF()
         graphPDF = distribution.drawPDF()
         graphHist.setGrid(True)
         View(graphHist, axes=[ax], bar_kwargs={'color':'blue','alpha': 0.5, 'label':'Residuals histogram'})

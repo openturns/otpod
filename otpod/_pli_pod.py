@@ -6,6 +6,7 @@ import openturns as ot
 import matplotlib.pyplot as plt
 from ._pli import PLIMeanBase, PLIVarianceBase
 import logging
+from distutils.version import LooseVersion
 
 __all__ = ['PLIMean', 'PLIVariance']
 
@@ -76,7 +77,10 @@ class PLIBase():
         g.clearHistory()
         g.clearCache()
         output = ot.CompositeRandomVector(g, ot.RandomVector(self._distribution))
-        event = ot.Event(output, ot.Greater(), self._detectionBoxCox)
+        if LooseVersion(ot.__version__) < "1.14":
+            event = ot.ThresholdEvent(output, ot.Greater(), self._detectionBoxCox)
+        else:
+            event = ot.Event(output, ot.Greater(), self._detectionBoxCox)
 
         ##### Monte Carlo ########
         algo_MC = ot.ProbabilitySimulationAlgorithm(event)

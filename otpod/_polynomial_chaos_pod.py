@@ -629,7 +629,7 @@ class PolynomialChaosPOD(POD):
                 polyCol[i] = ot.StandardDistributionPolynomialFactory(
                                                 self._distribution.getMarginal(i))
             
-            enumerateFunction = ot.EnumerateFunction(self._dim)
+            enumerateFunction = ot.LinearEnumerateFunction(self._dim)
             multivariateBasis = ot.OrthogonalProductPolynomialFactory(polyCol, enumerateFunction)
             # default degree is 3 (in __init__)
             indexMax = enumerateFunction.getStrataCumulatedCardinal(self._degree)

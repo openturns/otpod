@@ -1,3 +1,6 @@
+2019-10-28 - release 0.6.2
+- update code for openturns 1.14
+
 2018-11-26 - release 0.6.1
 - bug fix : use shifted output signals to get strictly positive values when using box cox
 

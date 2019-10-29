@@ -14,6 +14,8 @@
 
 import sys
 import os
+import sphinx
+from distutils.version import LooseVersion
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -46,8 +48,10 @@ html_sourcelink_suffix = ''
 extensions.append('IPython.sphinxext.ipython_console_highlighting')
 
 
-
-autodoc_default_flags = ['members', 'inherited-members']
+if LooseVersion(sphinx.__version__) >= '1.8':
+    autodoc_default_options = {'members': None, 'inherited-members': None}
+else:
+    autodoc_default_flags =  ['members', 'inherited-members']
 
 intersphinx_mapping = {'openturns': ('http://openturns.github.io/openturns/latest', None)}
 
@@ -163,7 +167,7 @@ html_favicon = 'themes/openturns/static/favicon.ico'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+#html_static_path = ['_static']
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied

@@ -219,8 +219,8 @@ class PLI():
         """
         Accessor to the Pertubation Law Indices.
 
-        return
-        ------
+        Returns
+        -------
         pli : 2d sequence of float
             The indices for all marginals and all given delta values.
         """
@@ -230,8 +230,8 @@ class PLI():
         """
         Accessor to applied delta values.
 
-        return
-        ------
+        Returns
+        -------
         deltaSample : 2d sequence of float
             The delta values.
         """

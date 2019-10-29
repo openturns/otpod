@@ -12,6 +12,7 @@ from statsmodels.regression.linear_model import OLS
 import numpy as np
 from ._decorator import DocInherit, keepingArgs
 from ._progress_bar import updateProgress
+from distutils.version import LooseVersion
 
 
 class UnivariateLinearModelPOD(POD):
@@ -64,7 +65,7 @@ class UnivariateLinearModelPOD(POD):
       is the default case. 
     - if *resDistFact* = :py:class:`openturns.NormalFactory`, it corresponds with Berens-Gauss.
     - if *resDistFact* = {:py:class:`openturns.KernelSmoothing`,
-      :py:class:`openturns.WeibullFactory`, ...}, the confidence interval is
+      :py:class:`openturns.WeibullMinFactory`, ...}, the confidence interval is
       built by bootstrap.
 
     If bootstrap is used, a progress bar is shown if the verbosity is enabled.
@@ -353,7 +354,11 @@ class UnivariateLinearModelPOD(POD):
         def predictionVariance(x):
             Y = ot.Point([1.0, x])
             gramX = X.computeGram()
-            return stderr**2 * (1. + ot.dot(Y, gramX.solveLinearSystem(Y)))
+            if LooseVersion(ot.__version__) < "1.14":
+                prod = ot.dot(Y, gramX.solveLinearSystem(Y))
+            else:
+                prod = Y.dot(gramX.solveLinearSystem(Y))
+            return stderr**2 * (1. + prod)
         # function to compute the POD(defect)
         def PODmodel(x):
             t = (self._detectionBoxCox - linearModel(x[0])) / np.sqrt(predictionVariance(x[0]))

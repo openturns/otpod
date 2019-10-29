@@ -108,13 +108,13 @@ def test_2_warnings():
 
 # Test with residual distribution as Weibull
 ot.RandomGenerator.SetSeed(0)
-analysis3 = otpod.UnivariateLinearModelAnalysis(defects, signals, resDistFact=ot.WeibullFactory())
+analysis3 = otpod.UnivariateLinearModelAnalysis(defects, signals, resDistFact=ot.WeibullMinFactory())
 def test_3_residual_dist():
     dist = analysis3.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
     Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
-    np.testing.assert_almost_equal(values, [753.1600021356328, 2.6999234275917843, -669.7717921948919], decimal=5)
+    np.testing.assert_almost_equal(values, [747.27421, 2.69992, -670.0099], decimal=5)
 def test_3_intercept():
     np.testing.assert_almost_equal(analysis3.getIntercept()[0], -660.288442844, decimal=5)
 def test_3_slope():
@@ -126,7 +126,7 @@ def test_3_boxcox():
 def test_3_R2():
     np.testing.assert_almost_equal(analysis3.getR2()[0], 0.783303649027, decimal=5)
 def test_3_kolmogorov():
-    np.testing.assert_almost_equal(analysis3.getKolmogorovPValue()[0], 0.629666052027, decimal=5)
+    np.testing.assert_almost_equal(analysis3.getKolmogorovPValue()[0], 0.76120, decimal=5)
 def test_3_anderson():
     np.testing.assert_almost_equal(analysis3.getAndersonDarlingPValue()[0], 0.0180973077091, decimal=5)
 def test_3_cramer():
@@ -146,13 +146,13 @@ def test_3_warnings():
 
 # Test residual distribution as Weibull and box cox
 ot.RandomGenerator.SetSeed(0)
-analysis4 = otpod.UnivariateLinearModelAnalysis(defects, signals, resDistFact=ot.WeibullFactory(), boxCox=True)
+analysis4 = otpod.UnivariateLinearModelAnalysis(defects, signals, resDistFact=ot.WeibullMinFactory(), boxCox=True)
 def test_4_residual_dist():
     dist = analysis4.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
     Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
-    np.testing.assert_almost_equal(values, [5.8945050002139014, 2.973243515863942, -5.261613781071394], decimal=5)
+    np.testing.assert_almost_equal(values, [5.87157, 2.9721, -5.55719], decimal=5)
 def test_4_intercept():
     np.testing.assert_almost_equal(analysis4.getIntercept()[0], 2.49892917613, decimal=5)
 def test_4_slope():
@@ -164,7 +164,7 @@ def test_4_boxcox():
 def test_4_R2():
     np.testing.assert_almost_equal(analysis4.getR2()[0], 0.890005925785, decimal=5)
 def test_4_kolmogorov():
-    np.testing.assert_almost_equal(analysis4.getKolmogorovPValue()[0], 0.628989851926, decimal=5)
+    np.testing.assert_almost_equal(analysis4.getKolmogorovPValue()[0], 0.06285756, decimal=5)
 def test_4_anderson():
     np.testing.assert_almost_equal(analysis4.getAndersonDarlingPValue()[0], 0.47964658675, decimal=5)
 def test_4_cramer():
@@ -258,13 +258,13 @@ def test_6_warnings():
 
 # Test with censored data and Weibull distribution
 ot.RandomGenerator.SetSeed(0)
-analysis7 = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, saturationThres, resDistFact=ot.WeibullFactory(), boxCox=False)
+analysis7 = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, saturationThres, resDistFact=ot.WeibullMinFactory(), boxCox=False)
 def test_7_residual_dist():
     dist = analysis7.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
     Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
-    np.testing.assert_almost_equal(values, [600.2380099188549, 3.025100794953687, -536.1982683387504], decimal=5)
+    np.testing.assert_almost_equal(values, [579.71148, 3.025, -551.7048], decimal=5)
 def test_7_intercept():
     np.testing.assert_almost_equal(analysis7.getIntercept()[0], -548.273499069, decimal=5)
 def test_7_slope():
@@ -276,7 +276,7 @@ def test_7_boxcox():
 def test_7_R2():
     np.testing.assert_almost_equal(analysis7.getR2()[0], 0.813100745002, decimal=5)
 def test_7_kolmogorov():
-    np.testing.assert_almost_equal(analysis7.getKolmogorovPValue()[0], 0.93916084908, decimal=5)
+    np.testing.assert_almost_equal(analysis7.getKolmogorovPValue()[0], 0.14987492, decimal=5)
 def test_7_anderson():
     np.testing.assert_almost_equal(analysis7.getAndersonDarlingPValue()[0], 0.459142308323, decimal=5)
 def test_7_cramer():
@@ -296,13 +296,13 @@ def test_7_warnings():
 
 # Test with censored data, Weibull distribution and box cox
 ot.RandomGenerator.SetSeed(0)
-analysis8 = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, saturationThres, resDistFact=ot.WeibullFactory(), boxCox=True)
+analysis8 = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, saturationThres, resDistFact=ot.WeibullMinFactory(), boxCox=True)
 def test_8_residual_dist():
     dist = analysis8.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
     Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
-    np.testing.assert_almost_equal(values, [4.2084342987316266, 2.9416335632358823, -3.75485509626758], decimal=5)
+    np.testing.assert_almost_equal(values, [4.18481,  2.94043, -4.03701], decimal=5)
 def test_8_intercept():
     np.testing.assert_almost_equal(analysis8.getIntercept()[0], 4.28145128492, decimal=5)
 def test_8_slope():
@@ -314,7 +314,7 @@ def test_8_boxcox():
 def test_8_R2():
     np.testing.assert_almost_equal(analysis8.getR2()[0], 0.871664790582, decimal=5)
 def test_8_kolmogorov():
-    np.testing.assert_almost_equal(analysis8.getKolmogorovPValue()[0], 0.541521326911, decimal=5)
+    np.testing.assert_almost_equal(analysis8.getKolmogorovPValue()[0], 0.02358453, decimal=5)
 def test_8_anderson():
     np.testing.assert_almost_equal(analysis8.getAndersonDarlingPValue()[0], 0.0439405361179, decimal=5)
 def test_8_cramer():
@@ -410,13 +410,13 @@ def test_10_warnings():
 
 # Test with low censored data and Weibull distribution
 ot.RandomGenerator.SetSeed(0)
-analysis11 = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, None, resDistFact=ot.WeibullFactory(), boxCox=False)
+analysis11 = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, None, resDistFact=ot.WeibullMinFactory(), boxCox=False)
 def test_11_residual_dist():
     dist = analysis11.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
     Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
-    np.testing.assert_almost_equal(values, [764.0613939729924, 2.6924123692533612, -679.4018639515667], decimal=5)
+    np.testing.assert_almost_equal(values, [758.0906, 2.69241, -679.64477], decimal=5)
 def test_11_intercept():
     np.testing.assert_almost_equal(analysis11.getIntercept()[0], -715.154543834, decimal=5)
 def test_11_slope():
@@ -428,7 +428,7 @@ def test_11_boxcox():
 def test_11_R2():
     np.testing.assert_almost_equal(analysis11.getR2()[0], 0.770763274557, decimal=5)
 def test_11_kolmogorov():
-    np.testing.assert_almost_equal(analysis11.getKolmogorovPValue()[0], 0.722232080907, decimal=5)
+    np.testing.assert_almost_equal(analysis11.getKolmogorovPValue()[0], 0.84340006, decimal=5)
 def test_11_anderson():
     np.testing.assert_almost_equal(analysis11.getAndersonDarlingPValue()[0], 0.0216220791687, decimal=5)
 def test_11_cramer():
@@ -448,13 +448,13 @@ def test_11_warnings():
 
 # Test with low censored data, Weibull distribution and box cox
 ot.RandomGenerator.SetSeed(0)
-analysis12 = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, None, resDistFact=ot.WeibullFactory(), boxCox=True)
+analysis12 = otpod.UnivariateLinearModelAnalysis(defects, signals, noiseThres, None, resDistFact=ot.WeibullMinFactory(), boxCox=True)
 def test_12_residual_dist():
     dist = analysis12.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
     Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
-    np.testing.assert_almost_equal(values, [3.214540830870479, 2.991213147115559, -2.870149515568862], decimal=5)
+    np.testing.assert_almost_equal(values, [3.20278,  2.99019, -3.06575], decimal=5)
 def test_12_intercept():
     np.testing.assert_almost_equal(analysis12.getIntercept()[0], 4.12213956422, decimal=5)
 def test_12_slope():
@@ -466,7 +466,7 @@ def test_12_boxcox():
 def test_12_R2():
     np.testing.assert_almost_equal(analysis12.getR2()[0], 0.883242398757, decimal=5)
 def test_12_kolmogorov():
-    np.testing.assert_almost_equal(analysis12.getKolmogorovPValue()[0], 0.5372107773, decimal=5)
+    np.testing.assert_almost_equal(analysis12.getKolmogorovPValue()[0], 0.02796090, decimal=5)
 def test_12_anderson():
     np.testing.assert_almost_equal(analysis12.getAndersonDarlingPValue()[0], 0.0851157758678, decimal=5)
 def test_12_cramer():
@@ -481,7 +481,7 @@ def test_12_durbin():
     np.testing.assert_almost_equal(analysis12.getDurbinWatsonPValue()[0], 0.96197852296, decimal=5)
 def test_12_warnings():
     msg = analysis12._printWarnings()
-    assert msg == ['', '', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
+    assert msg == ['', 'Some hypothesis tests failed : you may consider to use quantile regression or kriging (if input dimension > 1) to build POD.', 'Confidence interval, Normality tests and zero residual mean test are given assuming the residuals follow a Normal distribution.']
 
 
 # Test with high censored data
@@ -562,13 +562,13 @@ def test_14_warnings():
 
 # Test with high censored data and Weibull distribution
 ot.RandomGenerator.SetSeed(0)
-analysis15 = otpod.UnivariateLinearModelAnalysis(defects, signals, None, saturationThres, resDistFact=ot.WeibullFactory(), boxCox=False)
+analysis15 = otpod.UnivariateLinearModelAnalysis(defects, signals, None, saturationThres, resDistFact=ot.WeibullMinFactory(), boxCox=False)
 def test_15_residual_dist():
     dist = analysis15.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
     Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
-    np.testing.assert_almost_equal(values, [591.389857572173, 3.043705573914849, -528.4395183410408], decimal=5)
+    np.testing.assert_almost_equal(values, [570.91856, 3.0436, -544.19471], decimal=5)
 def test_15_intercept():
     np.testing.assert_almost_equal(analysis15.getIntercept()[0], -515.170723345, decimal=5)
 def test_15_slope():
@@ -580,7 +580,7 @@ def test_15_boxcox():
 def test_15_R2():
     np.testing.assert_almost_equal(analysis15.getR2()[0], 0.82718696356, decimal=5)
 def test_15_kolmogorov():
-    np.testing.assert_almost_equal(analysis15.getKolmogorovPValue()[0], 0.935565507884, decimal=5)
+    np.testing.assert_almost_equal(analysis15.getKolmogorovPValue()[0], 0.13890358, decimal=5)
 def test_15_anderson():
     np.testing.assert_almost_equal(analysis15.getAndersonDarlingPValue()[0], 0.504387479088, decimal=5)
 def test_15_cramer():
@@ -600,13 +600,13 @@ def test_15_warnings():
 
 # Test with high censored data, Weibull distribution and box cox
 ot.RandomGenerator.SetSeed(0)
-analysis16 = otpod.UnivariateLinearModelAnalysis(defects, signals, None, saturationThres, resDistFact=ot.WeibullFactory(), boxCox=True)
+analysis16 = otpod.UnivariateLinearModelAnalysis(defects, signals, None, saturationThres, resDistFact=ot.WeibullMinFactory(), boxCox=True)
 def test_16_residual_dist():
     dist = analysis16.getResidualsDistribution()[0]
     param = dist.getParametersCollection()[0]
     Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
-    np.testing.assert_almost_equal(values, [7.333918167967567, 2.8989242654479312, -6.539478667132534], decimal=5)
+    np.testing.assert_almost_equal(values, [7.28941,  2.89769, -6.94374], decimal=5)
 def test_16_intercept():
     np.testing.assert_almost_equal(analysis16.getIntercept()[0], 2.13686409675, decimal=5)
 def test_16_slope():
@@ -618,7 +618,7 @@ def test_16_boxcox():
 def test_16_R2():
     np.testing.assert_almost_equal(analysis16.getR2()[0], 0.882118212744, decimal=5)
 def test_16_kolmogorov():
-    np.testing.assert_almost_equal(analysis16.getKolmogorovPValue()[0], 0.406045399402, decimal=5)
+    np.testing.assert_almost_equal(analysis16.getKolmogorovPValue()[0], 0.0198277, decimal=5)
 def test_16_anderson():
     np.testing.assert_almost_equal(analysis16.getAndersonDarlingPValue()[0], 0.372627831653, decimal=5)
 def test_16_cramer():

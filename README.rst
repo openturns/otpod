@@ -52,7 +52,8 @@ Or you can install the module using Anaconda repository.
 
 .. code-block:: shell
 
-    $ conda install -c conda-forge otpod
+    $ conda config --add channels conda-forge
+    $ conda install otpod
 
 The documentation with examples is available `here <http://openturns.github.io/otpod/master>`_.
 

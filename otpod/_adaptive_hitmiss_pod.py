@@ -207,6 +207,7 @@ class AdaptiveHitMissPOD(POD):
                     C=C,
                     kernel=kernel,
                     degree=degree,
+                    gamma='auto',
                     probability=probability,
                     coef0=1,
                 ),
@@ -285,6 +286,7 @@ class AdaptiveHitMissPOD(POD):
                         C=C,
                         kernel=kernel,
                         degree=degree,
+                        gamma='auto',
                         probability=probability,
                         coef0=1),
                     *self._ClassifierParameters))[0]

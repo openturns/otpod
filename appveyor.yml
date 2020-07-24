@@ -1,5 +1,9 @@
 install:
-  - set PATH=C:\Miniconda36-x64;C:\Miniconda36-x64\Scripts;%PATH%
+  # conda
+  - curl -fSsLO https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe
+  - set CONDA_ROOT="C:\miniconda3-x64"
+  - Miniconda3-latest-Windows-x86_64.exe /InstallationType=JustMe /S /D=%CONDA_ROOT%
+  - call %CONDA_ROOT%\Scripts\activate.bat
   - conda config --add channels conda-forge
   - conda update -y conda
   - conda install -y openturns matplotlib scikit-learn statsmodels numpy scipy decorator pytest nbformat nbconvert

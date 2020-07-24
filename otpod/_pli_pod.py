@@ -368,7 +368,7 @@ class PLIBase():
 
         fig, ax = plt.subplots(figsize=(8, 6))
 
-        im = ax.imshow(Z, cmap=plt.cm.RdBu, origin='Lower', extent=extent, aspect='auto',
+        im = ax.imshow(Z, cmap=plt.cm.RdBu, origin='lower', extent=extent, aspect='auto',
                        vmin=-np.nanmax(np.abs(Z)), vmax=np.nanmax(np.abs(Z))) # drawing the function
         # adding the Contour lines with labels
         cset = ax.contour(Z, 20, linewidths=0.5, colors='k', extent=extent)

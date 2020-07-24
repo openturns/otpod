@@ -11,27 +11,21 @@ addons:
       - texlive-fonts-recommended
       - texlive-latex-extra
 
-matrix:
-  include:
-    - env: PYBASEVER=2.7
-    - env: PYBASEVER=3.7
-
 install:
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
   - bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - conda config --set always_yes yes --set changeps1 no
   - conda config --add channels conda-forge
+  - conda config --set channel_priority strict
   - conda update -q conda
-  - conda info -a
-  - conda create -q -n test-environment python=${PYBASEVER} openturns jupyter matplotlib scikit-learn statsmodels numpy scipy decorator pytest numpydoc sphinx nbsphinx jupyter_client ipython pandoc contextlib2
-  - source activate test-environment
+  - conda install -y openturns jupyter matplotlib scikit-learn statsmodels decorator pytest numpydoc sphinx nbsphinx jupyter_client ipython pandoc
 
 script:
   - python setup.py install
   - pytest test/
   - travis_wait 30 pytest test/test_notebook.py --notebook
-  - pushd doc && make html BUILDDIR=~/.local/share/otpod/doc && popd
+  - make html BUILDDIR=~/.local/share/otpod/doc -C doc
 
 after_success:
   - test "$TRAVIS_PULL_REQUEST" = "false" -a "$TRAVIS_BRANCH" = "master" || exit 0

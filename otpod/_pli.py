@@ -766,7 +766,7 @@ class PLIVarianceBase(PLI):
         optimPb = ot.OptimizationProblem(optimFunc,
                                          ot.Function(),
                                          ot.Function(),
-                                         ot.Interval())
+                                         ot.Interval([-1000.0]*2, [1000.0]*2))
 
         # solve the problem using SLSQP from NLopt
         optim = ot.NLopt(optimPb, 'LD_SLSQP')

@@ -185,26 +185,26 @@ class AdaptiveSignalPOD(POD, KrigingBase):
 
         # build initial kriging model
         # build the kriging model without optimization
-        algoKriging = self._buildKrigingAlgo(self._input, self._signals)
+        algoKriging, transformation = self._buildKrigingAlgo(self._input, self._signals)
         if self._verbose:
             print('Building the kriging model')
             print('Optimization of the covariance model parameters...')
 
         llDim = algoKriging.getReducedLogLikelihoodFunction().getInputDimension()
         lowerBound = [0.001] * llDim
-        upperBound = [50] * llDim               
+        upperBound = [50] * llDim
         algoKriging = self._estimKrigingTheta(algoKriging,
                                               lowerBound, upperBound,
                                               self._initialStartSize)
         algoKriging.run()
 
         # Get kriging results
-        self._krigingResult = algoKriging.getResult()
+        self._krigingResult = algoKriging.getResult() 
         self._covarianceModel = self._krigingResult.getCovarianceModel()
         self._basis = self._krigingResult.getBasisCollection()
-        metamodel = self._krigingResult.getMetaModel()
+        metamodel = ot.ComposedFunction(self._krigingResult.getMetaModel(), transformation)
 
-        self._Q2 = self._computeQ2(self._input, self._signals, self._krigingResult)
+        self._Q2 = self._computeQ2(self._input, self._signals, self._krigingResult, transformation)
         if self._verbose:
             print('Kriging validation Q2 (>0.9): {:0.4f}\n'.format(self._Q2))
 
@@ -245,9 +245,19 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                 signalsAugmented.add(metamodel(candidate))
                 # create a temporary kriging model with the new doe and without
                 # updating the covariance model parameters
-                algoKrigingTemp = ot.KrigingAlgorithm(inputAugmented, signalsAugmented,
+
+                # normalization
+                mean = inputAugmented.computeMean()
+                stddev = inputAugmented.computeStandardDeviationPerComponent()
+                linear = ot.SquareMatrix(self._dim)
+                for j in range(self._dim):
+                    linear[j, j] = 1.0 / stddev[j] if abs(stddev[j]) > 1e-12 else 1.0
+                zero = [0.0] * self._dim
+                transformation = ot.LinearFunction(mean, zero, linear)
+
+                algoKrigingTemp = ot.KrigingAlgorithm(transformation(inputAugmented), signalsAugmented,
                                                       self._covarianceModel,
-                                                      self._basis, True)
+                                                      self._basis)
                 optimizer = algoKrigingTemp.getOptimizationAlgorithm()
                 optimizer.setMaximumIterationNumber(0)
                 algoKrigingTemp.setOptimizationAlgorithm(optimizer)
@@ -261,7 +271,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                                          self._samplingSize, self._defectNumber)
                 for idef, defect in enumerate(self._defectSizes):
                     podSample = self._computePODSamplePerDefect(defect,
-                        self._detectionBoxCox, krigingResultTemp,
+                        self._detectionBoxCox, krigingResultTemp, transformation,
                         self._distribution, self._simulationSize, self._samplingSize)
                     PODPerDefect[:, idef] = podSample
 
@@ -297,11 +307,10 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                 print('Update the kriging model')
 
             # update the kriging model without optimization
-            algoKriging = self._buildKrigingAlgo(self._input, self._signals)
+            algoKriging, transformation = self._buildKrigingAlgo(self._input, self._signals)
             algoKriging.setOptimizeParameters(False)
             algoKriging.run()
-
-            self._Q2 = self._computeQ2(self._input, self._signals, algoKriging.getResult())
+            self._Q2 = self._computeQ2(self._input, self._signals, algoKriging.getResult(), transformation)
 
             # Check the quality of the kriging model if it needs optimization
             if self._Q2 < 0.95:
@@ -318,9 +327,8 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             self._krigingResult = algoKriging.getResult()
             self._covarianceModel = self._krigingResult.getCovarianceModel()
             self._basis = self._krigingResult.getBasisCollection()
-            metamodel = self._krigingResult.getMetaModel()
 
-            self._Q2 = self._computeQ2(self._input, self._signals, self._krigingResult)
+            self._Q2 = self._computeQ2(self._input, self._signals, self._krigingResult, transformation)
             if self._verbose:
                 print('Kriging validation Q2 (>0.9): {:0.4f}'.format(self._Q2))
 
@@ -348,8 +356,8 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                                          self._samplingSize, self._defectNumber)
         for i, defect in enumerate(self._defectSizes):
             self._PODPerDefect[:, i] = self._computePODSamplePerDefect(defect,
-                self._detectionBoxCox, self._krigingResult, self._distribution,
-                self._simulationSize, self._samplingSize)
+                self._detectionBoxCox, self._krigingResult, transformation,
+                self._distribution, self._simulationSize, self._samplingSize)
             if self._verbose:
                 updateProgress(i, self._defectNumber, 'Computing POD per defect')
 

@@ -25,15 +25,15 @@ class PLIBase():
         className = type(POD).__name__
         if className == "PolynomialChaosPOD":
             self._podResult = POD.getPolynomialChaosResult()
+            self._metamodel = self._podResult.getMetaModel()
             self._podType = "chaos"
         elif className in ["KrigingPOD", "AdaptiveSignalPOD"]:
             self._podResult = POD.getKrigingResult()
+            self._metamodel = ot.ComposedFunction(self._podResult.getMetaModel(), POD._transformation)
             self._podType = "kriging"
         else:
             raise Exception("Sobol indices can only be computed based on a " + \
                             "POD built with Kriging or polynomial chaos.")
-
-        self._metamodel = self._podResult.getMetaModel()
 
         # dimension is minus 1 to remove the defect parameter
         self._dim = self._podResult.getMetaModel().getInputDimension() - 1
@@ -78,9 +78,9 @@ class PLIBase():
         g.clearCache()
         output = ot.CompositeRandomVector(g, ot.RandomVector(self._distribution))
         if LooseVersion(ot.__version__) < "1.14":
-            event = ot.ThresholdEvent(output, ot.Greater(), self._detectionBoxCox)
-        else:
             event = ot.Event(output, ot.Greater(), self._detectionBoxCox)
+        else:
+            event = ot.ThresholdEvent(output, ot.Greater(), self._detectionBoxCox)
 
         ##### Monte Carlo ########
         algo_MC = ot.ProbabilitySimulationAlgorithm(event)

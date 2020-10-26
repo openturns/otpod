@@ -141,7 +141,7 @@ class KrigingPOD(POD, KrigingBase):
             if self._verbose:
                 print('Start optimizing covariance model parameters...')
             # build the kriging algorithm without optimizer
-            algoKriging = self._buildKrigingAlgo(self._input, self._signals)
+            algoKriging, transformation = self._buildKrigingAlgo(self._input, self._signals)
             # optimize the covariance model parameters and return the kriging
             # algorithm with the run launched
             llDim = algoKriging.getReducedLogLikelihoodFunction().getInputDimension()
@@ -154,9 +154,10 @@ class KrigingPOD(POD, KrigingBase):
             if self._verbose:
                 print('Kriging optimizer completed')
             self._krigingResult = algoKriging.getResult()
+            self._transformation = transformation
 
         # compute the Q2
-        self._Q2 = self._computeQ2(self._input, self._signals, self._krigingResult)
+        self._Q2 = self._computeQ2(self._input, self._signals, self._krigingResult, transformation)
         if self._verbose:
             print('kriging validation Q2 (>0.9): {:0.4f}'.format(self._Q2))
 
@@ -174,7 +175,7 @@ class KrigingPOD(POD, KrigingBase):
                                          self._samplingSize, self._defectNumber)
         for i, defect in enumerate(self._defectSizes):
             self._PODPerDefect[:, i] = self._computePODSamplePerDefect(defect,
-                self._detectionBoxCox, self._krigingResult, self._distribution,
+                self._detectionBoxCox, self._krigingResult, transformation, self._distribution,
                 self._simulationSize, self._samplingSize)
             if self._verbose:
                 updateProgress(i, self._defectNumber, 'Computing POD per defect')
@@ -195,6 +196,8 @@ class KrigingPOD(POD, KrigingBase):
         ----------
         result : :py:class:`openturns.KrigingResult`
             The kriging result.
+        transformation : :py:class:`openturns.Function`
+            The normalization transformation.
         """
         try:
             ot.KrigingResult(result)

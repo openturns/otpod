@@ -113,7 +113,7 @@ class KrigingBase():
     @keepingArgs # decorator to keep the real signature
     def drawValidationGraph(self, name=None):
 
-        y_loo = self._computeLOO(self._input, self._signals, self._krigingResult)
+        y_loo = self._computeLOO(self._input, self._signals, self._krigingResult, self._transformation)
         fig, ax = self._drawValidationGraph(self._signals, y_loo)
         ax.set_title("Validation of the Kriging model")
         ax.set_ylabel('Predicted leave one out signals')
@@ -364,11 +364,20 @@ class KrigingBase():
             # anisotropic squared exponential covariance model
             self._covarianceModel = ot.SquaredExponential([1] * self._dim)
 
-        algoKriging = ot.KrigingAlgorithm(inputSample, outputSample,
-                                          self._covarianceModel, self._basis, True)
-        return algoKriging
+        # normalization
+        mean = inputSample.computeMean()
+        stddev = inputSample.computeStandardDeviationPerComponent()
+        linear = ot.SquareMatrix(self._dim)
+        for j in range(self._dim):
+            linear[j, j] = 1.0 / stddev[j] if abs(stddev[j]) > 1e-12 else 1.0
+        zero = [0.0] * self._dim
+        transformation = ot.LinearFunction(mean, zero, linear)
 
-    def _computePODSamplePerDefect(self, defect, detection, krigingResult,
+        algoKriging = ot.KrigingAlgorithm(transformation(inputSample), outputSample,
+                                          self._covarianceModel, self._basis)
+        return algoKriging, transformation
+
+    def _computePODSamplePerDefect(self, defect, detection, krigingResult, transformation,
                                   distribution, simulationSize, samplingSize):
         """
         Compute the POD sample for a defect size.
@@ -384,7 +393,7 @@ class KrigingBase():
         MC_sample = distribution.getSample(samplingSize)
         # Kriging_RV = ot.KrigingRandomVector(krigingResult, MC_sample)
         # Y_sample = Kriging_RV.getSample(simulationSize)
-        Y_sample = self._randomVectorSampling(krigingResult, MC_sample,
+        Y_sample = self._randomVectorSampling(krigingResult, transformation(MC_sample),
                                         simulationSize, samplingSize)
 
         # compute the POD for all simulation size
@@ -451,7 +460,7 @@ class KrigingBase():
         return algoKriging
 
 
-    def _computeLOO(self, inputSample, outputSample, krigingResult):
+    def _computeLOO(self, inputSample, outputSample, krigingResult, transformation):
         """
         Compute the Leave One out prediction analytically.
         """
@@ -460,14 +469,9 @@ class KrigingBase():
 
         # get covariance model
         cov = krigingResult.getCovarianceModel()
+
         # get input transformation
-        t = krigingResult.getTransformation()
-        # check if the transformation was enabled or not and if so transform
-        # the input sample
-        if t.getInputDimension() == inputSample.shape[1]:
-            normalized_inputSample = np.array(t(inputSample))
-        else:
-            normalized_inputSample = inputSample
+        normalized_inputSample = transformation(inputSample)
 
         K = cov.discretize(normalized_inputSample)
         # get coefficient and compute trend
@@ -488,11 +492,11 @@ class KrigingBase():
         y_loo = (- np.dot(B_but_its_diag / B_diag, outputSample)).ravel()
         return y_loo
 
-    def _computeQ2(self, inputSample, outputSample, krigingResult):
+    def _computeQ2(self, inputSample, outputSample, krigingResult, transformation):
         """
         Compute the Q2 using the analytical loo prediction.
         """
-        y_loo = self._computeLOO(inputSample, outputSample, krigingResult)
+        y_loo = self._computeLOO(inputSample, outputSample, krigingResult, transformation)
         # Calcul du Q2
         delta = (np.hstack(outputSample) - y_loo)
         return 1 - np.mean(delta**2)/np.var(outputSample)

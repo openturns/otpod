@@ -65,13 +65,13 @@ totalAgg1 = sobol_result.getAggregatedTotalOrderIndices()
 firstOrder1 = sobol_result.getFirstOrderIndices(5)
 totalOrder1 = sobol_result.getTotalOrderIndices(5)
 def test_1_FA():
-    np.testing.assert_almost_equal(firstAgg1, [0.805, 0.0416706,-0.00108512], decimal=2)
+    np.testing.assert_almost_equal(firstAgg1, [0.04, 0.04, 1.32], decimal=1)
 def test_1_TA():
-    np.testing.assert_almost_equal(totalAgg1, [0.9934, 0.21, 0.008838], decimal=2)
+    np.testing.assert_almost_equal(totalAgg1, [6.03e-05, -4.81e-05,  9.75e-01], decimal=2)
 def test_1_FO_5():
-    np.testing.assert_almost_equal(firstOrder1, [0.61, 0.12, 0.09], decimal=2)
+    np.testing.assert_almost_equal(firstOrder1, [0.04, 0.04, 1.32], decimal=2)
 def test_1_TO_5():
-    np.testing.assert_almost_equal(totalOrder1, [0.92, 0.24, 0.01], decimal=2)
+    np.testing.assert_almost_equal(totalOrder1, [6.57e-05, -4.92e-05,  9.75e-01], decimal=2)
 
 # Test 2 for one specific defect size
 sobol.setDefectSizes([4.5])
@@ -82,9 +82,9 @@ sobol_result = sobol.getSensitivityResult()
 firstAgg2 = sobol_result.getAggregatedFirstOrderIndices()
 totalAgg2 = sobol_result.getAggregatedTotalOrderIndices()
 def test_2_FA():
-    np.testing.assert_almost_equal(firstAgg2, [0.90566,-0.0354556,-0.0490145], decimal=2)
+    np.testing.assert_almost_equal(firstAgg2, [0.04, 0.04, 1.32], decimal=2)
 def test_2_TA():
-    np.testing.assert_almost_equal(totalAgg2, [1.08, 0.19, 0.00680504], decimal=2)
+    np.testing.assert_almost_equal(totalAgg2, [6.38e-05, -4.86e-05, 9.75e-01], decimal=2)
 
 # Test 3 with Martinez method
 sobol.setSensitivityMethod("Martinez")
@@ -95,9 +95,9 @@ sobol_result = sobol.getSensitivityResult()
 firstAgg3 = sobol_result.getAggregatedFirstOrderIndices()
 totalAgg3 = sobol_result.getAggregatedTotalOrderIndices()
 def test_3_FA():
-    np.testing.assert_almost_equal(firstAgg3, [0.849301,-0.0342121,-0.0481013], decimal=2)
+    np.testing.assert_almost_equal(firstAgg3, [0.04, 0.04, 1.], decimal=2)
 def test_3_TA():
-    np.testing.assert_almost_equal(totalAgg3, [1.08513,0.186768,0.00576158], decimal=2)
+    np.testing.assert_almost_equal(totalAgg3, [9.54e-06, 1.06e-06, 9.63e-01], decimal=2)
 
 # Test 4 with Jansen method
 sobol.setSensitivityMethod("Jansen")
@@ -108,9 +108,9 @@ sobol_result = sobol.getSensitivityResult()
 firstAgg4 = sobol_result.getAggregatedFirstOrderIndices()
 totalAgg4 = sobol_result.getAggregatedTotalOrderIndices()
 def test_4_FA():
-    np.testing.assert_almost_equal(firstAgg4, [0.836597,-0.0691443,-0.066833], decimal=2)
+    np.testing.assert_almost_equal(firstAgg4, [-0.13, -0.13, 1.], decimal=2)
 def test_4_TA():
-    np.testing.assert_almost_equal(totalAgg4, [1.13863,0.189527,0.0057465], decimal=2)
+    np.testing.assert_almost_equal(totalAgg4, [9.54e-06, 1.08e-06, 1.13e+00], decimal=2)
 
 # Test 5 with Jansen method
 sobol.setSensitivityMethod("MauntzKucherenko")
@@ -121,9 +121,9 @@ sobol_result = sobol.getSensitivityResult()
 firstAgg5 = sobol_result.getAggregatedFirstOrderIndices()
 totalAgg5 = sobol_result.getAggregatedTotalOrderIndices()
 def test_5_FA():
-    np.testing.assert_almost_equal(firstAgg5, [0.943246,0.00213009,-0.0114289], decimal=2)
+    np.testing.assert_almost_equal(firstAgg5, [2.58e-04, -7.04e-05,  1.28e+00], decimal=2)
 def test_5_TA():
-    np.testing.assert_almost_equal(totalAgg5, [1.08, 0.19, 0.00680777], decimal=2)
+    np.testing.assert_almost_equal(totalAgg5, [8.59e-05, -2.66e-05, 9.75e-01], decimal=2)
 
 ################################################################################
 # Test 6 WITH CHAOS

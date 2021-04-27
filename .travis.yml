@@ -8,18 +8,14 @@ addons:
       - texlive-latex-extra
 
 install:
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
-  - bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
-  - conda config --set always_yes yes --set changeps1 no
-  - conda config --add channels conda-forge
-  - conda config --set channel_priority strict
-  - conda update -q conda
+  - wget -c --no-check-certificate https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -P /tmp
+  - bash /tmp/Miniforge3-Linux-x86_64.sh -b -p $HOME/miniforge
+  - export PATH="$HOME/miniforge/bin:$PATH"
   - conda install -y openturns jupyter matplotlib scikit-learn statsmodels decorator pytest numpydoc sphinx nbsphinx jupyter_client ipython pandoc
 
 script:
   - python setup.py install
-  - pytest test/
+  - pytest -s
   - MPLBACKEND=agg travis_wait 30 pytest test/test_notebook.py --notebook
   - make html BUILDDIR=~/.local/share/otpod/doc -C doc
 

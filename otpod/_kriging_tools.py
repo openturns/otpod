@@ -366,7 +366,7 @@ class KrigingBase():
 
         # normalization
         mean = inputSample.computeMean()
-        stddev = inputSample.computeStandardDeviationPerComponent()
+        stddev = inputSample.computeStandardDeviation()
         linear = ot.SquareMatrix(self._dim)
         for j in range(self._dim):
             linear[j, j] = 1.0 / stddev[j] if abs(stddev[j]) > 1e-12 else 1.0

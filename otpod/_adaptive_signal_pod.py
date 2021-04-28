@@ -248,7 +248,10 @@ class AdaptiveSignalPOD(POD, KrigingBase):
 
                 # normalization
                 mean = inputAugmented.computeMean()
-                stddev = inputAugmented.computeStandardDeviationPerComponent()
+                try:
+                    stddev = inputAugmented.computeStandardDeviation()
+                except AttributeError:
+                    stddev = inputAugmented.computeStandardDeviationPerComponent()
                 linear = ot.SquareMatrix(self._dim)
                 for j in range(self._dim):
                     linear[j, j] = 1.0 / stddev[j] if abs(stddev[j]) > 1e-12 else 1.0

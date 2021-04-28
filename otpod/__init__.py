@@ -34,7 +34,7 @@ from ._pli_pod import *
 from ._pli import *
 from ._math_tools import *
 
-__version__ = "0.6.6"
+__version__ = "0.6.7"
 
 __all__ = (_univariate_linear_model_analysis.__all__ +
            _univariate_linear_model_pod.__all__ + 

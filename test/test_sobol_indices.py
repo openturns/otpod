@@ -142,7 +142,8 @@ sobolChaos.run()
 sobol_result = sobolChaos.getSensitivityResult()
 firstAgg6 = sobol_result.getAggregatedFirstOrderIndices()
 totalAgg6 = sobol_result.getAggregatedTotalOrderIndices()
+
 def test_6_FA():
-    np.testing.assert_almost_equal(firstAgg6, [0.765053,0.119978,0.0796234], decimal=2)
+    np.testing.assert_almost_equal(firstAgg6, [0.0994924,-0.0318261,-0.111692], decimal=2)
 def test_6_TA():
-    np.testing.assert_almost_equal(totalAgg6, [0.859471,0.252722,0.0116165], decimal=2)
+    np.testing.assert_almost_equal(totalAgg6, [1.03563,0.969766,0.902102], decimal=2)

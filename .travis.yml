@@ -16,7 +16,7 @@ install:
 script:
   - python setup.py install
   - pytest -s
-  - MPLBACKEND=agg travis_wait 30 pytest test/test_notebook.py --notebook
+    #- MPLBACKEND=agg travis_wait 30 pytest test/test_notebook.py --notebook
   - make html BUILDDIR=~/.local/share/otpod/doc -C doc
 
 after_success:

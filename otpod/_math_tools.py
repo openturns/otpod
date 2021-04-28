@@ -151,8 +151,11 @@ def computeHarrisonMcCabeTest(residuals, breakRatio=0.5, simulationSize=1000):
     normalDist = ot.Normal()
     for i in range(simulationSize):
         xSampleNor = normalDist.getSample(nx)
-        xstand = np.array((xSampleNor - xSampleNor.computeMean()[0]) / \
-                  xSampleNor.computeStandardDeviation()[0, 0])
+        try:
+            stddev = xSampleNor.computeStandardDeviation()[0]
+        except:
+            stddev = xSampleNor.computeStandardDeviation()[0, 0] # ot <1.17
+        xstand = np.array((xSampleNor - xSampleNor.computeMean()[0]) / stddev)
         stat[i] = np.sum(xstand[:breakpoint]**2) / np.sum(xstand**2)
 
     return np.mean(stat <= hmc)

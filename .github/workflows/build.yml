@@ -1,0 +1,46 @@
+name: Build
+on: [push, pull_request]
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-version: latest
+      - name: Build
+        shell: bash -l {0}
+        run: |
+          conda install -y openturns jupyter matplotlib scikit-learn statsmodels decorator pytest numpydoc sphinx nbsphinx jupyter_client ipython pandoc
+          python setup.py install
+          pytest -s
+          #- MPLBACKEND=agg travis_wait 30 pytest test/test_notebook.py --notebook
+          apt install -y texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra
+          make html -C doc
+      - name: Upload
+        if: ${{ github.ref == 'refs/heads/master' }}
+        run: |
+          git clone --depth 1 https://${{ secrets.GH_TOKEN }}@github.com/openturns/openturns.github.io.git /tmp/io
+          mkdir -p /tmp/io/otpod/master
+          cp -r doc/_build/html/* /tmp/io/otpod/master
+          cd /tmp/io
+          touch .nojekyll
+          git config user.email "support@gh.com"
+          git config user.name "GitHub Actions"
+          git add -A .
+          if test `git diff HEAD | wc -c` -eq 0; then exit 0; fi
+          git commit -a -m "GitHub Actions build ${GITHUB_REPOSITORY} ${GITHUB_RUN_ID}"
+          git push --quiet origin master > /dev/null 2>&1
+
+  conda-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-version: latest
+      - name: Build
+        run: |
+          conda install -y openturns matplotlib scikit-learn statsmodels numpy scipy decorator pytest nbformat nbconvert
+          python setup.py install
+          pytest -s

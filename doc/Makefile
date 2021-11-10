@@ -5,7 +5,7 @@
 SPHINXOPTS    = -W -T
 SPHINXBUILD   = sphinx-build
 PAPER         =
-BUILDDIR      = ../../otpod-doc
+BUILDDIR      = _build
 PDFBUILDDIR   = /tmp
 PDF           = ../otpod-Documentation.pdf
 

@@ -1,7 +1,7 @@
 name: Build
 on: [push, pull_request]
 jobs:
-  linux:
+  conda-linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -15,7 +15,7 @@ jobs:
           python setup.py install
           pytest -s
           #- MPLBACKEND=agg travis_wait 30 pytest test/test_notebook.py --notebook
-          apt install -y texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra
+          sudo apt install -y texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra
           make html -C doc
       - name: Upload
         if: ${{ github.ref == 'refs/heads/master' }}

@@ -12,7 +12,10 @@ from statsmodels.regression.linear_model import OLS
 import numpy as np
 from ._decorator import DocInherit, keepingArgs
 from ._progress_bar import updateProgress
-from distutils.version import LooseVersion
+try:
+    from pkg_resources import parse_version
+except ImportError:
+    from distutils.version import LooseVersion as parse_version
 
 
 class UnivariateLinearModelPOD(POD):
@@ -354,7 +357,7 @@ class UnivariateLinearModelPOD(POD):
         def predictionVariance(x):
             Y = ot.Point([1.0, x])
             gramX = X.computeGram()
-            if LooseVersion(ot.__version__) < "1.14":
+            if parse_version(ot.__version__) < parse_version("1.14"):
                 prod = ot.dot(Y, gramX.solveLinearSystem(Y))
             else:
                 prod = Y.dot(gramX.solveLinearSystem(Y))

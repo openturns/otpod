@@ -69,7 +69,7 @@ def test_1_FA():
 def test_1_TA():
     np.testing.assert_almost_equal(totalAgg1, [6.03e-05, -4.81e-05,  9.75e-01], decimal=2)
 def test_1_FO_5():
-    np.testing.assert_almost_equal(firstOrder1, [0.04, 0.04, 1.32], decimal=2)
+    np.testing.assert_almost_equal(firstOrder1, [0.04, 0.04, 1.3], decimal=2)
 def test_1_TO_5():
     np.testing.assert_almost_equal(totalOrder1, [6.57e-05, -4.92e-05,  9.75e-01], decimal=2)
 

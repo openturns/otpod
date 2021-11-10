@@ -7,8 +7,10 @@ import openturns as ot
 import math as m
 import numpy as np
 from scipy.optimize import fmin
-from distutils.version import LooseVersion
-
+try:
+    from pkg_resources import parse_version
+except ImportError:
+    from distutils.version import LooseVersion as parse_version
 
 
 ######### ReducedLogLikelihood #########
@@ -125,7 +127,7 @@ def computeBreuschPaganTest(x, residuals):
     w = residuals**2 - sigma2
     linResidual = ot.LinearLeastSquares(x, w)
     linResidual.run()
-    if LooseVersion(ot.__version__) < "1.14":
+    if parse_version(ot.__version__) < parse_version("1.14"):
         linModel = linResidual.getResponseSurface()
     else:
         linModel = linResidual.getMetaModel()

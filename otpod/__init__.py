@@ -9,9 +9,12 @@
 
 def _initializing():
     # check openturns version
-    from distutils.version import LooseVersion
     import openturns as ot
-    if LooseVersion(ot.__version__) < "1.12":
+    try:
+        from pkg_resources import parse_version
+    except ImportError:
+        from distutils.version import LooseVersion as parse_version
+    if parse_version(ot.__version__) < parse_version("1.12"):
         raise ImportError(ot.__name__ + ' version must be at least 1.12.')
 
     # initialize the logger to display informations and warnings
@@ -34,7 +37,7 @@ from ._pli_pod import *
 from ._pli import *
 from ._math_tools import *
 
-__version__ = "0.6.7"
+__version__ = "0.6.8"
 
 __all__ = (_univariate_linear_model_analysis.__all__ +
            _univariate_linear_model_pod.__all__ + 

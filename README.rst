@@ -1,8 +1,5 @@
-.. image:: https://travis-ci.org/openturns/otpod.svg?branch=master
-    :target: https://travis-ci.org/openturns/otpod
-
-.. image:: https://ci.appveyor.com/api/projects/status/j62doteuljm5cb8a?svg=true
-    :target: https://ci.appveyor.com/project/openturns/otpod
+.. image:: https://github.com/openturns/otpod/actions/workflows/build.yml/badge.svg?branch=master
+    :target: https://github.com/openturns/otpod/actions/workflows/build.yml
 
 otpod module
 ============

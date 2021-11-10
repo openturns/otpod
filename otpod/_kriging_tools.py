@@ -5,6 +5,10 @@ import openturns as ot
 import numpy as np
 from scipy.interpolate import interp1d
 from ._decorator import DocInherit, keepingArgs
+try:
+    from pkg_resources import parse_version
+except ImportError:
+    from distutils.version import LooseVersion as parse_version
 
 __all__ = []
 
@@ -427,7 +431,10 @@ class KrigingBase():
         # only compute the variance
         variance = np.hstack([krigingResult.getConditionalCovariance(
                             sample[i])[0,0] for i in range(samplingSize)])
-        pred = krigingResult.getConditionalMean(sample)
+        if parse_version(ot.__version__) < parse_version('1.18'):
+            pred = krigingResult.getConditionalMean(sample)
+        else:
+            pred = krigingResult.getConditionalMean(sample).asPoint()
 
         normalSample = ot.Normal().getSample(simulationSize)
         # with numpy broadcasting

@@ -399,7 +399,7 @@ class PLI():
 
         if showOriginal:
             View(self._distribution.drawMarginal1DPDF(marginal, xMin, xMax,
-                int(pointNumber)), plot_kwargs={'label':label+' - Original PDF'},
+                int(pointNumber)), plot_kw={'label':label+' - Original PDF'},
                               axes=[ax])
             ax.grid()
             

@@ -641,7 +641,7 @@ class UnivariateLinearModelAnalysis():
 
         # graph.setXTitle('Residuals empirical quantiles')
         # graph.setYTitle(distribution.__str__())
-        View(graph, axes=[ax], plot_kwargs={'marker':'.', ''
+        View(graph, axes=[ax], plot_kw={'marker':'.', ''
                                             'color':'blue'})
         ax.grid(True)
         ax.set_xlabel('Residuals empirical quantiles')
@@ -696,8 +696,8 @@ class UnivariateLinearModelAnalysis():
         graphHist = ot.HistogramFactory().build(residuals).drawPDF()
         graphPDF = distribution.drawPDF()
         graphHist.setGrid(True)
-        View(graphHist, axes=[ax], bar_kwargs={'color':'blue','alpha': 0.5, 'label':'Residuals histogram'})
-        View(graphPDF, axes=[ax], plot_kwargs={'label':distribution.__str__()})
+        View(graphHist, axes=[ax], bar_kw={'color':'blue','alpha': 0.5, 'label':'Residuals histogram'})
+        View(graphPDF, axes=[ax], plot_kw={'label':distribution.__str__()})
         ax.set_xlabel('Defect realizations')
         if model == "uncensored":
             ax.set_title('Residuals distribution')

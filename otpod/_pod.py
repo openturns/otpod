@@ -166,12 +166,12 @@ class POD(object):
         fig, ax = plt.subplots(figsize=(8, 6))
         # POD model graph
         _ = View(PODmodel.draw(defectMin, defectMax, nbPt), axes=[ax],
-            plot_kwargs={'color':'red', 'label':'POD'})
+            plot_kw={'color':'red', 'label':'POD'})
 
         if confidenceLevel is not None:
             # POD at confidence level graph
             _ = View(PODmodelCl.draw(defectMin, defectMax, nbPt), axes=[ax],
-                plot_kwargs={'color':'blue', 'label':'POD at confidence level '+\
+                plot_kw={'color':'blue', 'label':'POD at confidence level '+\
                                                       str(confidenceLevel)})
         if probabilityLevel is not None:
             # horizontal line at the given probability level

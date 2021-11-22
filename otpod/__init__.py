@@ -14,8 +14,8 @@ def _initializing():
         from pkg_resources import parse_version
     except ImportError:
         from distutils.version import LooseVersion as parse_version
-    if parse_version(ot.__version__) < parse_version("1.12"):
-        raise ImportError(ot.__name__ + ' version must be at least 1.12.')
+    if parse_version(ot.__version__) < parse_version("1.16"):
+        raise ImportError(ot.__name__ + ' version must be at least 1.16.')
 
     # initialize the logger to display informations and warnings
     import logging

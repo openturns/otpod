@@ -7,10 +7,6 @@ import openturns as ot
 import math as m
 import numpy as np
 from scipy.optimize import fmin
-try:
-    from pkg_resources import parse_version
-except ImportError:
-    from distutils.version import LooseVersion as parse_version
 
 
 ######### ReducedLogLikelihood #########
@@ -127,10 +123,7 @@ def computeBreuschPaganTest(x, residuals):
     w = residuals**2 - sigma2
     linResidual = ot.LinearLeastSquares(x, w)
     linResidual.run()
-    if parse_version(ot.__version__) < parse_version("1.14"):
-        linModel = linResidual.getResponseSurface()
-    else:
-        linModel = linResidual.getMetaModel()
+    linModel = linResidual.getMetaModel()
     wpred = np.array(linModel(x))
     # statistic Breusch Pagan
     bp = nx * np.sum(wpred**2) / np.sum(w**2)

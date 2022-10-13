@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 from ._pli import PLIMeanBase, PLIVarianceBase
 import logging
 
-__all__ = ['PLIMean', 'PLIVariance']
+__all__ = ["PLIMean", "PLIVariance"]
 
 
-class PLIBase():
+class PLIBase:
     """
     PLI base class.
 
@@ -18,6 +18,7 @@ class PLIBase():
     PLI specific base class for the POD. Compute the indices for each defect
     size.
     """
+
     def __init__(self, POD, delta):
 
         className = type(POD).__name__
@@ -27,16 +28,22 @@ class PLIBase():
             self._podType = "chaos"
         elif className in ["KrigingPOD", "AdaptiveSignalPOD"]:
             self._podResult = POD.getKrigingResult()
-            self._metamodel = ot.ComposedFunction(self._podResult.getMetaModel(), POD._transformation)
+            self._metamodel = ot.ComposedFunction(
+                self._podResult.getMetaModel(), POD._transformation
+            )
             self._podType = "kriging"
         else:
-            raise Exception("Sobol indices can only be computed based on a " + \
-                            "POD built with Kriging or polynomial chaos.")
+            raise Exception(
+                "Sobol indices can only be computed based on a "
+                + "POD built with Kriging or polynomial chaos."
+            )
 
         # dimension is minus 1 to remove the defect parameter
         self._dim = self._podResult.getMetaModel().getInputDimension() - 1
-        assert (self._dim >=2), "The number of parameters must be greater or " + \
-                "equal than 2 to be able to perform the sensitivity analysis."
+        assert self._dim >= 2, (
+            "The number of parameters must be greater or "
+            + "equal than 2 to be able to perform the sensitivity analysis."
+        )
         self._POD = POD
         self._defectSizes = POD.getDefectSizes()
         self._defectNumber = self._defectSizes.shape[0]
@@ -45,13 +52,15 @@ class PLIBase():
 
         # the distribution of the parameters without the one of the defects.
         tmpDistribution = POD.getDistribution()
-        self._distribution = ot.ComposedDistribution([tmpDistribution.getMarginal(i)
-                                                for i in range(1, self._dim+1)])
+        self._distribution = ot.ComposedDistribution(
+            [tmpDistribution.getMarginal(i) for i in range(1, self._dim + 1)]
+        )
 
         self._delta = np.vstack(np.array(delta))
 
-        self._gaussKronrod = ot.GaussKronrod(50, 1e-5,
-                        ot.GaussKronrodRule(ot.GaussKronrodRule.G7K15))
+        self._gaussKronrod = ot.GaussKronrod(
+            50, 1e-5, ot.GaussKronrodRule(ot.GaussKronrodRule.G7K15)
+        )
 
         # initialize result matrix
         self._initializeResultMatrix()
@@ -59,8 +68,9 @@ class PLIBase():
     def _initializeResultMatrix(self):
         # initialize 3d matrix to save results for display
         marginals = np.arange(0, self._dim, 1)
-        deltaMesh, defectMesh, marginalMesh = np.meshgrid(marginals, self._delta,
-                                                          self._defectSizes)
+        deltaMesh, defectMesh, marginalMesh = np.meshgrid(
+            marginals, self._delta, self._defectSizes
+        )
         # matrix order [delta, marginal, defect]
         self._indices = np.zeros((self._delta.shape[0], self._dim, self._defectNumber))
 
@@ -116,13 +126,21 @@ class PLIBase():
             else:
                 self._keepedDefect.remove(idefect)
                 # set not computed indices to nan values
-                self._indices[:, :, idefect] = np.zeros(self._indices[:, :, idefect].shape)*np.nan
+                self._indices[:, :, idefect] = (
+                    np.zeros(self._indices[:, :, idefect].shape) * np.nan
+                )
 
         if len(self._keepedDefect) != self._defectNumber:
-            logging.warning('The indices were estimated only for the following defect: '+ \
-                  ''.join(('{:.2f}, ' * len(self._keepedDefect)).format(*self._defectSizes[self._keepedDefect])) + \
-                  'because the probability estimate is too small or too big '+\
-                  'for other defect values.') 
+            logging.warning(
+                "The indices were estimated only for the following defect: "
+                + "".join(
+                    ("{:.2f}, " * len(self._keepedDefect)).format(
+                        *self._defectSizes[self._keepedDefect]
+                    )
+                )
+                + "because the probability estimate is too small or too big "
+                + "for other defect values."
+            )
 
     def setDefectSizes(self, size):
         """
@@ -140,14 +158,15 @@ class PLIBase():
         minMin = self._POD._input[:, 0].getMin()[0]
         maxMax = self._POD._input[:, 0].getMax()[0]
         if size.max() > maxMax or size.min() < minMin:
-            raise ValueError('Defect sizes must range between ' + \
-                             '{:0.4f} '.format(np.ceil(minMin*10000)/10000) + \
-                             'and {:0.4f}.'.format(np.floor(maxMax*10000)/10000))
+            raise ValueError(
+                "Defect sizes must range between "
+                + "{:0.4f} ".format(np.ceil(minMin * 10000) / 10000)
+                + "and {:0.4f}.".format(np.floor(maxMax * 10000) / 10000)
+            )
         # update defect number
         self._defectNumber = self._defectSizes.shape[0]
         # update result matrix
         self._initializeResultMatrix()
-
 
     def getDefectSizes(self):
         """
@@ -187,7 +206,7 @@ class PLIBase():
 
     def setDistribution(self, distribution):
         """
-        Accessor to the parameters distribution. 
+        Accessor to the parameters distribution.
 
         Parameters
         ----------
@@ -197,15 +216,17 @@ class PLIBase():
         try:
             ot.ComposedDistribution(distribution)
         except NotImplementedError:
-            raise Exception('The given parameter is not a ComposedDistribution.')
+            raise Exception("The given parameter is not a ComposedDistribution.")
 
         if distribution.getDimension() != self._dim:
-            raise AttributeError("The dimension of the distribution must be {}.".format(self._dim))
+            raise AttributeError(
+                "The dimension of the distribution must be {}.".format(self._dim)
+            )
         self._distribution = distribution
 
     def getDistribution(self):
         """
-        Accessor to the parameters distribution. 
+        Accessor to the parameters distribution.
 
         Returns
         -------
@@ -271,7 +292,7 @@ class PLIBase():
         -------
         indices : float, 1d, 2d or 3d array.
             The parameter order of the full matrix is delta, marginal and defect.
-            The returned array depends on the given parameter values. 
+            The returned array depends on the given parameter values.
 
         """
         if idelta is None and marginal is None and idefect is None:
@@ -291,8 +312,9 @@ class PLIBase():
         else:
             return self._indices[idelta, marginal, idefect]
 
-    def drawIndices(self, idefect, confidenceLevel=.95, label=None,
-                    hellinger=True, name=None):
+    def drawIndices(
+        self, idefect, confidenceLevel=0.95, label=None, hellinger=True, name=None
+    ):
         """
         Draw the indices of all margins for a specific defect
 
@@ -318,14 +340,18 @@ class PLIBase():
             Matplotlib axes object.
         """
         if idefect in self._keepedDefect:
-            fig, ax = self._pli[idefect].drawIndices(confidenceLevel=confidenceLevel,
-                                                     label=label,
-                                                     hellinger=hellinger,
-                                                     name=None)
-            ax.set_title(self.__class__.__name__ + \
-                         ' - defect = {:.3f}'.format(self._defectSizes[idefect]))
+            fig, ax = self._pli[idefect].drawIndices(
+                confidenceLevel=confidenceLevel,
+                label=label,
+                hellinger=hellinger,
+                name=None,
+            )
+            ax.set_title(
+                self.__class__.__name__
+                + " - defect = {:.3f}".format(self._defectSizes[idefect])
+            )
             if name is not None:
-                fig.savefig(name, bbox_inches='tight', transparent=True)
+                fig.savefig(name, bbox_inches="tight", transparent=True)
             return fig, ax
         else:
             raise Exception("The indices have not been computed for this defect.")
@@ -347,35 +373,46 @@ class PLIBase():
             Matplotlib figure object.
         ax : `matplotlib.axes <http://matplotlib.org/api/axes_api.html>`_
             Matplotlib axes object.
-        """ 
-        if marginal > self._dim-1:
-            raise AttributeError('The marginal parameter must ' +\
-                                 'be in the range [0, {}]'.format(self._dim-1))
+        """
+        if marginal > self._dim - 1:
+            raise AttributeError(
+                "The marginal parameter must "
+                + "be in the range [0, {}]".format(self._dim - 1)
+            )
 
         if label is None:
-            label = 'X{}'.format(marginal)
+            label = "X{}".format(marginal)
 
-        extent = (np.min(self._defectSizes[self._keepedDefect]),
-                  np.max(self._defectSizes[self._keepedDefect]),
-                  np.min(self._delta), np.max(self._delta))
+        extent = (
+            np.min(self._defectSizes[self._keepedDefect]),
+            np.max(self._defectSizes[self._keepedDefect]),
+            np.min(self._delta),
+            np.max(self._delta),
+        )
 
         Z = self._indices[:, marginal, self._keepedDefect]
 
         fig, ax = plt.subplots(figsize=(8, 6))
 
-        im = ax.imshow(Z, cmap=plt.cm.RdBu, origin='lower', extent=extent, aspect='auto',
-                       vmin=-np.nanmax(np.abs(Z)), vmax=np.nanmax(np.abs(Z))) # drawing the function
+        im = ax.imshow(
+            Z,
+            cmap=plt.cm.RdBu,
+            origin="lower",
+            extent=extent,
+            aspect="auto",
+            vmin=-np.nanmax(np.abs(Z)),
+            vmax=np.nanmax(np.abs(Z)),
+        )  # drawing the function
         # adding the Contour lines with labels
-        cset = ax.contour(Z, 20, linewidths=0.5, colors='k', extent=extent)
-        ax.clabel(cset,inline=True,fmt='%0.2f',fontsize=8, colors='k')
-        fig.colorbar(im) # adding the colobar on the right
-        ax.set_title(self.__class__.__name__ + ' indices - ' + label)
-        ax.set_xlabel('Defects')
-        ax.set_ylabel('Delta')
+        cset = ax.contour(Z, 20, linewidths=0.5, colors="k", extent=extent)
+        ax.clabel(cset, inline=True, fmt="%0.2f", fontsize=8, colors="k")
+        fig.colorbar(im)  # adding the colobar on the right
+        ax.set_title(self.__class__.__name__ + " indices - " + label)
+        ax.set_xlabel("Defects")
+        ax.set_ylabel("Delta")
         if name is not None:
-            fig.savefig(name, bbox_inches='tight', transparent=True)
+            fig.savefig(name, bbox_inches="tight", transparent=True)
         return fig, ax
-
 
 
 class PLIMean(PLIBase):
@@ -391,20 +428,24 @@ class PLIMean(PLIBase):
         values are the same for all marginals, or 2d if delta values are defined
         independently for each marginal.
     sigmaScaled : bool
-        Change the type of the applied  mean shiftingfor all the variables. 
+        Change the type of the applied  mean shiftingfor all the variables.
         If False (default case), the given delta values are the new marginal means.
         If True, newMean = mean + sigma x delta, where sigma
         is the standard deviation of each marginals.
     """
+
     def __init__(self, POD, delta, sigmaScaled=True):
         PLIBase.__init__(self, POD, delta)
         self._sigmaScaled = sigmaScaled
 
-
     def _definePLIAlgorithm(self, resultMonteCarlo):
-        return PLIMeanBase(resultMonteCarlo, self._distribution, self._delta,
-                           sigmaScaled=self._sigmaScaled)
-        
+        return PLIMeanBase(
+            resultMonteCarlo,
+            self._distribution,
+            self._delta,
+            sigmaScaled=self._sigmaScaled,
+        )
+
 
 class PLIVariance(PLIBase):
     """
@@ -419,17 +460,16 @@ class PLIVariance(PLIBase):
         all marginals, or 2d if delta values are defined independently for each
         marginal.
     covScaled : bool
-        Change the type of the applied variance shifting for all the variables. 
+        Change the type of the applied variance shifting for all the variables.
         If False (default case), the given delta values are the new marginal variances.
         If True, newVariance = variance x delta.
     """
+
     def __init__(self, POD, delta, covScaled=True):
         PLIBase.__init__(self, POD, delta)
         self._covScaled = covScaled
 
     def _definePLIAlgorithm(self, resultMonteCarlo):
-        return PLIVarianceBase(resultMonteCarlo, self._distribution, self._delta,
-                               covScaled=self._covScaled)
-
-
-        
+        return PLIVarianceBase(
+            resultMonteCarlo, self._distribution, self._delta, covScaled=self._covScaled
+        )

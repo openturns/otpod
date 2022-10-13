@@ -8,6 +8,7 @@ import nbformat
 import nbconvert
 import matplotlib.pyplot as plt
 
+
 def notebook_run(ipynb):
     with open(ipynb) as fh:
         nb = nbformat.reads(fh.read(), 4)
@@ -15,7 +16,7 @@ def notebook_run(ipynb):
     exporter = nbconvert.PythonExporter()
 
     try:
-        os.mkdir('figure')
+        os.mkdir("figure")
     except:
         pass
     # source is a tuple of python source code
@@ -23,11 +24,11 @@ def notebook_run(ipynb):
     source, meta = exporter.from_notebook_node(nb)
     try:
         exec(source.encode())
-        plt.close('all')
-        shutil.rmtree('figure', ignore_errors=True)
+        plt.close("all")
+        shutil.rmtree("figure", ignore_errors=True)
         return []
     except:
-        shutil.rmtree('figure', ignore_errors=True)
+        shutil.rmtree("figure", ignore_errors=True)
         return traceback.print_exc()
 
 

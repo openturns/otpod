@@ -22,20 +22,22 @@ print '\ntotal time : ', time.time() - t0
 
 import sys
 
-def updateProgress(i, nIter, message='Progress', nFlush=50, barLength=50):
+
+def updateProgress(i, nIter, message="Progress", nFlush=50, barLength=50):
     # nFlush must be at max equal to nIter
     if nFlush > nIter:
         nFlush = nIter
     # update the progress bar only everyCheck
     everyCheck = round(float(nIter) / nFlush)
-    if not ((i+1) % everyCheck) or (i+1) == nIter:
-        progress = float(i+1) / nIter
+    if not ((i + 1) % everyCheck) or (i + 1) == nIter:
+        progress = float(i + 1) / nIter
         status = ""
         if progress >= 1:
             progress = 1
             status = "Done\r\n"
-        block = int(round(barLength*progress))
-        text =  "\r{0}: [{1}] {2:0.2f}% {3}".format( message,"="*block + "-"*(barLength-block),
-                                                    progress*100, status)
+        block = int(round(barLength * progress))
+        text = "\r{0}: [{1}] {2:0.2f}% {3}".format(
+            message, "=" * block + "-" * (barLength - block), progress * 100, status
+        )
         sys.stdout.write(text)
         sys.stdout.flush()

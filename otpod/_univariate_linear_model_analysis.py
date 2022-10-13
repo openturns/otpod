@@ -1,22 +1,31 @@
 # -*- Python -*-
 
-__all__ = ['UnivariateLinearModelAnalysis']
+__all__ = ["UnivariateLinearModelAnalysis"]
 
 import openturns as ot
 from openturns.viewer import View
-from ._math_tools import computeBoxCox, computeZeroMeanTest, computeBreuschPaganTest, \
-                         computeHarrisonMcCabeTest, computeDurbinWatsonTest, \
-                         computeR2, DataHandling, computeLinearParametersCensored
+from ._math_tools import (
+    computeBoxCox,
+    computeZeroMeanTest,
+    computeBreuschPaganTest,
+    computeHarrisonMcCabeTest,
+    computeDurbinWatsonTest,
+    computeR2,
+    DataHandling,
+    computeLinearParametersCensored,
+)
 from statsmodels.regression.linear_model import OLS
 import numpy as np
 import matplotlib.pyplot as plt
 import logging
 
-class _Results():
+
+class _Results:
     """
     This class contains the result of the analysis. Instances are created
     for uncensored data or if needed for censored data.
     """
+
     def __init__(self):
         self.intercept = None
         self.slope = None
@@ -24,11 +33,12 @@ class _Results():
         self.confInt = None
         self.testResults = None
 
-class UnivariateLinearModelAnalysis():
+
+class UnivariateLinearModelAnalysis:
 
     """
     Linear regression analysis with residuals hypothesis tests.
-    
+
     **Available constructors:**
 
     UnivariateLinearModelAnalysis(*inputSample, outputSample*)
@@ -47,7 +57,7 @@ class UnivariateLinearModelAnalysis():
     saturationThres : float
         Value for high censored data. Default is None.
     resDistFact : :py:class:`openturns.DistributionFactory`
-        Distribution hypothesis followed by the residuals. Default is 
+        Distribution hypothesis followed by the residuals. Default is
         :py:class:`openturns.NormalFactory`.
     boxCox : bool or float
         Enable or not the Box Cox transformation. If boxCox is a float, the Box
@@ -78,7 +88,7 @@ class UnivariateLinearModelAnalysis():
     >>> signalsInvBoxCox = defects * 43. + epsilon.getSample(N) + 2.5
     >>> invBoxCox = ot.InverseBoxCoxTransform(0.3)
     >>> signals = invBoxCox(signalsInvBoxCox)
-    
+
     Run analysis with gaussian hypothesis on the residuals :
 
     >>> analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, boxCox=True)
@@ -86,7 +96,7 @@ class UnivariateLinearModelAnalysis():
     [Intercept for uncensored case : 2.51037]
     >>> print analysis.getKolmogorovPValue()
     [Kolmogorov p-value for uncensored case : 0.835529]
-    
+
     Run analysis with noise and saturation threshold :
 
     >>> analysis = otpod.UnivariateLinearModelAnalysis(defects, signals, 60., 1700., boxCox=True)
@@ -104,9 +114,15 @@ class UnivariateLinearModelAnalysis():
     [Kolmogorov p-value for uncensored case : 0.476036, Kolmogorov p-value for censored case : 0.71764]
     """
 
-    def __init__(self, inputSample, outputSample, noiseThres=None,
-                 saturationThres=None, resDistFact=None,
-                 boxCox=False):
+    def __init__(
+        self,
+        inputSample,
+        outputSample,
+        noiseThres=None,
+        saturationThres=None,
+        resDistFact=None,
+        boxCox=False,
+    ):
 
         self._inputSample = ot.Sample(np.vstack(inputSample))
         self._outputSample = ot.Sample(np.vstack(outputSample))
@@ -142,11 +158,14 @@ class UnivariateLinearModelAnalysis():
         self._dim = self._inputSample.getDimension()
 
         # Assertions on parameters
-        assert (self._size >=3), "Not enough observations."
-        assert (self._size == self._outputSample.getSize()), \
-                "InputSample and outputSample must have the same size."
-        assert (self._dim == 1), "Dimension of inputSample must be 1."
-        assert (self._outputSample.getDimension() == 1), "Dimension of outputSample must be 1."
+        assert self._size >= 3, "Not enough observations."
+        assert (
+            self._size == self._outputSample.getSize()
+        ), "InputSample and outputSample must have the same size."
+        assert self._dim == 1, "Dimension of inputSample must be 1."
+        assert (
+            self._outputSample.getDimension() == 1
+        ), "Dimension of outputSample must be 1."
 
         # run the analysis
         self._run()
@@ -173,25 +192,35 @@ class UnivariateLinearModelAnalysis():
             # defectsSat in the saturation area
             # signals in the non censored area
             # check if one the threshold is None
-            defects, defectsNoise, defectsSat, signals = \
-                DataHandling.filterCensoredData(self._inputSample, self._outputSample,
-                              self._noiseThres, self._saturationThres)
+            (
+                defects,
+                defectsNoise,
+                defectsSat,
+                signals,
+            ) = DataHandling.filterCensoredData(
+                self._inputSample,
+                self._outputSample,
+                self._noiseThres,
+                self._saturationThres,
+            )
         else:
             defects, signals = self._inputSample, self._outputSample
-        
+
         defectsSize = defects.getSize()
 
         ###################### Box Cox transformation ##########################
         # Compute Box Cox if enabled
         if self._boxCox:
             if signals.getMin()[0] < 0:
-                shift = - signals.getMin()[0] + 100
+                shift = -signals.getMin()[0] + 100
             else:
-                shift = 0.
+                shift = 0.0
 
             if self._lambdaBoxCox is None:
                 # optimization required, get optimal lambda and graph
-                self._lambdaBoxCox, self._graphBoxCox = computeBoxCox(defects, signals, shift)
+                self._lambdaBoxCox, self._graphBoxCox = computeBoxCox(
+                    defects, signals, shift
+                )
 
             # Transformation of data
             boxCoxTransform = ot.BoxCoxTransform([self._lambdaBoxCox])
@@ -224,11 +253,21 @@ class UnivariateLinearModelAnalysis():
 
         if self._censored:
             # define initial starting point for MLE optimization
-            initialStartMLE = [self._resultsUnc.intercept, self._resultsUnc.slope,
-                               self._resultsUnc.stderr]
+            initialStartMLE = [
+                self._resultsUnc.intercept,
+                self._resultsUnc.slope,
+                self._resultsUnc.stderr,
+            ]
             # MLE optimization
-            res = computeLinearParametersCensored(initialStartMLE, defects,
-                defectsNoise, defectsSat, signals, noiseThres, saturationThres)
+            res = computeLinearParametersCensored(
+                initialStartMLE,
+                defects,
+                defectsNoise,
+                defectsSat,
+                signals,
+                noiseThres,
+                saturationThres,
+            )
             self._resultsCens.intercept = res[0]
             self._resultsCens.slope = res[1]
             self._resultsCens.stderr = res[2]
@@ -248,61 +287,62 @@ class UnivariateLinearModelAnalysis():
             self._resultsCens.fittedSignals = CensLinModel(defects)
             self._resultsCens.residuals = signals - self._resultsCens.fittedSignals
             # compute residuals distribution.
-            self._resultsCens.resDist = self._resDistFact.build(self._resultsCens.residuals)
+            self._resultsCens.resDist = self._resDistFact.build(
+                self._resultsCens.residuals
+            )
 
         ########################## Compute tests ###############################
-        self._resultsUnc.testResults = \
-                self._computeTests(defects, signals, self._resultsUnc.residuals,
-                                   self._resultsUnc.resDist)
+        self._resultsUnc.testResults = self._computeTests(
+            defects, signals, self._resultsUnc.residuals, self._resultsUnc.resDist
+        )
 
         if self._censored:
-            self._resultsCens.testResults = \
-                self._computeTests(defects, signals, self._resultsCens.residuals,
-                                   self._resultsCens.resDist)
+            self._resultsCens.testResults = self._computeTests(
+                defects, signals, self._resultsCens.residuals, self._resultsCens.resDist
+            )
 
         ################ Build the result lists to be printed ##################
         self._buildPrintResults()
 
-
-################################################################################
-###################### Hypothesis and validation tests #########################
-################################################################################
+    ################################################################################
+    ###################### Hypothesis and validation tests #########################
+    ################################################################################
 
     def _computeTests(self, defects, signals, residuals, resDist):
 
         testResults = {}
         # compute R2
-        testResults['R2'] = computeR2(signals, residuals)
+        testResults["R2"] = computeR2(signals, residuals)
 
         # compute Anderson Darling test (normality test)
         testAnderDar = ot.NormalityTest.AndersonDarlingNormal(residuals)
-        testResults['AndersonDarling'] = testAnderDar.getPValue()
+        testResults["AndersonDarling"] = testAnderDar.getPValue()
 
         # compute Cramer Von Mises test (normality test)
         testCramVM = ot.NormalityTest.CramerVonMisesNormal(residuals)
-        testResults['CramerVonMises'] = testCramVM.getPValue()
+        testResults["CramerVonMises"] = testCramVM.getPValue()
 
         # compute zero residual mean test
-        testResults['ZeroMean'] = computeZeroMeanTest(residuals)
+        testResults["ZeroMean"] = computeZeroMeanTest(residuals)
 
         # compute Kolmogorov test (fitting test)
         testKol = ot.FittingTest.Kolmogorov(residuals, resDist, 0.05)
-        testResults['Kolmogorov'] = testKol.getPValue()
+        testResults["Kolmogorov"] = testKol.getPValue()
 
         # compute Breusch Pagan test (homoskedasticity : constant variance)
-        testResults['BreuschPagan'] = computeBreuschPaganTest(defects, residuals)
+        testResults["BreuschPagan"] = computeBreuschPaganTest(defects, residuals)
 
         # compute Harrison McCabe test (homoskedasticity : constant variance)
-        testResults['HarrisonMcCabe'] = computeHarrisonMcCabeTest(residuals)
+        testResults["HarrisonMcCabe"] = computeHarrisonMcCabeTest(residuals)
 
         # compute Durbin Watson test (autocorrelation == 0)
-        testResults['DurbinWatson'] = computeDurbinWatsonTest(defects, residuals)
+        testResults["DurbinWatson"] = computeDurbinWatsonTest(defects, residuals)
 
         return testResults
 
-################################################################################
-########################## Print and save results ##############################
-################################################################################
+    ################################################################################
+    ########################## Print and save results ##############################
+    ################################################################################
 
     def getResults(self):
         """
@@ -311,29 +351,40 @@ class UnivariateLinearModelAnalysis():
         # Enable warning to be displayed
         ot.Log.Show(ot.Log.WARN)
 
-        regressionResult = '\n'.join(['{:<47} {:>13} {:>13}'.format(*line) for
-                            line in self._dataRegression])
+        regressionResult = "\n".join(
+            ["{:<47} {:>13} {:>13}".format(*line) for line in self._dataRegression]
+        )
 
-        residualsResult = '\n'.join(['{:<47} {:>13} {:>13}'.format(*line) for 
-                            line in self._dataResiduals])
+        residualsResult = "\n".join(
+            ["{:<47} {:>13} {:>13}".format(*line) for line in self._dataResiduals]
+        )
 
         ndash = 80
-        results = '-' * ndash + '\n'
-        results = results + '         Linear model analysis results' + '\n'
-        results = results + '-' * ndash + '\n'
-        results = results + regressionResult + '\n'
-        results = results + '-' * ndash + '\n'
-        results = results + '' + '\n'
-        results = results + '-' * ndash + '\n'
-        results = results + '         Residuals analysis results' + '\n'
-        results = results + '-' * ndash + '\n'
-        results = results + residualsResult + '\n'
-        results = results + '-' * ndash + '\n'
-        results = results + '' + '\n'
+        results = "-" * ndash + "\n"
+        results = results + "         Linear model analysis results" + "\n"
+        results = results + "-" * ndash + "\n"
+        results = results + regressionResult + "\n"
+        results = results + "-" * ndash + "\n"
+        results = results + "" + "\n"
+        results = results + "-" * ndash + "\n"
+        results = results + "         Residuals analysis results" + "\n"
+        results = results + "-" * ndash + "\n"
+        results = results + residualsResult + "\n"
+        results = results + "-" * ndash + "\n"
+        results = results + "" + "\n"
         # print warnings if not empty
-        if self._printWarnings(False).count('') != len(self._printWarnings(False)):
-            results = results + 'Warning : ' + '\nWarning : '.join(['{}'.format(line) for 
-                            line in self._printWarnings(False) if len(line)>0])
+        if self._printWarnings(False).count("") != len(self._printWarnings(False)):
+            results = (
+                results
+                + "Warning : "
+                + "\nWarning : ".join(
+                    [
+                        "{}".format(line)
+                        for line in self._printWarnings(False)
+                        if len(line) > 0
+                    ]
+                )
+            )
         return results
 
     def _printWarnings(self, disp=True):
@@ -342,31 +393,37 @@ class UnivariateLinearModelAnalysis():
         valuesUnc = np.array(list(self._resultsUnc.testResults.values()))
         if self._censored:
             valuesCens = np.array(list(self._resultsCens.testResults.values()))
-            testPValues = ((valuesUnc < 0.05).any() or (valuesCens < 0.05).any())
+            testPValues = (valuesUnc < 0.05).any() or (valuesCens < 0.05).any()
         else:
             testPValues = (valuesUnc < 0.05).any()
 
         # print warning if some pValues are less than 0.05
         msg = ["", "", ""]
         if testPValues and not self._boxCox:
-            msg[0] = 'Some hypothesis tests failed : you may consider to use '+\
-                        'the Box Cox transformation.'
+            msg[0] = (
+                "Some hypothesis tests failed : you may consider to use "
+                + "the Box Cox transformation."
+            )
             if disp:
                 logging.warning(msg[0])
                 # ot.Log.Warn(msg[0])
                 # ot.Log.Flush()
         elif testPValues and self._boxCox:
-            msg[1] = 'Some hypothesis tests failed : you may consider to use '+\
-                'quantile regression or kriging (if input dimension > 1) to build POD.'
+            msg[1] = (
+                "Some hypothesis tests failed : you may consider to use "
+                + "quantile regression or kriging (if input dimension > 1) to build POD."
+            )
             if disp:
                 logging.warning(msg[1])
                 # ot.Log.Warn(msg[1])
                 # ot.Log.Flush()
 
-        if self._resultsUnc.resDist.getImplementation().getClassName() != 'Normal':
-            msg[2] = 'Confidence interval, Normality tests and zero ' + \
-                        'residual mean test are given assuming the residuals ' +\
-                        'follow a Normal distribution.'
+        if self._resultsUnc.resDist.getImplementation().getClassName() != "Normal":
+            msg[2] = (
+                "Confidence interval, Normality tests and zero "
+                + "residual mean test are given assuming the residuals "
+                + "follow a Normal distribution."
+            )
             if disp:
                 logging.warning(msg[2])
                 # ot.Log.Warn(msg[2])
@@ -390,22 +447,32 @@ class UnivariateLinearModelAnalysis():
         If *name* is the file name, then it is saved in the current working
         directory.
         """
-        regressionResult = '\n'.join(['{}\t{}\t{}'.format(*line) for
-                                line in self._dataRegression])
+        regressionResult = "\n".join(
+            ["{}\t{}\t{}".format(*line) for line in self._dataRegression]
+        )
 
-        residualsResult = '\n'.join(['{}\t{}\t{}'.format(*line) for
-                                line in self._dataResiduals])
+        residualsResult = "\n".join(
+            ["{}\t{}\t{}".format(*line) for line in self._dataResiduals]
+        )
 
-        with open(name, 'w') as fd:
-            fd.write('Linear model analysis results\n\n')
+        with open(name, "w") as fd:
+            fd.write("Linear model analysis results\n\n")
             fd.write(regressionResult)
-            fd.write('\n\nResiduals analysis results\n\n')
+            fd.write("\n\nResiduals analysis results\n\n")
             fd.write(residualsResult)
             # add warnings if not empty
-            if self._printWarnings(False).count('') != len(self._printWarnings(False)):
-                fd.write('\n\n')
-                fd.write('Warning : ' + '\nWarning : '.join(['{}'.format(line) for 
-                                line in self._printWarnings(False) if len(line)>0]))
+            if self._printWarnings(False).count("") != len(self._printWarnings(False)):
+                fd.write("\n\n")
+                fd.write(
+                    "Warning : "
+                    + "\nWarning : ".join(
+                        [
+                            "{}".format(line)
+                            for line in self._printWarnings(False)
+                            if len(line) > 0
+                        ]
+                    )
+                )
 
     def _buildPrintResults(self):
         # Build the lists used in the printResult and saveResults methods :
@@ -414,8 +481,8 @@ class UnivariateLinearModelAnalysis():
 
         # number of digits to be displayed
         n_digits = 2
-        #format for confidence interval
-        strformat =  "[{:0."+str(n_digits)+"f}, {:0."+str(n_digits)+"f}]"
+        # format for confidence interval
+        strformat = "[{:0." + str(n_digits) + "f}, {:0." + str(n_digits) + "f}]"
 
         if self._boxCox:
             boxCoxstr = round(self._lambdaBoxCox, n_digits)
@@ -430,38 +497,80 @@ class UnivariateLinearModelAnalysis():
             ["", "", ""],
             ["", "Uncensored", ""],
             ["", "", ""],
-            ["Intercept coefficient :", round(self._resultsUnc.intercept, n_digits), ""],
+            [
+                "Intercept coefficient :",
+                round(self._resultsUnc.intercept, n_digits),
+                "",
+            ],
             ["Slope coefficient :", round(self._resultsUnc.slope, n_digits), ""],
-            ["Standard error of the estimate :", round(self._resultsUnc.stderr, n_digits), ""],
+            [
+                "Standard error of the estimate :",
+                round(self._resultsUnc.stderr, n_digits),
+                "",
+            ],
             ["", "", ""],
             ["Confidence interval on coefficients", "", ""],
-            ["Intercept coefficient :", strformat.format(*self._resultsUnc.confInt[0]), ""],
+            [
+                "Intercept coefficient :",
+                strformat.format(*self._resultsUnc.confInt[0]),
+                "",
+            ],
             ["Slope coefficient :", strformat.format(*self._resultsUnc.confInt[1]), ""],
             ["Level :", 0.95, ""],
             ["", "", ""],
             ["Quality of regression", "", ""],
-            ["R2 (> 0.8):", round(self._resultsUnc.testResults['R2'], n_digits), ""]]
+            ["R2 (> 0.8):", round(self._resultsUnc.testResults["R2"], n_digits), ""],
+        ]
 
         self._dataResiduals = [
-            ["Fitted distribution (uncensored) :", self._resultsUnc.resDist.__str__(), ""],
+            [
+                "Fitted distribution (uncensored) :",
+                self._resultsUnc.resDist.__str__(),
+                "",
+            ],
             ["", "", ""],
             ["", "Uncensored", ""],
             ["Distribution fitting test", "", ""],
-            ["Kolmogorov p-value (> 0.05):", round(testResults['Kolmogorov'], n_digits), ""],
+            [
+                "Kolmogorov p-value (> 0.05):",
+                round(testResults["Kolmogorov"], n_digits),
+                "",
+            ],
             ["", "", ""],
             ["Normality test", "", ""],
-            ["Anderson Darling p-value (> 0.05):", round(testResults['AndersonDarling'], n_digits), ""],
-            ["Cramer Von Mises p-value (> 0.05):", round(testResults['CramerVonMises'], n_digits), ""],
+            [
+                "Anderson Darling p-value (> 0.05):",
+                round(testResults["AndersonDarling"], n_digits),
+                "",
+            ],
+            [
+                "Cramer Von Mises p-value (> 0.05):",
+                round(testResults["CramerVonMises"], n_digits),
+                "",
+            ],
             ["", "", ""],
             ["Zero residual mean test", "", ""],
-            ["p-value (> 0.05):", round(testResults['ZeroMean'], n_digits), ""],
+            ["p-value (> 0.05):", round(testResults["ZeroMean"], n_digits), ""],
             ["", "", ""],
             ["Homoskedasticity test (constant variance)", "", ""],
-            ["Breush Pagan p-value (> 0.05):", round(testResults['BreuschPagan'], n_digits), ""],
-            ["Harrison McCabe p-value (> 0.05):", round(testResults['HarrisonMcCabe'], n_digits), ""],
+            [
+                "Breush Pagan p-value (> 0.05):",
+                round(testResults["BreuschPagan"], n_digits),
+                "",
+            ],
+            [
+                "Harrison McCabe p-value (> 0.05):",
+                round(testResults["HarrisonMcCabe"], n_digits),
+                "",
+            ],
             ["", "", ""],
             ["Non autocorrelation test", "", ""],
-            ["Durbin Watson p-value (> 0.05):", round(testResults['DurbinWatson'], n_digits), ""]]
+            [
+                "Durbin Watson p-value (> 0.05):",
+                round(testResults["DurbinWatson"], n_digits),
+                "",
+            ],
+        ]
 
         if self._censored:
             # Add censored case results in the lists
@@ -471,23 +580,30 @@ class UnivariateLinearModelAnalysis():
             self._dataRegression[4][2] = round(self._resultsCens.intercept, n_digits)
             self._dataRegression[5][2] = round(self._resultsCens.slope, n_digits)
             self._dataRegression[6][2] = round(self._resultsCens.stderr, n_digits)
-            self._dataRegression[14][2] = round(self._resultsCens.testResults['R2'], n_digits)
+            self._dataRegression[14][2] = round(
+                self._resultsCens.testResults["R2"], n_digits
+            )
 
-            self._dataResiduals.insert(1, ["Fitted distribution (censored) :",
-                                       self._resultsCens.resDist.__str__(), ""])
+            self._dataResiduals.insert(
+                1,
+                [
+                    "Fitted distribution (censored) :",
+                    self._resultsCens.resDist.__str__(),
+                    "",
+                ],
+            )
             self._dataResiduals[3][2] = "Censored"
-            self._dataResiduals[5][2] = round(testResults['Kolmogorov'], n_digits)
-            self._dataResiduals[8][2] = round(testResults['AndersonDarling'], n_digits)
-            self._dataResiduals[9][2] = round(testResults['CramerVonMises'], n_digits)
-            self._dataResiduals[12][2] = round(testResults['ZeroMean'], n_digits)
-            self._dataResiduals[15][2] = round(testResults['BreuschPagan'], n_digits)
-            self._dataResiduals[16][2] = round(testResults['HarrisonMcCabe'], n_digits)
-            self._dataResiduals[19][2] = round(testResults['DurbinWatson'], n_digits)
+            self._dataResiduals[5][2] = round(testResults["Kolmogorov"], n_digits)
+            self._dataResiduals[8][2] = round(testResults["AndersonDarling"], n_digits)
+            self._dataResiduals[9][2] = round(testResults["CramerVonMises"], n_digits)
+            self._dataResiduals[12][2] = round(testResults["ZeroMean"], n_digits)
+            self._dataResiduals[15][2] = round(testResults["BreuschPagan"], n_digits)
+            self._dataResiduals[16][2] = round(testResults["HarrisonMcCabe"], n_digits)
+            self._dataResiduals[19][2] = round(testResults["DurbinWatson"], n_digits)
 
-
-################################################################################
-############################### graphs #########################################
-################################################################################
+    ################################################################################
+    ############################### graphs #########################################
+    ################################################################################
 
     def drawLinearModel(self, model="uncensored", name=None):
         """
@@ -500,7 +616,7 @@ class UnivariateLinearModelAnalysis():
             *censored* if censored threshold were given. Default is *uncensored*.
         name : string
             name of the figure to be saved with *transparent* option sets to True
-            and *bbox_inches='tight'*. It can be only the file name or the 
+            and *bbox_inches='tight'*. It can be only the file name or the
             full path name. Default is None.
 
         Returns
@@ -511,9 +627,9 @@ class UnivariateLinearModelAnalysis():
             Matplotlib axes object.
         """
 
-        # Check is the censored model exists when asking for it 
+        # Check is the censored model exists when asking for it
         if model == "censored" and not self._censored:
-            raise NameError('Linear model for censored data is not available.')
+            raise NameError("Linear model for censored data is not available.")
 
         defects = self._algoLinear.model.exog[:, 1]
         signals = self._algoLinear.model.endog
@@ -526,23 +642,22 @@ class UnivariateLinearModelAnalysis():
             raise NameError("model can be 'uncensored' or 'censored'.")
 
         fig, ax = plt.subplots(figsize=(8, 6))
-        ax.plot(defects, signals, 'b.', label='Data', ms=9)
-        ax.plot(defects, fittedSignals, 'r-', label='Linear model')
-        ax.set_xlabel('Defects')
+        ax.plot(defects, signals, "b.", label="Data", ms=9)
+        ax.plot(defects, fittedSignals, "r-", label="Linear model")
+        ax.set_xlabel("Defects")
         if model == "uncensored":
-            ax.set_ylabel('Signals')
-            ax.set_title('Linear regression model')
+            ax.set_ylabel("Signals")
+            ax.set_title("Linear regression model")
         elif model == "censored":
-            ax.set_ylabel('Box Cox (signals)')
-            ax.set_title('Linear regression model for censored data')
+            ax.set_ylabel("Box Cox (signals)")
+            ax.set_title("Linear regression model for censored data")
         ax.grid()
-        ax.legend(loc='upper left')
+        ax.legend(loc="upper left")
 
         if name is not None:
-            fig.savefig(name, bbox_inches='tight', transparent=True)
+            fig.savefig(name, bbox_inches="tight", transparent=True)
 
         return fig, ax
-
 
     def drawResiduals(self, model="uncensored", name=None):
         """
@@ -555,7 +670,7 @@ class UnivariateLinearModelAnalysis():
             *censored* if censored threshold were given. Default is *uncensored*.
         name : string
             name of the figure to be saved with *transparent* option sets to True
-            and *bbox_inches='tight'*. It can be only the file name or the 
+            and *bbox_inches='tight'*. It can be only the file name or the
             full path name. Default is None.
 
         Returns
@@ -566,31 +681,31 @@ class UnivariateLinearModelAnalysis():
             Matplotlib axes object.
         """
 
-        # Check is the censored model exists when asking for it 
+        # Check is the censored model exists when asking for it
         if model == "censored" and not self._censored:
-            raise NameError('Residuals for censored data is not available.')
+            raise NameError("Residuals for censored data is not available.")
 
         defects = self._algoLinear.model.exog[:, 1]
         if model == "uncensored":
             residuals = self._resultsUnc.residuals
-        elif model =="censored":
+        elif model == "censored":
             residuals = self._resultsCens.residuals
         else:
             raise NameError("model can be 'uncensored' or 'censored'.")
 
         fig, ax = plt.subplots(figsize=(8, 6))
         ax.grid()
-        ax.plot(defects, residuals, 'b.', ms=9)
-        ax.hlines(0, defects.min(), defects.max(), 'r', 'dashed')
-        ax.set_xlabel('Defects')
-        ax.set_ylabel('Residuals dispersion')
+        ax.plot(defects, residuals, "b.", ms=9)
+        ax.hlines(0, defects.min(), defects.max(), "r", "dashed")
+        ax.set_xlabel("Defects")
+        ax.set_ylabel("Residuals dispersion")
         if model == "uncensored":
-            ax.set_title('Residuals')
+            ax.set_title("Residuals")
         elif model == "censored":
-            ax.set_title('Residuals for censored data')
+            ax.set_title("Residuals for censored data")
 
         if name is not None:
-            fig.savefig(name, bbox_inches='tight', transparent=True)
+            fig.savefig(name, bbox_inches="tight", transparent=True)
 
         return fig, ax
 
@@ -605,7 +720,7 @@ class UnivariateLinearModelAnalysis():
             *censored* if censored threshold were given. Default is *uncensored*.
         name : string
             name of the figure to be saved with *transparent* option sets to True
-            and *bbox_inches='tight'*. It can be only the file name or the 
+            and *bbox_inches='tight'*. It can be only the file name or the
             full path name. Default is None.
 
         Returns
@@ -616,9 +731,9 @@ class UnivariateLinearModelAnalysis():
             Matplotlib axes object.
         """
 
-        # Check is the censored model exists when asking for it 
+        # Check is the censored model exists when asking for it
         if model == "censored" and not self._censored:
-            raise NameError('Residuals for censored data is not available.')
+            raise NameError("Residuals for censored data is not available.")
 
         if model == "uncensored":
             residuals = self._resultsUnc.residuals
@@ -640,21 +755,19 @@ class UnivariateLinearModelAnalysis():
 
         # graph.setXTitle('Residuals empirical quantiles')
         # graph.setYTitle(distribution.__str__())
-        View(graph, axes=[ax], plot_kw={'marker':'.', ''
-                                            'color':'blue'})
+        View(graph, axes=[ax], plot_kw={"marker": ".", "" "color": "blue"})
         ax.grid(True)
-        ax.set_xlabel('Residuals empirical quantiles')
+        ax.set_xlabel("Residuals empirical quantiles")
         ax.set_ylabel(distribution.__str__())
         if model == "uncensored":
-            ax.set_title('QQ-plot of the residuals ')
+            ax.set_title("QQ-plot of the residuals ")
         elif model == "censored":
-            ax.set_title('QQ-plot of the residuals for censored data')
+            ax.set_title("QQ-plot of the residuals for censored data")
 
         if name is not None:
-            fig.savefig(name, bbox_inches='tight', transparent=True)
+            fig.savefig(name, bbox_inches="tight", transparent=True)
 
         return fig, ax
-
 
     def drawResidualsDistribution(self, model="uncensored", name=None):
         """
@@ -667,7 +780,7 @@ class UnivariateLinearModelAnalysis():
             *censored* if censored threshold were given. Default is *uncensored*.
         name : string
             name of the figure to be saved with *transparent* option sets to True
-            and *bbox_inches='tight'*. It can be only the file name or the 
+            and *bbox_inches='tight'*. It can be only the file name or the
             full path name. Default is None.
 
         Returns
@@ -678,14 +791,14 @@ class UnivariateLinearModelAnalysis():
             Matplotlib axes object.
         """
 
-        # Check is the censored model exists when asking for it 
+        # Check is the censored model exists when asking for it
         if model == "censored" and not self._censored:
-            raise NameError('Residuals for censored data is not available.')
+            raise NameError("Residuals for censored data is not available.")
 
         if model == "uncensored":
             residuals = self._resultsUnc.residuals
             distribution = self._resultsUnc.resDist
-        elif model =="censored":
+        elif model == "censored":
             residuals = self._resultsCens.residuals
             distribution = self._resultsCens.resDist
         else:
@@ -695,19 +808,22 @@ class UnivariateLinearModelAnalysis():
         graphHist = ot.HistogramFactory().build(residuals).drawPDF()
         graphPDF = distribution.drawPDF()
         graphHist.setGrid(True)
-        View(graphHist, axes=[ax], bar_kw={'color':'blue','alpha': 0.5, 'label':'Residuals histogram'})
-        View(graphPDF, axes=[ax], plot_kw={'label':distribution.__str__()})
-        ax.set_xlabel('Defect realizations')
+        View(
+            graphHist,
+            axes=[ax],
+            bar_kw={"color": "blue", "alpha": 0.5, "label": "Residuals histogram"},
+        )
+        View(graphPDF, axes=[ax], plot_kw={"label": distribution.__str__()})
+        ax.set_xlabel("Defect realizations")
         if model == "uncensored":
-            ax.set_title('Residuals distribution')
+            ax.set_title("Residuals distribution")
         elif model == "censored":
-            ax.set_title('Residuals distribution for censored data')
+            ax.set_title("Residuals distribution for censored data")
 
         if name is not None:
-            fig.savefig(name, bbox_inches='tight', transparent=True)
+            fig.savefig(name, bbox_inches="tight", transparent=True)
 
         return fig, ax
-
 
     def drawBoxCoxLikelihood(self, name=None):
         """
@@ -717,7 +833,7 @@ class UnivariateLinearModelAnalysis():
         ----------
         name : string
             name of the figure to be saved with *transparent* option sets to True
-            and *bbox_inches='tight'*. It can be only the file name or the 
+            and *bbox_inches='tight'*. It can be only the file name or the
             full path name. Default is None.
 
         Returns
@@ -732,30 +848,29 @@ class UnivariateLinearModelAnalysis():
         This method is available only when the parameter *boxCox* is set to True.
         """
 
-        # Check is the censored model exists when asking for it 
+        # Check is the censored model exists when asking for it
         if not self._boxCox:
-            raise Exception('The Box Cox transformation is not enabled.')
+            raise Exception("The Box Cox transformation is not enabled.")
 
         fig, ax = plt.subplots(figsize=(8, 6))
         # get the graph from the method 'computeBoxCox'
         View(self._graphBoxCox, axes=[ax])
-        ax.set_xlabel('Box Cox parameter')
-        ax.set_ylabel('LogLikelihood')
-        ax.set_title('Loglikelihood versus Box Cox parameter')
+        ax.set_xlabel("Box Cox parameter")
+        ax.set_ylabel("LogLikelihood")
+        ax.set_title("Loglikelihood versus Box Cox parameter")
 
         if name is not None:
-            fig.savefig(name, bbox_inches='tight', transparent=True)
+            fig.savefig(name, bbox_inches="tight", transparent=True)
 
         return fig, ax
 
-
-################################################################################
-###################### get methods #############################################
-################################################################################
+    ################################################################################
+    ###################### get methods #############################################
+    ################################################################################
 
     def getInputSample(self):
         """
-        Accessor to the input sample. 
+        Accessor to the input sample.
 
         Returns
         -------
@@ -766,7 +881,7 @@ class UnivariateLinearModelAnalysis():
 
     def getOutputSample(self):
         """
-        Accessor to the output sample. 
+        Accessor to the output sample.
 
         Returns
         -------
@@ -777,7 +892,7 @@ class UnivariateLinearModelAnalysis():
 
     def getNoiseThreshold(self):
         """
-        Accessor to the noise threshold. 
+        Accessor to the noise threshold.
 
         Returns
         -------
@@ -788,7 +903,7 @@ class UnivariateLinearModelAnalysis():
 
     def getSaturationThreshold(self):
         """
-        Accessor to the saturation threshold. 
+        Accessor to the saturation threshold.
 
         Returns
         -------
@@ -799,7 +914,7 @@ class UnivariateLinearModelAnalysis():
 
     def getResiduals(self):
         """
-        Accessor to the residuals. 
+        Accessor to the residuals.
 
         Returns
         -------
@@ -812,17 +927,18 @@ class UnivariateLinearModelAnalysis():
             residuals = ot.Sample(size, 2)
             residuals[:, 0] = self._resultsUnc.residuals
             residuals[:, 1] = self._resultsCens.residuals
-            residuals.setDescription(['Residuals for uncensored case',
-                                      'Residuals for censored case'])
+            residuals.setDescription(
+                ["Residuals for uncensored case", "Residuals for censored case"]
+            )
         else:
             residuals = self._resultsUnc.residuals
-            residuals.setDescription(['Residuals for uncensored case'])
+            residuals.setDescription(["Residuals for uncensored case"])
 
         return residuals
 
     def getResidualsDistribution(self):
         """
-        Accessor to the residuals distribution. 
+        Accessor to the residuals distribution.
 
         Returns
         -------
@@ -837,7 +953,7 @@ class UnivariateLinearModelAnalysis():
 
     def getIntercept(self):
         """
-        Accessor to the intercept of the linear regression model. 
+        Accessor to the intercept of the linear regression model.
 
         Returns
         -------
@@ -847,20 +963,21 @@ class UnivariateLinearModelAnalysis():
         """
         if self._censored:
             intercept = ot.PointWithDescription(
-                        [('Intercept for uncensored case', 
-                        self._resultsUnc.intercept),
-                        ('Intercept for censored case',
-                        self._resultsCens.intercept)])
+                [
+                    ("Intercept for uncensored case", self._resultsUnc.intercept),
+                    ("Intercept for censored case", self._resultsCens.intercept),
+                ]
+            )
         else:
             intercept = ot.PointWithDescription(
-                        [('Intercept for uncensored case', 
-                        self._resultsUnc.intercept)])
+                [("Intercept for uncensored case", self._resultsUnc.intercept)]
+            )
 
         return intercept
 
     def getSlope(self):
         """
-        Accessor to the slope of the linear regression model. 
+        Accessor to the slope of the linear regression model.
 
         Returns
         -------
@@ -870,20 +987,21 @@ class UnivariateLinearModelAnalysis():
         """
         if self._censored:
             slope = ot.PointWithDescription(
-                        [('Slope for uncensored case', 
-                        self._resultsUnc.slope),
-                        ('Slope for censored case',
-                        self._resultsCens.slope)])
+                [
+                    ("Slope for uncensored case", self._resultsUnc.slope),
+                    ("Slope for censored case", self._resultsCens.slope),
+                ]
+            )
         else:
             slope = ot.PointWithDescription(
-                        [('Slope for uncensored case', 
-                        self._resultsUnc.slope)])
+                [("Slope for uncensored case", self._resultsUnc.slope)]
+            )
 
         return slope
 
     def getStandardError(self):
         """
-        Accessor to the standard error of the estimate. 
+        Accessor to the standard error of the estimate.
 
         Returns
         -------
@@ -893,39 +1011,40 @@ class UnivariateLinearModelAnalysis():
         """
         if self._censored:
             stderr = ot.PointWithDescription(
-                        [('Stderr for uncensored case', 
-                        self._resultsUnc.stderr),
-                        ('Stderr for censored case',
-                        self._resultsCens.stderr)])
+                [
+                    ("Stderr for uncensored case", self._resultsUnc.stderr),
+                    ("Stderr for censored case", self._resultsCens.stderr),
+                ]
+            )
         else:
             stderr = ot.PointWithDescription(
-                        [('Stderr for uncensored case', 
-                        self._resultsUnc.stderr)])
+                [("Stderr for uncensored case", self._resultsUnc.stderr)]
+            )
 
         return stderr
 
     def getBoxCoxParameter(self):
         """
-        Accessor to the Box Cox parameter. 
+        Accessor to the Box Cox parameter.
 
         Returns
         -------
         lambdaBoxCox : float
             The Box Cox parameter used to transform the data. If the transformation
-            is not enabled None is returned. 
+            is not enabled None is returned.
         """
         return self._lambdaBoxCox
 
     def getR2(self):
         """
-        Accessor to the R2 value. 
+        Accessor to the R2 value.
 
         Returns
         -------
         R2 : :py:class:`openturns.Point`
             Either the R2 for the uncensored case or for both cases.
         """
-        return self._getResultValue('R2', 'R2')
+        return self._getResultValue("R2", "R2")
 
     def getAndersonDarlingPValue(self):
         """
@@ -936,8 +1055,7 @@ class UnivariateLinearModelAnalysis():
         pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
-        return self._getResultValue('AndersonDarling', 'Anderson Darling p-value')
-
+        return self._getResultValue("AndersonDarling", "Anderson Darling p-value")
 
     def getCramerVonMisesPValue(self):
         """
@@ -948,7 +1066,7 @@ class UnivariateLinearModelAnalysis():
         pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
-        return self._getResultValue('CramerVonMises', 'Cramer Von Mises p-value')
+        return self._getResultValue("CramerVonMises", "Cramer Von Mises p-value")
 
     def getKolmogorovPValue(self):
         """
@@ -959,7 +1077,7 @@ class UnivariateLinearModelAnalysis():
         pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
-        return self._getResultValue('Kolmogorov', 'Kolmogorov p-value')
+        return self._getResultValue("Kolmogorov", "Kolmogorov p-value")
 
     def getZeroMeanPValue(self):
         """
@@ -970,7 +1088,7 @@ class UnivariateLinearModelAnalysis():
         pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
-        return self._getResultValue('ZeroMean', 'Zero Mean p-value')
+        return self._getResultValue("ZeroMean", "Zero Mean p-value")
 
     def getBreuschPaganPValue(self):
         """
@@ -981,7 +1099,7 @@ class UnivariateLinearModelAnalysis():
         pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
-        return self._getResultValue('BreuschPagan', 'Breusch Pagan p-value')
+        return self._getResultValue("BreuschPagan", "Breusch Pagan p-value")
 
     def getHarrisonMcCabePValue(self):
         """
@@ -992,7 +1110,7 @@ class UnivariateLinearModelAnalysis():
         pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
-        return self._getResultValue('HarrisonMcCabe', 'Harrison McCabe p-value')
+        return self._getResultValue("HarrisonMcCabe", "Harrison McCabe p-value")
 
     def getDurbinWatsonPValue(self):
         """
@@ -1003,8 +1121,7 @@ class UnivariateLinearModelAnalysis():
         pValue : :py:class:`openturns.Point`
             Either the p-value for the uncensored case or for both cases.
         """
-        return self._getResultValue('DurbinWatson', 'Durbin Watson p-value')
-
+        return self._getResultValue("DurbinWatson", "Durbin Watson p-value")
 
     def _getResultValue(self, test, description):
         """
@@ -1018,12 +1135,24 @@ class UnivariateLinearModelAnalysis():
         """
         if self._censored:
             pValue = ot.PointWithDescription(
-                        [(description + ' for uncensored case', 
-                        self._resultsUnc.testResults[test]),
-                        (description + ' for censored case',
-                        self._resultsCens.testResults[test])])
+                [
+                    (
+                        description + " for uncensored case",
+                        self._resultsUnc.testResults[test],
+                    ),
+                    (
+                        description + " for censored case",
+                        self._resultsCens.testResults[test],
+                    ),
+                ]
+            )
         else:
             pValue = ot.PointWithDescription(
-                        [(description + ' for uncensored case', 
-                        self._resultsUnc.testResults[test])])
+                [
+                    (
+                        description + " for uncensored case",
+                        self._resultsUnc.testResults[test],
+                    )
+                ]
+            )
         return pValue

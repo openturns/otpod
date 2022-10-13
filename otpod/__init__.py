@@ -6,20 +6,24 @@
     and polynomial chaos. Sensitivity analysis can be also be performed.
 """
 
+
 def _initializing():
     # check openturns version
     import openturns as ot
+
     try:
         from pkg_resources import parse_version
     except ImportError:
         from distutils.version import LooseVersion as parse_version
     if parse_version(ot.__version__) < parse_version("1.16"):
-        raise ImportError(ot.__name__ + ' version must be at least 1.16.')
+        raise ImportError(ot.__name__ + " version must be at least 1.16.")
 
     # initialize the logger to display informations and warnings
     import logging
+
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
+
 
 _initializing()
 
@@ -38,14 +42,15 @@ from ._math_tools import *
 
 __version__ = "0.6.8"
 
-__all__ = (_univariate_linear_model_analysis.__all__ +
-           _univariate_linear_model_pod.__all__ + 
-           _quantile_regression_pod.__all__ +
-           _polynomial_chaos_pod.__all__ +
-           _kriging_pod.__all__ +
-           _adaptive_signal_pod.__all__ +
-           _adaptive_hitmiss_pod.__all__ +
-           _pod_summary.__all__ +
-           _sobol_indices.__all__ +
-           _math_tools.__all__)
-
+__all__ = (
+    _univariate_linear_model_analysis.__all__
+    + _univariate_linear_model_pod.__all__
+    + _quantile_regression_pod.__all__
+    + _polynomial_chaos_pod.__all__
+    + _kriging_pod.__all__
+    + _adaptive_signal_pod.__all__
+    + _adaptive_hitmiss_pod.__all__
+    + _pod_summary.__all__
+    + _sobol_indices.__all__
+    + _math_tools.__all__
+)

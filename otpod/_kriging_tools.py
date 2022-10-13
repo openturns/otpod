@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # -*- Python -*-
 
 import openturns as ot

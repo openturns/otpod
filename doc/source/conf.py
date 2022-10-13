@@ -59,6 +59,8 @@ autosummary_generate = True
 numpydoc_show_class_members = True
 numpydoc_class_members_toctree = False
 
+# Create table of contents entries for domain objects
+toc_object_entries = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

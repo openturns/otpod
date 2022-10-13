@@ -17,7 +17,7 @@ def notebook_run(ipynb):
 
     try:
         os.mkdir("figure")
-    except:
+    except Exception:
         pass
     # source is a tuple of python source code
     # meta contains metadata
@@ -27,7 +27,7 @@ def notebook_run(ipynb):
         plt.close("all")
         shutil.rmtree("figure", ignore_errors=True)
         return []
-    except:
+    except Exception:
         shutil.rmtree("figure", ignore_errors=True)
         return traceback.print_exc()
 

@@ -257,7 +257,7 @@ class PODSummary:
         activation : bool
             Set to True to activate and False to deactivate.
         """
-        if not method in self._activeMethods:
+        if method not in self._activeMethods:
             raise NameError(method + " is not an admissible keys.")
         if type(activation) is not bool:
             raise ValueError("The given activation parameter is not a boolean.")

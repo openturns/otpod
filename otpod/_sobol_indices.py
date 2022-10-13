@@ -595,7 +595,7 @@ class PODaggrChaos(ot.OpenTURNSPythonFunction):
             x = np.array(x, ndmin=2)
             x = x.repeat(self.defectNumber, axis=0)
             xWitha = np.concatenate((np.vstack(self.defectSizes), x), axis=1)
-            fullX[self.defectNumber * i : self.defectNumber * (i + 1), :] = xWitha
+            fullX[self.defectNumber * i: self.defectNumber * (i + 1), :] = xWitha
 
         # add randomness from the residual, identical for all defect size
         residualsSample = (
@@ -604,7 +604,7 @@ class PODaggrChaos(ot.OpenTURNSPythonFunction):
         )
         fullRes = ot.Sample(self.simulationSize, samplingSize * self.defectNumber)
         for i in range(samplingSize):
-            fullRes[:, self.defectNumber * i : self.defectNumber * (i + 1)] = np.repeat(
+            fullRes[:, self.defectNumber * i: self.defectNumber * (i + 1)] = np.repeat(
                 residualsSample[:, i], self.defectNumber, axis=1
             )
         fullRes = np.transpose(fullRes)

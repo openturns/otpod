@@ -251,7 +251,7 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             # Add the defect sizes as first value
             for i, defect in enumerate(self._defectSizes):
                 fullSamplePred[
-                    self._samplingSize * i : self._samplingSize * (i + 1), :
+                    self._samplingSize * i: self._samplingSize * (i + 1), :
                 ] = self._mergeDefectInX(defect, samplePred)
             meanPredictionSample = metamodel(fullSamplePred)
             meanPredictionSample = np.reshape(

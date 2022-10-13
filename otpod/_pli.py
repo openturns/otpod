@@ -828,7 +828,8 @@ class PLIVarianceBase(PLI):
         """
         Compute the integrals using GaussKronrod algorithm
         """
-        func = lambda X: self.pdfExp(X, marginal, lamb, degree)[0]
+        def func(X):
+            return self.pdfExp(X, marginal, lamb, degree)[0]
         funcOT = ot.PythonFunction(1, 1, func)
         return self._gaussKronrod.integrate(
             funcOT, self._distribution.getMarginal(marginal).getRange()

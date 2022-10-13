@@ -344,9 +344,8 @@ def computeLinearParametersCensored(
     defectsSat = np.array(defectsSat)
     signals = np.array(signals)
 
-    func = lambda x: MLE(
-        x, defects, defectsNoise, defectsSat, signals, noiseThres, saturationThres
-    )
+    def func(x):
+        return MLE(x, defects, defectsNoise, defectsSat, signals, noiseThres, saturationThres)
 
     testMLE = func(initialStartMLE)
     if testMLE == np.inf:

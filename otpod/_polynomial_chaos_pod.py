@@ -752,7 +752,7 @@ class PolynomialChaosPOD(POD):
         fullSamplePred = ot.Sample(self._samplingSize * self._defectNumber, self._dim)
         for i, defect in enumerate(defectSizes):
             fullSamplePred[
-                self._samplingSize * i : self._samplingSize * (i + 1), :
+                self._samplingSize * i: self._samplingSize * (i + 1), :
             ] = self._mergeDefectInX(defect, samplePred)
 
         # create the chaos function for user defined coefs

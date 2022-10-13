@@ -313,7 +313,6 @@ class POD(object):
             )
         else:
             inputSample, signals = inputSample, outputSample
-            inputSampleNoise, inputSampleSat = None, None
 
         ###################### Box Cox transformation ##########################
         # Compute Box Cox if enabled

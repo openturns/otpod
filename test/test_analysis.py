@@ -65,7 +65,7 @@ def test_1_standard_error():
 
 
 def test_1_boxcox():
-    assert analysis1.getBoxCoxParameter() == None
+    assert analysis1.getBoxCoxParameter() is None
 
 
 def test_1_R2():
@@ -243,7 +243,7 @@ def test_3_standard_error():
 
 
 def test_3_boxcox():
-    assert analysis3.getBoxCoxParameter() == None
+    assert analysis3.getBoxCoxParameter() is None
 
 
 def test_3_R2():
@@ -423,7 +423,7 @@ def test_5_standard_error():
 
 
 def test_5_boxcox():
-    assert analysis5.getBoxCoxParameter() == None
+    assert analysis5.getBoxCoxParameter() is None
 
 
 def test_5_R2():
@@ -608,7 +608,7 @@ def test_7_standard_error():
 
 
 def test_7_boxcox():
-    assert analysis7.getBoxCoxParameter() == None
+    assert analysis7.getBoxCoxParameter() is None
 
 
 def test_7_R2():
@@ -791,7 +791,7 @@ def test_9_standard_error():
 
 
 def test_9_boxcox():
-    assert analysis9.getBoxCoxParameter() == None
+    assert analysis9.getBoxCoxParameter() is None
 
 
 def test_9_R2():
@@ -967,7 +967,7 @@ def test_11_standard_error():
 
 
 def test_11_boxcox():
-    assert analysis11.getBoxCoxParameter() == None
+    assert analysis11.getBoxCoxParameter() is None
 
 
 def test_11_R2():
@@ -1143,7 +1143,7 @@ def test_13_standard_error():
 
 
 def test_13_boxcox():
-    assert analysis13.getBoxCoxParameter() == None
+    assert analysis13.getBoxCoxParameter() is None
 
 
 def test_13_R2():
@@ -1328,7 +1328,7 @@ def test_15_standard_error():
 
 
 def test_15_boxcox():
-    assert analysis15.getBoxCoxParameter() == None
+    assert analysis15.getBoxCoxParameter() is None
 
 
 def test_15_R2():

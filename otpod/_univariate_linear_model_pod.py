@@ -96,7 +96,7 @@ class UnivariateLinearModelPOD(POD):
                 assert saturationThres is None
                 assert resDistFact is None
                 assert detection is not None
-            except:
+            except Exception:
                 raise AttributeError(
                     "The constructor available with a linear "
                     + "analysis as parameter must only have "

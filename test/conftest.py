@@ -13,7 +13,7 @@ ipynbs = []
 for root, dirnames, filenames in os.walk(ipynb_path):
     for filename in fnmatch.filter(filenames, "*.ipynb"):
         ipynb = os.path.join(root, filename)
-        if not "ipynb_checkpoints" in ipynb:  # exclude automatic backups
+        if "ipynb_checkpoints" not in ipynb:  # exclude automatic backups
             ipynbs.append(ipynb)
 
 print(ipynbs)

@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 # -*- Python -*-
 
-__all__ = ['KrigingPOD']
+__all__ = ["KrigingPOD"]
 
 import openturns as ot
 import numpy as np
@@ -10,6 +9,7 @@ from scipy.interpolate import interp1d
 from ._progress_bar import updateProgress
 from ._kriging_tools import KrigingBase
 import logging
+
 
 class KrigingPOD(POD, KrigingBase):
     """
@@ -48,7 +48,7 @@ class KrigingPOD(POD, KrigingBase):
     simulating conditional prediction. For each, a Monte Carlo simulation is
     performed. The accuracy of the Monte Carlo simulation is taken into account
     using the TCL.
-    
+
     The return POD model corresponds with an interpolate function built
     with the POD values computed for the given defect sizes. The default values
     are 20 defect sizes between the minimum and maximum value of the defect sample.
@@ -60,8 +60,8 @@ class KrigingPOD(POD, KrigingBase):
     algorithm, the 100 initial starting points are defined according to a Sobol
     sequence .
 
-    For advanced use, all parameters can be defined thanks to dedicated set 
-    methods. Moreover, if the user has already built a kriging result, 
+    For advanced use, all parameters can be defined thanks to dedicated set
+    methods. Moreover, if the user has already built a kriging result,
     it can be given as parameter using the method *setKrigingResult*,
     then the POD is computed based on this kriging result.
 
@@ -69,26 +69,34 @@ class KrigingPOD(POD, KrigingBase):
     the method *setVerbose*.
     """
 
-    def __init__(self, inputSample=None, outputSample=None, detection=None, noiseThres=None,
-                 saturationThres=None, boxCox=False):
+    def __init__(
+        self,
+        inputSample=None,
+        outputSample=None,
+        detection=None,
+        noiseThres=None,
+        saturationThres=None,
+        boxCox=False,
+    ):
 
         # initialize the POD class
-        super(KrigingPOD, self).__init__(inputSample, outputSample,
-                                 detection, noiseThres, saturationThres, boxCox)
+        super(KrigingPOD, self).__init__(
+            inputSample, outputSample, detection, noiseThres, saturationThres, boxCox
+        )
         # inherited attributes
         # self._simulationSize
         # self._detection
         # self._inputSample
         # self._outputSample
         # self._noiseThres
-        # self._saturationThres        
+        # self._saturationThres
         # self._lambdaBoxCox
         # self._boxCox
         # self._size
         # self._dim
         # self._censored
 
-        assert (self._dim > 1), "Dimension of inputSample must be greater than 1."
+        assert self._dim > 1, "Dimension of inputSample must be greater than 1."
 
         self._userKriging = False
         self._krigingResult = None
@@ -102,24 +110,34 @@ class KrigingPOD(POD, KrigingBase):
         self._normalDist = ot.Normal()
 
         if self._censored:
-            logging.info('Censored data are not taken into account : the ' + \
-                         'kriging model is only built on filtered data.')
+            logging.info(
+                "Censored data are not taken into account : the "
+                + "kriging model is only built on filtered data."
+            )
 
         # Run the preliminary run of the POD class
-        result = self._run(self._inputSample, self._outputSample, self._detection,
-                           self._noiseThres, self._saturationThres, self._boxCox,
-                           self._censored)
+        result = self._run(
+            self._inputSample,
+            self._outputSample,
+            self._detection,
+            self._noiseThres,
+            self._saturationThres,
+            self._boxCox,
+            self._censored,
+        )
 
         # get some results
-        self._input = result['inputSample']
-        self._signals = result['signals']
-        self._detectionBoxCox = result['detectionBoxCox']
+        self._input = result["inputSample"]
+        self._signals = result["signals"]
+        self._detectionBoxCox = result["detectionBoxCox"]
 
         # define the default defect sizes for the interpolation function if not defined
         self._defectNumber = 20
-        self._defectSizes = np.linspace(self._input[:,0].getMin()[0], 
-                                        self._input[:,0].getMax()[0],
-                                        self._defectNumber)
+        self._defectSizes = np.linspace(
+            self._input[:, 0].getMin()[0],
+            self._input[:, 0].getMax()[0],
+            self._defectNumber,
+        )
 
     def run(self):
         """
@@ -129,7 +147,7 @@ class KrigingPOD(POD, KrigingBase):
         -----
         This method build the kriging model. First the censored data
         are filtered if needed. The Box Cox transformation is performed if it is
-        enabled. Then it builds the POD models : conditional samples are 
+        enabled. Then it builds the POD models : conditional samples are
         simulated for each defect size, then the distributions of the probability
         estimator (for MC simulation) are built. Eventually, a sample of this
         distribution is used to compute the mean POD and the POD at the confidence
@@ -139,29 +157,33 @@ class KrigingPOD(POD, KrigingBase):
         # run the chaos algorithm and get result if not given
         if not self._userKriging:
             if self._verbose:
-                print('Start optimizing covariance model parameters...')
+                print("Start optimizing covariance model parameters...")
             # build the kriging algorithm without optimizer
-            algoKriging, transformation = self._buildKrigingAlgo(self._input, self._signals)
+            algoKriging, transformation = self._buildKrigingAlgo(
+                self._input, self._signals
+            )
             # optimize the covariance model parameters and return the kriging
             # algorithm with the run launched
             llDim = algoKriging.getReducedLogLikelihoodFunction().getInputDimension()
             lowerBound = [0.001] * llDim
             upperBound = [50] * llDim
-            algoKriging = self._estimKrigingTheta(algoKriging,
-                                                  lowerBound, upperBound,
-                                                  self._initialStartSize)
+            algoKriging = self._estimKrigingTheta(
+                algoKriging, lowerBound, upperBound, self._initialStartSize
+            )
             algoKriging.run()
             if self._verbose:
-                print('Kriging optimizer completed')
+                print("Kriging optimizer completed")
             self._krigingResult = algoKriging.getResult()
             self._transformation = transformation
 
         # compute the Q2
-        self._Q2 = self._computeQ2(self._input, self._signals, self._krigingResult, transformation)
+        self._Q2 = self._computeQ2(
+            self._input, self._signals, self._krigingResult, transformation
+        )
         if self._verbose:
-            print('kriging validation Q2 (>0.9): {:0.4f}'.format(self._Q2))
+            print("kriging validation Q2 (>0.9): {:0.4f}".format(self._Q2))
 
-        # set default uniform distribution with min and max of the given defect sizes 
+        # set default uniform distribution with min and max of the given defect sizes
         if self._distribution is None:
             inputMin = self._input.getMin()
             inputMin[0] = np.min(self._defectSizes)
@@ -170,20 +192,27 @@ class KrigingPOD(POD, KrigingBase):
             marginals = [ot.Uniform(inputMin[i], inputMax[i]) for i in range(self._dim)]
             self._distribution = ot.ComposedDistribution(marginals)
 
-        # compute the sample containing the POD values for all defect 
-        self._PODPerDefect = ot.Sample(self._simulationSize *
-                                         self._samplingSize, self._defectNumber)
+        # compute the sample containing the POD values for all defect
+        self._PODPerDefect = ot.Sample(
+            self._simulationSize * self._samplingSize, self._defectNumber
+        )
         for i, defect in enumerate(self._defectSizes):
-            self._PODPerDefect[:, i] = self._computePODSamplePerDefect(defect,
-                self._detectionBoxCox, self._krigingResult, transformation, self._distribution,
-                self._simulationSize, self._samplingSize)
+            self._PODPerDefect[:, i] = self._computePODSamplePerDefect(
+                defect,
+                self._detectionBoxCox,
+                self._krigingResult,
+                transformation,
+                self._distribution,
+                self._simulationSize,
+                self._samplingSize,
+            )
             if self._verbose:
-                updateProgress(i, self._defectNumber, 'Computing POD per defect')
+                updateProgress(i, self._defectNumber, "Computing POD per defect")
 
-        # compute the mean POD 
+        # compute the mean POD
         meanPOD = self._PODPerDefect.computeMean()
         # create the interpolate function of the POD model
-        interpModel = interp1d(self._defectSizes, np.array(meanPOD), kind='linear')
+        interpModel = interp1d(self._defectSizes, np.array(meanPOD), kind="linear")
         self._PODmodel = ot.PythonFunction(1, 1, interpModel)
 
         # The POD at confidence level is built in getPODCLModel() directly
@@ -202,6 +231,6 @@ class KrigingPOD(POD, KrigingBase):
         try:
             ot.KrigingResult(result)
         except NotImplementedError:
-            raise Exception('The given parameter is not an KrigingResult.')
+            raise Exception("The given parameter is not an KrigingResult.")
         self._krigingResult = result
         self._userKriging = True

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # -*- Python -*-
 
 __all__ = []
@@ -27,6 +26,7 @@ Now, Bar.foo.__doc__ == Bar().foo.__doc__ == Foo.foo.__doc__ == "Frobber"
 from functools import wraps
 import decorator
 
+
 class DocInherit(object):
     """
     Docstring inheriting method descriptor
@@ -36,7 +36,7 @@ class DocInherit(object):
 
     def __init__(self, mthd):
         self.mthd = mthd
-        self.name = '_'+mthd.__name__
+        self.name = "_" + mthd.__name__
 
     def __get__(self, obj, cls):
         if obj:
@@ -48,7 +48,7 @@ class DocInherit(object):
 
         overridden = getattr(super(cls, obj), self.name, None)
 
-        @wraps(self.mthd, assigned=('__name__','__module__'))
+        @wraps(self.mthd, assigned=("__name__", "__module__"))
         def f(*args, **kwargs):
             return self.mthd(obj, *args, **kwargs)
 
@@ -58,9 +58,10 @@ class DocInherit(object):
 
         for parent in cls.__mro__[1:]:
             overridden = getattr(parent, self.name, None)
-            if overridden: break
+            if overridden:
+                break
 
-        @wraps(self.mthd, assigned=('__name__','__module__'))
+        @wraps(self.mthd, assigned=("__name__", "__module__"))
         def f(*args, **kwargs):
             return self.mthd(*args, **kwargs)
 
@@ -68,14 +69,16 @@ class DocInherit(object):
 
     def use_parent_doc(self, func, source):
         if source is None:
-            raise NameError ("Can't find '%s' in parents"%self.name)
+            raise NameError("Can't find '%s' in parents" % self.name)
         func.__doc__ = source.__doc__
         return func
 
+
 def keepingArgs(target):
     # the target function has been prepended to the list of arguments
-    def wrapper(target, *args, **kwargs): 
+    def wrapper(target, *args, **kwargs):
         return target(*args, **kwargs)
-    # We are calling the returned value with the target function to get a 
+
+    # We are calling the returned value with the target function to get a
     # 'proper' wrapper function back
     return decorator.decorator(wrapper)(target)

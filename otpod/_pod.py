@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # -*- Python -*-
 
 __all__ = []
@@ -9,16 +8,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 from ._math_tools import computeBoxCox, DataHandling
 
+
 class POD(object):
     """
     Base class to compute the POD with the subclass.
     """
 
-    def __init__(self, inputSample, outputSample, detection, noiseThres,
-                 saturationThres, boxCox):
+    def __init__(
+        self, inputSample, outputSample, detection, noiseThres, saturationThres, boxCox
+    ):
 
         self._simulationSize = 1000
-
 
         # inherited attributes
         self._inputSample = ot.Sample(np.vstack(inputSample))
@@ -47,11 +47,13 @@ class POD(object):
             self._censored = False
 
         # Assertions on parameters
-        assert (self._size >=3), "Not enough observations."
-        assert (self._size == self._outputSample.getSize()), \
-                "InputSample and outputSample must have the same size."
-        assert (self._outputSample.getDimension() == 1), "Dimension outputSample must be 1."
-
+        assert self._size >= 3, "Not enough observations."
+        assert (
+            self._size == self._outputSample.getSize()
+        ), "InputSample and outputSample must have the same size."
+        assert (
+            self._outputSample.getDimension() == 1
+        ), "Dimension outputSample must be 1."
 
     def getSimulationSize(self):
         """
@@ -75,12 +77,19 @@ class POD(object):
         """
         self._simulationSize = size
 
-################################################################################
-################ Common methods called inside subclass #########################
-################################################################################
+    ################################################################################
+    ################ Common methods called inside subclass #########################
+    ################################################################################
 
-    def _computeDetectionSize(self, model, modelCl=None, probabilityLevel=None,
-                              confidenceLevel=None, defectMin=None, defectMax=None):
+    def _computeDetectionSize(
+        self,
+        model,
+        modelCl=None,
+        probabilityLevel=None,
+        confidenceLevel=None,
+        defectMin=None,
+        defectMax=None,
+    ):
         """
         Compute the detection size for a given probability level.
 
@@ -106,29 +115,49 @@ class POD(object):
 
         # compute 'a90'
         if not (model([defectMin])[0] <= probabilityLevel <= model([defectMax])[0]):
-            raise Exception('The POD model does not contain, for the given ' + \
-                             'defect interval, the wanted probability level.')
-        detectionSize = ot.PointWithDescription(1, ot.Brent().solve(model,
-                                        probabilityLevel, defectMin, defectMax))
-        description = ['a'+str(int(probabilityLevel*100))]
+            raise Exception(
+                "The POD model does not contain, for the given "
+                + "defect interval, the wanted probability level."
+            )
+        detectionSize = ot.PointWithDescription(
+            1, ot.Brent().solve(model, probabilityLevel, defectMin, defectMax)
+        )
+        description = ["a" + str(int(probabilityLevel * 100))]
 
         # compute 'a90_95'
         if confidenceLevel is not None:
-            if not (modelCl([defectMin])[0] <= probabilityLevel <= modelCl([defectMax])[0]):
-                raise Exception('The POD model at the confidence level does not '+\
-                                'contain, for the given defect interval, the '+\
-                                'wanted probability level.')
-            detectionSize.add(ot.Brent().solve(modelCl, probabilityLevel,
-                                               defectMin, defectMax))
-            description.append('a'+str(int(probabilityLevel*100))+'/'\
-                                                +str(int(confidenceLevel*100)))
+            if not (
+                modelCl([defectMin])[0] <= probabilityLevel <= modelCl([defectMax])[0]
+            ):
+                raise Exception(
+                    "The POD model at the confidence level does not "
+                    + "contain, for the given defect interval, the "
+                    + "wanted probability level."
+                )
+            detectionSize.add(
+                ot.Brent().solve(modelCl, probabilityLevel, defectMin, defectMax)
+            )
+            description.append(
+                "a"
+                + str(int(probabilityLevel * 100))
+                + "/"
+                + str(int(confidenceLevel * 100))
+            )
         # add description to the Point
         detectionSize.setDescription(description)
         return detectionSize
 
-    def _drawPOD(self, PODmodel, PODmodelCl=None, probabilityLevel=None,
-                 confidenceLevel=None, defectMin=None, defectMax=None,
-                 nbPt=100, name=None):
+    def _drawPOD(
+        self,
+        PODmodel,
+        PODmodelCl=None,
+        probabilityLevel=None,
+        confidenceLevel=None,
+        defectMin=None,
+        defectMax=None,
+        nbPt=100,
+        name=None,
+    ):
         """
         Draw the POD curve.
 
@@ -147,7 +176,7 @@ class POD(object):
             The number of points to draw the curves. Default is 100.
         name : string
             name of the figure to be saved with *transparent* option sets to True
-            and *bbox_inches='tight'*. It can be only the file name or the 
+            and *bbox_inches='tight'*. It can be only the file name or the
             full path name. Default is None.
 
         Returns
@@ -165,33 +194,65 @@ class POD(object):
 
         fig, ax = plt.subplots(figsize=(8, 6))
         # POD model graph
-        _ = View(PODmodel.draw(defectMin, defectMax, nbPt), axes=[ax],
-            plot_kw={'color':'red', 'label':'POD'})
+        _ = View(
+            PODmodel.draw(defectMin, defectMax, nbPt),
+            axes=[ax],
+            plot_kw={"color": "red", "label": "POD"},
+        )
 
         if confidenceLevel is not None:
             # POD at confidence level graph
-            _ = View(PODmodelCl.draw(defectMin, defectMax, nbPt), axes=[ax],
-                plot_kw={'color':'blue', 'label':'POD at confidence level '+\
-                                                      str(confidenceLevel)})
+            _ = View(
+                PODmodelCl.draw(defectMin, defectMax, nbPt),
+                axes=[ax],
+                plot_kw={
+                    "color": "blue",
+                    "label": "POD at confidence level " + str(confidenceLevel),
+                },
+            )
         if probabilityLevel is not None:
             # horizontal line at the given probability level
-            ax.hlines(probabilityLevel, defectMin, defectMax, 'black', 'solid',
-                      'Probability level '+str(probabilityLevel))
+            ax.hlines(
+                probabilityLevel,
+                defectMin,
+                defectMax,
+                "black",
+                "solid",
+                "Probability level " + str(probabilityLevel),
+            )
 
             # compute detection size at the given probability level
             detectionSize = self.computeDetectionSize(probabilityLevel, confidenceLevel)
-            ax.vlines(detectionSize[0], 0., probabilityLevel, 'red', 'dashed',
-                      'a'+str(int(probabilityLevel*100))+' : '+str(round(detectionSize[0], 3)))
+            ax.vlines(
+                detectionSize[0],
+                0.0,
+                probabilityLevel,
+                "red",
+                "dashed",
+                "a"
+                + str(int(probabilityLevel * 100))
+                + " : "
+                + str(round(detectionSize[0], 3)),
+            )
             if confidenceLevel is not None:
-                ax.vlines(detectionSize[1], 0., probabilityLevel, 'blue', 'dashed',
-                      'a'+str(int(probabilityLevel*100))+'/'+str(int(confidenceLevel*100))+\
-                      ' : '+str(round(detectionSize[1], 3)))
+                ax.vlines(
+                    detectionSize[1],
+                    0.0,
+                    probabilityLevel,
+                    "blue",
+                    "dashed",
+                    "a"
+                    + str(int(probabilityLevel * 100))
+                    + "/"
+                    + str(int(confidenceLevel * 100))
+                    + " : "
+                    + str(round(detectionSize[1], 3)),
+                )
 
-        ax.legend(loc='lower right')
-        ax.set_xlabel('Defects')
-        ax.set_ylabel('POD')
+        ax.legend(loc="lower right")
+        ax.set_xlabel("Defects")
+        ax.set_ylabel("POD")
         return fig, ax
-
 
     def _drawValidationGraph(self, target, prediction):
         """
@@ -201,7 +262,7 @@ class POD(object):
         ----------
         name : string
             name of the figure to be saved with *transparent* option sets to True
-            and *bbox_inches='tight'*. It can be only the file name or the 
+            and *bbox_inches='tight'*. It can be only the file name or the
             full path name. Default is None.
 
         Returns
@@ -214,41 +275,55 @@ class POD(object):
         target = np.hstack(target)
         prediction = np.hstack(prediction)
         fig, ax = plt.subplots(figsize=(8, 8))
-        # compute boundaries of the graph assuming target and prediction > 0 
-        _min = 0.99*np.concatenate([target, prediction]).min()
-        _max = 1.01*np.concatenate([target, prediction]).max()
-        ax.plot([_min, _max], [_min, _max], 'r-', lw=0.5)
-        ax.plot(target, prediction, 'b.', ms=9)
+        # compute boundaries of the graph assuming target and prediction > 0
+        _min = 0.99 * np.concatenate([target, prediction]).min()
+        _max = 1.01 * np.concatenate([target, prediction]).max()
+        ax.plot([_min, _max], [_min, _max], "r-", lw=0.5)
+        ax.plot(target, prediction, "b.", ms=9)
         ax.grid()
         ax.set_xlim(_min, _max)
         ax.set_ylim(_min, _max)
-        ax.set_xlabel('Signals')
-        ax.set_aspect(1.)
+        ax.set_xlabel("Signals")
+        ax.set_aspect(1.0)
         return fig, ax
 
-    def _run(self, inputSample, outputSample, detection, noiseThres,
-             saturationThres, boxCox, censored):
+    def _run(
+        self,
+        inputSample,
+        outputSample,
+        detection,
+        noiseThres,
+        saturationThres,
+        boxCox,
+        censored,
+    ):
         """
-        Run common preliminary analysis to all methods to build POD. 
+        Run common preliminary analysis to all methods to build POD.
         """
-         #################### Filter censored data ##############################
+        #################### Filter censored data ##############################
         if censored:
             # Filter censored data
-            inputSample, inputSampleNoise, inputSampleSat, signals = \
-                DataHandling.filterCensoredData(inputSample, outputSample,
-                              noiseThres, saturationThres)
+            (
+                inputSample,
+                inputSampleNoise,
+                inputSampleSat,
+                signals,
+            ) = DataHandling.filterCensoredData(
+                inputSample, outputSample, noiseThres, saturationThres
+            )
         else:
             inputSample, signals = inputSample, outputSample
-            inputSampleNoise, inputSampleSat = None, None
 
         ###################### Box Cox transformation ##########################
         # Compute Box Cox if enabled
-        shift = 0.
+        shift = 0.0
         if boxCox:
             if signals.getMin()[0] < 0:
-                shift = - signals.getMin()[0] + 100
+                shift = -signals.getMin()[0] + 100
             # optimization required, get optimal lambda without graph
-            self._lambdaBoxCox, self._graphBoxCox = computeBoxCox(inputSample, signals, shift)
+            self._lambdaBoxCox, self._graphBoxCox = computeBoxCox(
+                inputSample, signals, shift
+            )
 
             # Transformation of data
             boxCoxTransform = ot.BoxCoxTransform([self._lambdaBoxCox])
@@ -264,8 +339,13 @@ class POD(object):
             self._lambdaBoxCox = None
             boxCoxTransform = None
 
-        return {'inputSample':inputSample, 'signals':signals, 'shift':shift,
-                'detectionBoxCox':detectionBoxCox, 'boxCoxTransform':boxCoxTransform}
+        return {
+            "inputSample": inputSample,
+            "signals": signals,
+            "shift": shift,
+            "detectionBoxCox": detectionBoxCox,
+            "boxCoxTransform": boxCoxTransform,
+        }
 
     def drawBoxCoxLikelihood(self, name=None):
         """
@@ -275,7 +355,7 @@ class POD(object):
         ----------
         name : string
             name of the figure to be saved with *transparent* option sets to True
-            and *bbox_inches='tight'*. It can be only the file name or the 
+            and *bbox_inches='tight'*. It can be only the file name or the
             full path name. Default is None.
 
         Returns
@@ -290,30 +370,30 @@ class POD(object):
         This method is available only when the parameter *boxCox* is set to True.
         """
 
-        # Check is the censored model exists when asking for it 
+        # Check is the censored model exists when asking for it
         if not self._boxCox:
-            raise Exception('The Box Cox transformation is not enabled.')
+            raise Exception("The Box Cox transformation is not enabled.")
 
         fig, ax = plt.subplots(figsize=(8, 6))
         # get the graph from the method 'computeBoxCox'
         _ = View(self._graphBoxCox, axes=[ax])
-        ax.set_xlabel('Box Cox parameter')
-        ax.set_ylabel('LogLikelihood')
-        ax.set_title('Loglikelihood versus Box Cox parameter')
+        ax.set_xlabel("Box Cox parameter")
+        ax.set_ylabel("LogLikelihood")
+        ax.set_title("Loglikelihood versus Box Cox parameter")
 
         if name is not None:
-            fig.savefig(name, bbox_inches='tight', transparent=True)
+            fig.savefig(name, bbox_inches="tight", transparent=True)
 
         return fig, ax
 
     def getBoxCoxParameter(self):
         """
-        Accessor to the Box Cox parameter. 
+        Accessor to the Box Cox parameter.
 
         Returns
         -------
         lambdaBoxCox : float
             The Box Cox parameter used to transform the data. If the transformation
-            is not enabled None is returned. 
+            is not enabled None is returned.
         """
         return self._lambdaBoxCox

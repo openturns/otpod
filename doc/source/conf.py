@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # test documentation build configuration file, created by
 # sphinx-quickstart on Mon Apr  4 18:17:48 2016.
@@ -94,7 +93,7 @@ author = u'Antoine Dumas'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+# language = None
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:

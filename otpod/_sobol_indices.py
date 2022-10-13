@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 # -*- Python -*-
 
-__all__ = ['SobolIndices']
+__all__ = ["SobolIndices"]
 
 import openturns as ot
 from openturns.viewer import View
@@ -9,7 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import logging
 
-class SobolIndices():
+
+class SobolIndices:
     """
     Sensitivity analysis based on Sobol' indices.
 
@@ -36,8 +36,8 @@ class SobolIndices():
     built with a Kriging metamodel or a polynomial chaos where the input
     dimension is greater than 3 (counting the defect).
 
-    When using Kriging, the POD at a given point is computed using the kriging 
-    mean and variance. For polynomial chaos, random coefficients are generated, 
+    When using Kriging, the POD at a given point is computed using the kriging
+    mean and variance. For polynomial chaos, random coefficients are generated,
     the signal is computed for all coefficients and the POD is eventually
     estimated. The default simulation size is set to 1000. This value can be
     changed using :func:`setSimulationSize`.
@@ -66,13 +66,17 @@ class SobolIndices():
             self._podResult = POD.getKrigingResult()
             self._podType = "kriging"
         else:
-            raise Exception("Sobol indices can only be computed based on a " + \
-                            "POD built with Kriging or polynomial chaos.")
+            raise Exception(
+                "Sobol indices can only be computed based on a "
+                + "POD built with Kriging or polynomial chaos."
+            )
 
         # dimension is minus 1 to remove the defect parameter
         self._dim = self._podResult.getMetaModel().getInputDimension() - 1
-        assert (self._dim >=2), "The number of parameters must be greater or " + \
-                "equal than 2 to be able to perform the sensitivity analysis."
+        assert self._dim >= 2, (
+            "The number of parameters must be greater or "
+            + "equal than 2 to be able to perform the sensitivity analysis."
+        )
         self._POD = POD
         self._defectSizes = POD.getDefectSizes()
         self._defectNumber = self._defectSizes.shape[0]
@@ -81,7 +85,9 @@ class SobolIndices():
 
         # the distribution of the parameters without the one of the defects.
         tmpDistribution = POD.getDistribution()
-        self._distribution = ot.ComposedDistribution([tmpDistribution.getMarginal(i) for i in range(1, self._dim+1)])
+        self._distribution = ot.ComposedDistribution(
+            [tmpDistribution.getMarginal(i) for i in range(1, self._dim + 1)]
+        )
 
         # number of samples
         self._N = N
@@ -92,51 +98,73 @@ class SobolIndices():
 
     def run(self):
         """
-        Compute the Sobol indices with the chosen algorithm. 
+        Compute the Sobol indices with the chosen algorithm.
         """
 
         # create the Function which computes the POD for a given
         # realization and for all defect sizes.
         if self._podType == "kriging":
-            self._PODaggr = ot.Function(PODaggrKriging(self._POD,
-                            self._dim, self._defectSizes, self._detectionBoxCox))
+            self._PODaggr = ot.Function(
+                PODaggrKriging(
+                    self._POD, self._dim, self._defectSizes, self._detectionBoxCox
+                )
+            )
         elif self._podType == "chaos":
-            self._PODaggr = ot.Function(PODaggrChaos(self._POD,
-                            self._dim, self._defectSizes, self._detectionBoxCox,
-                            self._simulationSize))
+            self._PODaggr = ot.Function(
+                PODaggrChaos(
+                    self._POD,
+                    self._dim,
+                    self._defectSizes,
+                    self._detectionBoxCox,
+                    self._simulationSize,
+                )
+            )
 
-        input_design = ot.SobolIndicesExperiment(self._distribution, self._N, False).generate()
+        input_design = ot.SobolIndicesExperiment(
+            self._distribution, self._N, False
+        ).generate()
         output_design = self._PODaggr(input_design)
 
         # remove the output marginal when the variance is null because it causes
         # a failure. Must remove also the associated defect sizes.
         selected_marginal_index = []
         for index_output in range(output_design.getDimension()):
-            if output_design.getMarginal(index_output)[:self._N].computeCovariance()[0, 0] != 0:
+            if (
+                output_design.getMarginal(index_output)[: self._N].computeCovariance()[
+                    0, 0
+                ]
+                != 0
+            ):
                 selected_marginal_index.append(index_output)
 
         if len(selected_marginal_index) != output_design.getDimension():
             self.setDefectSizes(self._defectSizes[selected_marginal_index])
             selected_output_design = np.array(output_design)[:, selected_marginal_index]
 
-            logging.warning("Warning : some output variances are null. " + \
-                         "Only the following defect sizes are taken into " + \
-                         "account : {}".format(self._defectSizes))
+            logging.warning(
+                "Warning : some output variances are null. "
+                + "Only the following defect sizes are taken into "
+                + "account : {}".format(self._defectSizes)
+            )
         else:
             selected_output_design = output_design
 
         if self._method == "Saltelli":
-            self._sa = ot.SaltelliSensitivityAlgorithm(input_design,
-                                            selected_output_design, self._N)
+            self._sa = ot.SaltelliSensitivityAlgorithm(
+                input_design, selected_output_design, self._N
+            )
         elif self._method == "Martinez":
-            self._sa = ot.MartinezSensitivityAlgorithm(input_design,
-                                            selected_output_design, self._N)
+            self._sa = ot.MartinezSensitivityAlgorithm(
+                input_design, selected_output_design, self._N
+            )
         elif self._method == "Jansen":
-            self._sa = ot.JansenSensitivityAlgorithm(input_design,
-                                            selected_output_design, self._N)
+            self._sa = ot.JansenSensitivityAlgorithm(
+                input_design, selected_output_design, self._N
+            )
         elif self._method == "MauntzKucherenko":
-            self._sa = ot.MauntzKucherenkoSensitivityAlgorithm(input_design,
-                                            selected_output_design, self._N)
+            self._sa = ot.MauntzKucherenkoSensitivityAlgorithm(
+                input_design, selected_output_design, self._N
+            )
 
         self._sa.setUseAsymptoticDistribution(True)
 
@@ -163,7 +191,7 @@ class SobolIndices():
             The name of the input parameters
         name : string
             name of the figure to be saved with *transparent* option sets to True
-            and *bbox_inches='tight'*. It can be only the file name or the 
+            and *bbox_inches='tight'*. It can be only the file name or the
             full path name. Default is None.
 
         Returns
@@ -177,17 +205,19 @@ class SobolIndices():
             label = ot.Description.BuildDefault(self._dim, "X")
         else:
             if len(label) != self._dim:
-                raise AttributeError("The label dimension must be {}.").format(self._dim)
+                raise AttributeError("The label dimension must be {}.").format(
+                    self._dim
+                )
 
         graph = self._sa.draw()
         fig, ax = plt.subplots(figsize=(8, 6))
         View(graph, axes=[ax])
-        ax.set_xticks(np.array(range(self._dim))+1)
-        ax.set_xlim(0.5, self._dim+0.5)
+        ax.set_xticks(np.array(range(self._dim)) + 1)
+        ax.set_xlim(0.5, self._dim + 0.5)
         ax.set_xticklabels(label)
         ax.set_title(graph.getTitle())
         if name is not None:
-            fig.savefig(name, bbox_inches='tight', transparent=True)
+            fig.savefig(name, bbox_inches="tight", transparent=True)
 
         return fig, ax
 
@@ -201,7 +231,7 @@ class SobolIndices():
             The name of the input parameters
         name : string
             name of the figure to be saved with *transparent* option sets to True
-            and *bbox_inches='tight'*. It can be only the file name or the 
+            and *bbox_inches='tight'*. It can be only the file name or the
             full path name. Default is None.
 
         Returns
@@ -211,7 +241,7 @@ class SobolIndices():
         ax : `matplotlib.axes <http://matplotlib.org/api/axes_api.html>`_
             Matplotlib axes object.
         """
-        fig, ax = self._drawIndices('first', label, name)
+        fig, ax = self._drawIndices("first", label, name)
         return fig, ax
 
     def drawTotalOrderIndices(self, label=None, name=None):
@@ -224,7 +254,7 @@ class SobolIndices():
             The name of the input parameters
         name : string
             name of the figure to be saved with *transparent* option sets to True
-            and *bbox_inches='tight'*. It can be only the file name or the 
+            and *bbox_inches='tight'*. It can be only the file name or the
             full path name. Default is None.
 
         Returns
@@ -234,7 +264,7 @@ class SobolIndices():
         ax : `matplotlib.axes <http://matplotlib.org/api/axes_api.html>`_
             Matplotlib axes object.
         """
-        fig, ax = self._drawIndices('total', label, name)
+        fig, ax = self._drawIndices("total", label, name)
         return fig, ax
 
     def _drawIndices(self, order, label, name=None):
@@ -249,7 +279,7 @@ class SobolIndices():
             The name of the input parameters
         name : string
             name of the figure to be saved with *transparent* option sets to True
-            and *bbox_inches='tight'*. It can be only the file name or the 
+            and *bbox_inches='tight'*. It can be only the file name or the
             full path name. Default is None.
 
         Returns
@@ -263,16 +293,18 @@ class SobolIndices():
             label = ot.Description.BuildDefault(self._dim, "X")
         else:
             if len(label) != self._dim:
-                raise AttributeError("The label dimension must be {}.").format(self._dim)
+                raise AttributeError("The label dimension must be {}.").format(
+                    self._dim
+                )
 
         # get the indices values that can be computed
         xplot = ot.Sample(0, 1)
         yplot = ot.Sample(0, self._dim)
         for i, defect in enumerate(self._defectSizes):
             try:
-                if order == 'first':
+                if order == "first":
                     yplot.add(self._sa.getFirstOrderIndices(i))
-                elif order == 'total':
+                elif order == "total":
                     yplot.add(self._sa.getTotalOrderIndices(i))
                 xplot.add([defect])
             except:
@@ -281,27 +313,37 @@ class SobolIndices():
         # define different colors for each parameter
         colors = ot.Drawable.BuildDefaultPalette(self._dim)
 
-        fig, ax = plt.subplots(figsize=(8, 2*self._dim))
+        fig, ax = plt.subplots(figsize=(8, 2 * self._dim))
         for output in range(self._dim):
-            ax.plot(xplot, yplot[:, output], color=colors[output], marker='o',
-                                             ls='', label=label[output])
-        ax.set_xlabel('Defects')
-        ax.set_ylabel('Sensitivity indices')
-        if order == 'first':
-            ax.set_title('First order sensitivity indices - {} Algorithm'.format(self._method))
-        elif order == 'total':
-            ax.set_title('Total order sensitivity indices - {} Algorithm'.format(self._method))
+            ax.plot(
+                xplot,
+                yplot[:, output],
+                color=colors[output],
+                marker="o",
+                ls="",
+                label=label[output],
+            )
+        ax.set_xlabel("Defects")
+        ax.set_ylabel("Sensitivity indices")
+        if order == "first":
+            ax.set_title(
+                "First order sensitivity indices - {} Algorithm".format(self._method)
+            )
+        elif order == "total":
+            ax.set_title(
+                "Total order sensitivity indices - {} Algorithm".format(self._method)
+            )
         ax.set_ylim(0, 1.2)
         ax.grid()
-        ax.legend(loc='lower left')
+        ax.legend(loc="lower left")
         if name is not None:
-            fig.savefig(name, bbox_inches='tight', transparent=True)
+            fig.savefig(name, bbox_inches="tight", transparent=True)
         return fig, ax
 
     def getSensitivityMethod(self):
         """
         Accessor to the sensitivity method.
-        
+
         Returns
         -------
         method : str
@@ -309,11 +351,10 @@ class SobolIndices():
         """
         return self._method
 
-
     def setSensitivityMethod(self, method):
         """
         Accessor to the sensitivity method.
-        
+
         Parameters
         ----------
         method : str
@@ -323,8 +364,10 @@ class SobolIndices():
         if method in ["Saltelli", "Jansen", "Martinez", "MauntzKucherenko"]:
             self._method = method
         else:
-            raise AttributeError('The sensitivity method is not known, it ' + \
-                'must be "Saltelli", "Martinez", "Jansen" or "MauntzKucherenko".')
+            raise AttributeError(
+                "The sensitivity method is not known, it "
+                + 'must be "Saltelli", "Martinez", "Jansen" or "MauntzKucherenko".'
+            )
 
     def setDefectSizes(self, size):
         """
@@ -342,11 +385,12 @@ class SobolIndices():
         minMin = self._POD._input[:, 0].getMin()[0]
         maxMax = self._POD._input[:, 0].getMax()[0]
         if size.max() > maxMax or size.min() < minMin:
-            raise ValueError('Defect sizes must range between ' + \
-                             '{:0.4f} '.format(np.ceil(minMin*10000)/10000) + \
-                             'and {:0.4f}.'.format(np.floor(maxMax*10000)/10000))
+            raise ValueError(
+                "Defect sizes must range between "
+                + "{:0.4f} ".format(np.ceil(minMin * 10000) / 10000)
+                + "and {:0.4f}.".format(np.floor(maxMax * 10000) / 10000)
+            )
         self._defectNumber = self._defectSizes.shape[0]
-
 
     def getDefectSizes(self):
         """
@@ -362,7 +406,7 @@ class SobolIndices():
 
     def setDistribution(self, distribution):
         """
-        Accessor to the parameters distribution. 
+        Accessor to the parameters distribution.
 
         Parameters
         ----------
@@ -372,15 +416,17 @@ class SobolIndices():
         try:
             ot.ComposedDistribution(distribution)
         except NotImplementedError:
-            raise Exception('The given parameter is not a ComposedDistribution.')
+            raise Exception("The given parameter is not a ComposedDistribution.")
 
         if distribution.getDimension() != self._dim:
-            raise AttributeError("The dimension of the distribution must be {}.".format(self._dim))
+            raise AttributeError(
+                "The dimension of the distribution must be {}.".format(self._dim)
+            )
         self._distribution = distribution
 
     def getDistribution(self):
         """
-        Accessor to the parameters distribution. 
+        Accessor to the parameters distribution.
 
         Returns
         -------
@@ -421,7 +467,7 @@ class PODaggrKriging(ot.OpenTURNSPythonFunction):
 
     Parameters
     ----------
-    krigingPOD : :class:`KrigingPOD` or :class:`AdaptiveSignalPOD` 
+    krigingPOD : :class:`KrigingPOD` or :class:`AdaptiveSignalPOD`
         The kriging POD object obtained after building the POD.
     dim : integer
         The number of input parameters of the function without the defect.
@@ -431,6 +477,7 @@ class PODaggrKriging(ot.OpenTURNSPythonFunction):
         Detection value of the signal after box cox if it was enabled : must
         be "detectionBoxCox" from the POD object.
     """
+
     def __init__(self, krigingPOD, dim, defectSizes, detection):
 
         super(PODaggrKriging, self).__init__(dim, defectSizes.shape[0])
@@ -438,7 +485,7 @@ class PODaggrKriging(ot.OpenTURNSPythonFunction):
         self.defectNumber = len(defectSizes)
         self.defectSizes = defectSizes
         self.detection = detection
-    
+
     def _exec(self, X):
         # create sample combining all defect size with the given X
         x = np.array(X, ndmin=2)
@@ -449,24 +496,30 @@ class PODaggrKriging(ot.OpenTURNSPythonFunction):
         mean = np.array(self.krigingResult.getConditionalMean(xWitha))
 
         # Two solutions to compute the variance, the second seems a bit faster
-        #var = np.diag(self.krigingResult.getConditionalCovariance(xWitha))
-        var = np.array([self.krigingResult.getConditionalCovariance(p)[0, 0] for p in xWitha])
+        # var = np.diag(self.krigingResult.getConditionalCovariance(xWitha))
+        var = np.array(
+            [self.krigingResult.getConditionalCovariance(p)[0, 0] for p in xWitha]
+        )
 
         # check if the variance is positive of not, accept negative values
-        # if they are > -1e-2, else raise an error. 
+        # if they are > -1e-2, else raise an error.
         if (var < 0).all():
-            logging.warning("Warning : some variance values are negatives, " + \
-                         "the kriging model may not be accurate enough.")
+            logging.warning(
+                "Warning : some variance values are negatives, "
+                + "the kriging model may not be accurate enough."
+            )
 
-            if (var[var<0] < 1e-2).all():
-                raise ValueError("Variance values are lower than -1e-2. Please " +\
-                    "check the validity of the kriging model.")
+            if (var[var < 0] < 1e-2).all():
+                raise ValueError(
+                    "Variance values are lower than -1e-2. Please "
+                    + "check the validity of the kriging model."
+                )
             else:
                 var = np.abs(var)
 
         # compute the quantile
         quantile = np.vstack((self.detection - mean) / np.sqrt(var))
-        prob = 1. - np.array([ot.DistFunc.pNormal(q[0]) for q in quantile])
+        prob = 1.0 - np.array([ot.DistFunc.pNormal(q[0]) for q in quantile])
         return prob
 
 
@@ -489,6 +542,7 @@ class PODaggrChaos(ot.OpenTURNSPythonFunction):
     simulationSize : int
         The size of the simulation used to compute the POD at a given point.
     """
+
     def __init__(self, chaosPOD, dim, defectSizes, detection, simulationSize):
         super(PODaggrChaos, self).__init__(dim, defectSizes.shape[0])
         self.chaosPOD = chaosPOD
@@ -498,7 +552,7 @@ class PODaggrChaos(ot.OpenTURNSPythonFunction):
         self.simulationSize = simulationSize
         self.detection = detection
 
-        # get the sample of coefficient using the coef distribution 
+        # get the sample of coefficient using the coef distribution
         # used to compute the POD for a given point
         sampleCoefs = chaosPOD.getCoefficientDistribution().getSample(simulationSize)
 
@@ -511,7 +565,9 @@ class PODaggrChaos(ot.OpenTURNSPythonFunction):
         chaosFunctionCol = []
         for i, coefs in enumerate(sampleCoefs):
             standardChaosFunction = ot.LinearCombinationFunction(reducedBasis, coefs)
-            chaosFunctionCol.append(ot.ComposedFunction(standardChaosFunction, transformation))
+            chaosFunctionCol.append(
+                ot.ComposedFunction(standardChaosFunction, transformation)
+            )
         self.chaosFunction = ot.AggregatedFunction(chaosFunctionCol)
 
     def _exec(self, X):
@@ -520,7 +576,10 @@ class PODaggrChaos(ot.OpenTURNSPythonFunction):
         x = x.repeat(self.defectNumber, axis=0)
         xWitha = np.concatenate((np.vstack(self.chaosPOD._defectSizes), x), axis=1)
         # add randomness from the residual, identical for all defect size
-        residualsSample = np.hstack(self.chaosPOD._normalDist.getSample(self.simulationSize) * self.chaosPOD._stderr)
+        residualsSample = np.hstack(
+            self.chaosPOD._normalDist.getSample(self.simulationSize)
+            * self.chaosPOD._stderr
+        )
         # compute the signal for all chaos
         Y = self.chaosFunction(xWitha)
         # compute the POD for all defect size
@@ -531,18 +590,23 @@ class PODaggrChaos(ot.OpenTURNSPythonFunction):
         samplingSize = ot.Sample(X).getSize()
 
         # create sample containing all input combined with all defect sizes
-        fullX = ot.Sample(samplingSize * self.defectNumber,self.dim+1)
+        fullX = ot.Sample(samplingSize * self.defectNumber, self.dim + 1)
         for i, x in enumerate(X):
             x = np.array(x, ndmin=2)
             x = x.repeat(self.defectNumber, axis=0)
             xWitha = np.concatenate((np.vstack(self.defectSizes), x), axis=1)
-            fullX[self.defectNumber*i:self.defectNumber*(i+1), :] = xWitha
+            fullX[self.defectNumber * i: self.defectNumber * (i + 1), :] = xWitha
 
         # add randomness from the residual, identical for all defect size
-        residualsSample = ot.Normal(samplingSize).getSample(self.simulationSize) * self.chaosPOD._stderr
+        residualsSample = (
+            ot.Normal(samplingSize).getSample(self.simulationSize)
+            * self.chaosPOD._stderr
+        )
         fullRes = ot.Sample(self.simulationSize, samplingSize * self.defectNumber)
         for i in range(samplingSize):
-            fullRes[:, self.defectNumber*i:self.defectNumber*(i+1)] = np.repeat(residualsSample[:, i], self.defectNumber, axis=1)
+            fullRes[:, self.defectNumber * i: self.defectNumber * (i + 1)] = np.repeat(
+                residualsSample[:, i], self.defectNumber, axis=1
+            )
         fullRes = np.transpose(fullRes)
 
         # compute the signal
@@ -552,5 +616,3 @@ class PODaggrChaos(ot.OpenTURNSPythonFunction):
         prob = np.mean((Y + fullRes) > self.detection, axis=1)
         prob = prob.reshape(samplingSize, self.defectNumber)
         return prob
-
-            

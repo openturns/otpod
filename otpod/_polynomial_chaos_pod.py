@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 # -*- Python -*-
 
-__all__ = ['PolynomialChaosPOD']
+__all__ = ["PolynomialChaosPOD"]
 
 import openturns as ot
 import numpy as np
@@ -12,6 +11,7 @@ from ._progress_bar import updateProgress
 from ._math_tools import computeR2
 import matplotlib.pyplot as plt
 import logging
+
 
 class PolynomialChaosPOD(POD):
     """
@@ -48,7 +48,7 @@ class PolynomialChaosPOD(POD):
     This class aims at building the POD based on a polynomial chaos model. This
     method must be used under the assumption that the residuals follows a Normal
     distribution.
-    
+
     The return POD model corresponds with an interpolate function built
     with the POD values computed for the given defect sizes. The default values
     are 20 defect sizes between the minimum and maximum value of the defect sample.
@@ -59,8 +59,8 @@ class PolynomialChaosPOD(POD):
     with the KFold. The AdaptiveStrategy is chosen fixed with a linear enumerate
     function of maximum degree 3.
 
-    For advanced use, all parameters can be defined thanks to dedicated set 
-    methods. Moreover, if the user has already built a polynomial chaos result, 
+    For advanced use, all parameters can be defined thanks to dedicated set
+    methods. Moreover, if the user has already built a polynomial chaos result,
     it can be given as parameter using the method *setPolynomialChaosResult*,
     then the POD is computed based on this polynomial chaos result.
 
@@ -68,19 +68,27 @@ class PolynomialChaosPOD(POD):
     the method *setVerbose*.
     """
 
-    def __init__(self, inputSample=None, outputSample=None, detection=None, noiseThres=None,
-                 saturationThres=None, boxCox=False):
+    def __init__(
+        self,
+        inputSample=None,
+        outputSample=None,
+        detection=None,
+        noiseThres=None,
+        saturationThres=None,
+        boxCox=False,
+    ):
 
         # initialize the POD class
-        super(PolynomialChaosPOD, self).__init__(inputSample, outputSample,
-                                 detection, noiseThres, saturationThres, boxCox)
+        super(PolynomialChaosPOD, self).__init__(
+            inputSample, outputSample, detection, noiseThres, saturationThres, boxCox
+        )
         # inherited attributes
         # self._simulationSize
         # self._detection
         # self._inputSample
         # self._outputSample
         # self._noiseThres
-        # self._saturationThres        
+        # self._saturationThres
         # self._lambdaBoxCox
         # self._boxCox
         # self._size
@@ -100,25 +108,35 @@ class PolynomialChaosPOD(POD):
         self._normalDist = ot.Normal()
 
         if self._censored:
-            logging.info('Censored data are not taken into account : the ' + \
-                         'polynomial chaos model is only built on filtered data.')
+            logging.info(
+                "Censored data are not taken into account : the "
+                + "polynomial chaos model is only built on filtered data."
+            )
 
         # Run the preliminary run of the POD class
-        result = self._run(self._inputSample, self._outputSample, self._detection,
-                           self._noiseThres, self._saturationThres, self._boxCox,
-                           self._censored)
+        result = self._run(
+            self._inputSample,
+            self._outputSample,
+            self._detection,
+            self._noiseThres,
+            self._saturationThres,
+            self._boxCox,
+            self._censored,
+        )
 
         # get some results
-        self._input = result['inputSample']
-        self._signals = result['signals']
-        self._detectionBoxCox = result['detectionBoxCox']
+        self._input = result["inputSample"]
+        self._signals = result["signals"]
+        self._detectionBoxCox = result["detectionBoxCox"]
 
         # define the defect sizes for the interpolation function if not defined
         if self._defectSizes is None:
             self._defectNumber = 20
-            self._defectSizes = np.linspace(self._input[:,0].getMin()[0], 
-                                      self._input[:,0].getMax()[0],
-                                      self._defectNumber)
+            self._defectSizes = np.linspace(
+                self._input[:, 0].getMin()[0],
+                self._input[:, 0].getMax()[0],
+                self._defectNumber,
+            )
 
     def run(self):
         """
@@ -129,7 +147,7 @@ class PolynomialChaosPOD(POD):
         This method build the polynomial chaos model. First the censored data
         are filtered if needed. The Box Cox transformation is performed if it is
         enabled. Then it builds the POD models, the Monte Carlo simulation is
-        performed for each given defect sizes. The confidence interval is 
+        performed for each given defect sizes. The confidence interval is
         computed by simulating new coefficients of the polynomial chaos, then
         Monte Carlo simulations are performed.
         """
@@ -137,55 +155,64 @@ class PolynomialChaosPOD(POD):
         # run the chaos algorithm and get result if not given
         if not self._userChaos:
             if self._verbose:
-                print('Start build polynomial chaos model...')
+                print("Start build polynomial chaos model...")
             self._algoChaos = self._buildChaosAlgo(self._input, self._signals)
             self._algoChaos.run()
             if self._verbose:
-                print('Polynomial chaos model completed')
+                print("Polynomial chaos model completed")
             self._chaosResult = self._algoChaos.getResult()
 
-                # get the metamodel
+            # get the metamodel
         self._chaosPred = self._chaosResult.getMetaModel()
         # get the basis, coef and transformation, needed for the confidence interval
         self._chaosCoefs = self._chaosResult.getCoefficients()
         self._reducedBasis = self._chaosResult.getReducedBasis()
         self._transformation = self._chaosResult.getTransformation()
-        self._basisFunction = ot.ComposedFunction(ot.AggregatedFunction(
-                                self._reducedBasis), self._transformation)
+        self._basisFunction = ot.ComposedFunction(
+            ot.AggregatedFunction(self._reducedBasis), self._transformation
+        )
 
         # compute the residuals and stderr
         inputSize = self._input.getSize()
         basisSize = self._reducedBasis.getSize()
-        self._residuals = self._signals - self._chaosPred(self._input) # residuals
-        self._stderr = np.sqrt(np.sum(np.array(self._residuals)**2) / (inputSize - basisSize - 1))
+        self._residuals = self._signals - self._chaosPred(self._input)  # residuals
+        self._stderr = np.sqrt(
+            np.sum(np.array(self._residuals) ** 2) / (inputSize - basisSize - 1)
+        )
 
         # Check the quality of the chaos model
         R2 = self.getR2()
         Q2 = self.getQ2()
         if self._verbose:
-            print('Polynomial chaos validation R2 (>0.8) : {:0.4f}'.format(R2))
-            print('Polynomial chaos validation Q2 (>0.8) : {:0.4f}'.format(Q2))
+            print("Polynomial chaos validation R2 (>0.8) : {:0.4f}".format(R2))
+            print("Polynomial chaos validation Q2 (>0.8) : {:0.4f}".format(Q2))
 
         # Compute the POD values for each defect sizes
         self.POD = self._computePOD(self._defectSizes, self._chaosCoefs)
         # create the interpolate function
-        interpModel = interp1d(self._defectSizes, self.POD, kind='linear')
+        interpModel = interp1d(self._defectSizes, self.POD, kind="linear")
         self._PODmodel = ot.PythonFunction(1, 1, interpModel)
 
         ####################### confidence interval ############################
         dof = inputSize - basisSize - 1
-        varEpsilon = (ot.ChiSquare(dof).inverse() * dof * self._stderr**2).getRealization()[0]
+        varEpsilon = (
+            ot.ChiSquare(dof).inverse() * dof * self._stderr**2
+        ).getRealization()[0]
         gramBasis = ot.Matrix(self._basisFunction(self._input)).computeGram()
-        covMatrix = gramBasis.solveLinearSystem(ot.IdentityMatrix(basisSize)) * varEpsilon
-        self._coefsDist = ot.Normal(np.hstack(self._chaosCoefs), ot.CovarianceMatrix(covMatrix.getImplementation()))
+        covMatrix = (
+            gramBasis.solveLinearSystem(ot.IdentityMatrix(basisSize)) * varEpsilon
+        )
+        self._coefsDist = ot.Normal(
+            np.hstack(self._chaosCoefs),
+            ot.CovarianceMatrix(covMatrix.getImplementation()),
+        )
         coefsRandom = self._coefsDist.getSample(self._simulationSize)
 
         self._PODPerDefect = ot.Sample(self._simulationSize, self._defectNumber)
         for i, coefs in enumerate(coefsRandom):
             self._PODPerDefect[i, :] = self._computePOD(self._defectSizes, coefs)
             if self._verbose:
-                updateProgress(i, self._simulationSize, 'Computing POD per defect')
-
+                updateProgress(i, self._simulationSize, "Computing POD per defect")
 
     def getPODModel(self):
         """
@@ -217,81 +244,114 @@ class PolynomialChaosPOD(POD):
         # Compute the quantile at the given confidence level for each
         # defect quantile and build the interpolate function.
         PODQuantile = self._PODPerDefect.computeQuantilePerComponent(
-                                                            1. - confidenceLevel)
-        interpModel = interp1d(self._defectSizes, PODQuantile, kind='linear')
+            1.0 - confidenceLevel
+        )
+        interpModel = interp1d(self._defectSizes, PODQuantile, kind="linear")
         PODmodelCl = ot.PythonFunction(1, 1, interpModel)
 
         return PODmodelCl
 
-    @DocInherit # decorator to inherit the docstring from POD class
-    @keepingArgs # decorator to keep the real signature
+    @DocInherit  # decorator to inherit the docstring from POD class
+    @keepingArgs  # decorator to keep the real signature
     def computeDetectionSize(self, probabilityLevel, confidenceLevel=None):
         if confidenceLevel is None:
-            return self._computeDetectionSize(self.getPODModel(),
-                                          None,
-                                          probabilityLevel,
-                                          confidenceLevel,
-                                          np.min(self._defectSizes),
-                                          np.max(self._defectSizes))
+            return self._computeDetectionSize(
+                self.getPODModel(),
+                None,
+                probabilityLevel,
+                confidenceLevel,
+                np.min(self._defectSizes),
+                np.max(self._defectSizes),
+            )
         elif confidenceLevel is not None:
-            return self._computeDetectionSize(self.getPODModel(),
-                                          self.getPODCLModel(confidenceLevel),
-                                          probabilityLevel,
-                                          confidenceLevel,
-                                          np.min(self._defectSizes),
-                                          np.max(self._defectSizes))
+            return self._computeDetectionSize(
+                self.getPODModel(),
+                self.getPODCLModel(confidenceLevel),
+                probabilityLevel,
+                confidenceLevel,
+                np.min(self._defectSizes),
+                np.max(self._defectSizes),
+            )
 
-    @DocInherit # decorator to inherit the docstring from POD class
-    @keepingArgs # decorator to keep the real signature
-    def drawPOD(self, probabilityLevel=None, confidenceLevel=None, defectMin=None,
-                defectMax=None, nbPt=100, name=None):
+    @DocInherit  # decorator to inherit the docstring from POD class
+    @keepingArgs  # decorator to keep the real signature
+    def drawPOD(
+        self,
+        probabilityLevel=None,
+        confidenceLevel=None,
+        defectMin=None,
+        defectMax=None,
+        nbPt=100,
+        name=None,
+    ):
 
         if defectMin is None:
             defectMin = np.min(self._defectSizes)
         else:
             if defectMin < np.min(self._defectSizes):
-                raise ValueError('DefectMin must be greater than the minimum ' + \
-                                 'of the given defect sizes.')
+                raise ValueError(
+                    "DefectMin must be greater than the minimum "
+                    + "of the given defect sizes."
+                )
             if defectMin > np.max(self._defectSizes):
-                raise ValueError('DefectMin must be lower than the maximum ' + \
-                                 'of the given defect sizes.')
+                raise ValueError(
+                    "DefectMin must be lower than the maximum "
+                    + "of the given defect sizes."
+                )
         if defectMax is None:
             defectMax = np.max(self._defectSizes)
         else:
             if defectMax > np.max(self._defectSizes):
-                raise ValueError('DefectMax must be lower than the maximum ' + \
-                                 'of the given defect sizes.')
+                raise ValueError(
+                    "DefectMax must be lower than the maximum "
+                    + "of the given defect sizes."
+                )
             if defectMax < np.min(self._defectSizes):
-                raise ValueError('DefectMax must be greater than the minimum ' + \
-                                 'of the given defect sizes.')
+                raise ValueError(
+                    "DefectMax must be greater than the minimum "
+                    + "of the given defect sizes."
+                )
 
         if confidenceLevel is None:
-            fig, ax = self._drawPOD(self.getPODModel(), None,
-                                probabilityLevel, confidenceLevel, defectMin,
-                                defectMax, nbPt, name)
+            fig, ax = self._drawPOD(
+                self.getPODModel(),
+                None,
+                probabilityLevel,
+                confidenceLevel,
+                defectMin,
+                defectMax,
+                nbPt,
+                name,
+            )
         elif confidenceLevel is not None:
-            fig, ax = self._drawPOD(self.getPODModel(), self.getPODCLModel(confidenceLevel),
-                    probabilityLevel, confidenceLevel, defectMin,
-                    defectMax, nbPt, name)
+            fig, ax = self._drawPOD(
+                self.getPODModel(),
+                self.getPODCLModel(confidenceLevel),
+                probabilityLevel,
+                confidenceLevel,
+                defectMin,
+                defectMax,
+                nbPt,
+                name,
+            )
 
-        ax.set_title('POD - Polynomial chaos model')
+        ax.set_title("POD - Polynomial chaos model")
         if name is not None:
-            fig.savefig(name, bbox_inches='tight', transparent=True)
+            fig.savefig(name, bbox_inches="tight", transparent=True)
 
         return fig, ax
 
-    @DocInherit # decorator to inherit the docstring from POD class
-    @keepingArgs # decorator to keep the real signature
+    @DocInherit  # decorator to inherit the docstring from POD class
+    @keepingArgs  # decorator to keep the real signature
     def drawValidationGraph(self, name=None):
 
         fig, ax = self._drawValidationGraph(self._signals, self._chaosPred(self._input))
         ax.set_title("Validation of the polynomial chaos model")
-        ax.set_ylabel('Predicted signals')
+        ax.set_ylabel("Predicted signals")
 
         if name is not None:
-            fig.savefig(name, bbox_inches='tight', transparent=True)
+            fig.savefig(name, bbox_inches="tight", transparent=True)
         return fig, ax
-
 
     def drawPolynomialChaosModel(self, name=None):
         """
@@ -301,7 +361,7 @@ class PolynomialChaosPOD(POD):
         ----------
         name : string
             name of the figure to be saved with *transparent* option sets to True
-            and *bbox_inches='tight'*. It can be only the file name or the 
+            and *bbox_inches='tight'*. It can be only the file name or the
             full path name. Default is None.
 
         Returns
@@ -317,8 +377,10 @@ class PolynomialChaosPOD(POD):
         """
 
         if self._dim != 1:
-            raise Exception('drawPolynomialChaosModel is available only if '+ \
-                            'the input sample dimension is 1.')
+            raise Exception(
+                "drawPolynomialChaosModel is available only if "
+                + "the input sample dimension is 1."
+            )
 
         model = self._chaosPred
 
@@ -328,22 +390,22 @@ class PolynomialChaosPOD(POD):
         fittedSignals = model(defectsSorted)
 
         fig, ax = plt.subplots(figsize=(8, 6))
-        ax.plot(defects, signals, 'b.', label='Data', ms=9)
-        ax.plot(defectsSorted, fittedSignals, 'r-', label='Polynomial chaos model')
-        ax.set_xlabel('Defects')
-        ax.set_ylabel('Signals')
-        ax.set_title('Polynomial chaos model versus data')
+        ax.plot(defects, signals, "b.", label="Data", ms=9)
+        ax.plot(defectsSorted, fittedSignals, "r-", label="Polynomial chaos model")
+        ax.set_xlabel("Defects")
+        ax.set_ylabel("Signals")
+        ax.set_title("Polynomial chaos model versus data")
         ax.grid()
-        ax.legend(loc='upper left')
+        ax.legend(loc="upper left")
 
         if name is not None:
-            fig.savefig(name, bbox_inches='tight', transparent=True)
+            fig.savefig(name, bbox_inches="tight", transparent=True)
 
         return fig, ax
 
     def getR2(self):
         """
-        Accessor to the R2 value. 
+        Accessor to the R2 value.
 
         Returns
         -------
@@ -354,7 +416,7 @@ class PolynomialChaosPOD(POD):
 
     def getQ2(self):
         """
-        Accessor to the Q2 value. 
+        Accessor to the Q2 value.
 
         Returns
         -------
@@ -366,9 +428,9 @@ class PolynomialChaosPOD(POD):
         H = basisMatrix * gramBasis.solveLinearSystem(basisMatrix.transpose())
         Hdiag = np.vstack(np.array(H).diagonal())
         fittedSignals = np.array(self._chaosPred(self._input))
-        delta = np.array(self._signals - fittedSignals) / (1. - Hdiag)
+        delta = np.array(self._signals - fittedSignals) / (1.0 - Hdiag)
 
-        return 1 - np.mean(delta**2)/ self._signals.computeVariance()[0]
+        return 1 - np.mean(delta**2) / self._signals.computeVariance()[0]
 
     def getSamplingSize(self):
         """
@@ -422,14 +484,16 @@ class PolynomialChaosPOD(POD):
         minMin = self._input[:, 0].getMin()[0]
         maxMax = self._input[:, 0].getMax()[0]
         if size.max() > maxMax or size.min() < minMin:
-            raise ValueError('Defect sizes must range between ' + \
-                             '{:0.4f} '.format(np.ceil(minMin*10000)/10000) + \
-                             'and {:0.4f}.'.format(np.floor(maxMax*10000)/10000))
+            raise ValueError(
+                "Defect sizes must range between "
+                + "{:0.4f} ".format(np.ceil(minMin * 10000) / 10000)
+                + "and {:0.4f}.".format(np.floor(maxMax * 10000) / 10000)
+            )
         self._defectNumber = self._defectSizes.shape[0]
 
     def setDistribution(self, distribution):
         """
-        Accessor to the parameters distribution. 
+        Accessor to the parameters distribution.
 
         Parameters
         ----------
@@ -439,12 +503,12 @@ class PolynomialChaosPOD(POD):
         try:
             ot.ComposedDistribution(distribution)
         except NotImplementedError:
-            raise Exception('The given parameter is not a ComposedDistribution.')
+            raise Exception("The given parameter is not a ComposedDistribution.")
         self._distribution = distribution
 
     def getDistribution(self):
         """
-        Accessor to the parameters distribution. 
+        Accessor to the parameters distribution.
 
         Returns
         -------
@@ -453,13 +517,13 @@ class PolynomialChaosPOD(POD):
             for all parameters.
         """
         if self._distribution is None:
-            print('The run method must be launched first.')
+            print("The run method must be launched first.")
         else:
             return self._distribution
 
     def setAdaptiveStrategy(self, strategy):
         """
-        Accessor to the adaptive strategy. 
+        Accessor to the adaptive strategy.
 
         Parameters
         ----------
@@ -469,7 +533,7 @@ class PolynomialChaosPOD(POD):
         try:
             ot.AdaptiveStrategy(strategy)
         except NotImplementedError:
-            raise Exception('The given parameter is not an AdaptiveStrategy.')
+            raise Exception("The given parameter is not an AdaptiveStrategy.")
         self._adaptiveStrategy = strategy
 
     def getAdaptiveStrategy(self):
@@ -482,13 +546,13 @@ class PolynomialChaosPOD(POD):
             The adaptive strategy for the polynomial chaos.
         """
         if self._adaptiveStrategy is None:
-            print('The run method must be launched first.')
+            print("The run method must be launched first.")
         else:
             return self._adaptiveStrategy
 
     def setProjectionStrategy(self, strategy):
         """
-        Accessor to the projection strategy. 
+        Accessor to the projection strategy.
 
         Parameters
         ----------
@@ -498,7 +562,7 @@ class PolynomialChaosPOD(POD):
         try:
             ot.ProjectionStrategy(strategy)
         except NotImplementedError:
-            raise Exception('The given parameter is not an ProjectionStrategy.')
+            raise Exception("The given parameter is not an ProjectionStrategy.")
         self._projectionStrategy = strategy
 
     def getProjectionStrategy(self):
@@ -511,13 +575,13 @@ class PolynomialChaosPOD(POD):
             The projection strategy for the polynomial chaos.
         """
         if self._projectionStrategy is None:
-            print('The run method must be launched first.')
+            print("The run method must be launched first.")
         else:
             return self._projectionStrategy
 
     def setDegree(self, degree):
         """
-        Accessor to the polynomial chaos degree. 
+        Accessor to the polynomial chaos degree.
 
         Parameters
         ----------
@@ -549,7 +613,7 @@ class PolynomialChaosPOD(POD):
         try:
             ot.FunctionalChaosResult(chaosResult)
         except NotImplementedError:
-            raise Exception('The given parameter is not an FunctionalChaosResult.')
+            raise Exception("The given parameter is not an FunctionalChaosResult.")
         self._chaosResult = chaosResult
         self._userChaos = True
 
@@ -563,7 +627,7 @@ class PolynomialChaosPOD(POD):
             The polynomial chaos result.
         """
         if self._chaosResult is None:
-            print('The run method must be launched first.')
+            print("The run method must be launched first.")
         else:
             return self._chaosResult
 
@@ -574,7 +638,7 @@ class PolynomialChaosPOD(POD):
         Returns
         -------
         verbose : bool
-            Enable or disable the verbosity. Default is True. 
+            Enable or disable the verbosity. Default is True.
         """
         return self._verbose
 
@@ -588,7 +652,7 @@ class PolynomialChaosPOD(POD):
             Enable or disable the verbosity.
         """
         if type(verbose) is not bool:
-            raise TypeError('The parameter is not a bool.')
+            raise TypeError("The parameter is not a bool.")
         else:
             self._verbose = verbose
 
@@ -599,7 +663,7 @@ class PolynomialChaosPOD(POD):
         Returns
         -------
         dist : :py:class:`openturns.Distribution`
-            The distribution of the coefficients. 
+            The distribution of the coefficients.
         """
         return self._coefsDist
 
@@ -608,7 +672,7 @@ class PolynomialChaosPOD(POD):
         Build the functional chaos algorithm without running it.
         """
         if self._distribution is None:
-            # create default distribution : Uniform between min and max of the 
+            # create default distribution : Uniform between min and max of the
             # input sample
             inputSample = ot.Sample(inputSample)
             inputMin = inputSample.getMin()
@@ -624,13 +688,16 @@ class PolynomialChaosPOD(POD):
         if self._adaptiveStrategy is None:
             # Create the adaptive strategy : default is fixed strategy of degree 5
             # with linear enumerate function
-            polyCol = [0.]*self._dim
+            polyCol = [0.0] * self._dim
             for i in range(self._dim):
                 polyCol[i] = ot.StandardDistributionPolynomialFactory(
-                                                self._distribution.getMarginal(i))
-            
+                    self._distribution.getMarginal(i)
+                )
+
             enumerateFunction = ot.LinearEnumerateFunction(self._dim)
-            multivariateBasis = ot.OrthogonalProductPolynomialFactory(polyCol, enumerateFunction)
+            multivariateBasis = ot.OrthogonalProductPolynomialFactory(
+                polyCol, enumerateFunction
+            )
             # default degree is 3 (in __init__)
             indexMax = enumerateFunction.getStrataCumulatedCardinal(self._degree)
             self._adaptiveStrategy = ot.FixedStrategy(multivariateBasis, indexMax)
@@ -640,13 +707,19 @@ class PolynomialChaosPOD(POD):
             basis_sequence_factory = ot.LARS()
             fitting_algorithm = ot.KFold()
             approximation_algorithm = ot.LeastSquaresMetaModelSelectionFactory(
-                                      basis_sequence_factory, fitting_algorithm)
-            self._projectionStrategy = ot.LeastSquaresStrategy(inputSample,
-                                        outputSample, approximation_algorithm)
+                basis_sequence_factory, fitting_algorithm
+            )
+            self._projectionStrategy = ot.LeastSquaresStrategy(
+                inputSample, outputSample, approximation_algorithm
+            )
 
-        return ot.FunctionalChaosAlgorithm(inputSample, outputSample, \
-                self._distribution, self._adaptiveStrategy, self._projectionStrategy)
-
+        return ot.FunctionalChaosAlgorithm(
+            inputSample,
+            outputSample,
+            self._distribution,
+            self._adaptiveStrategy,
+            self._projectionStrategy,
+        )
 
     def _mergeDefectInX(self, defect, X):
         """
@@ -660,38 +733,42 @@ class PolynomialChaosPOD(POD):
         samplePred[:, 1:] = X
         return samplePred
 
-
     def _buildChaosFunction(self, reducedBasis, transformation, coefs):
         """
         Build the chaos metamodel with given coefficients.
         """
-        standardChaosFunction = ot.LinearCombinationFunction(reducedBasis, np.hstack(coefs))
+        standardChaosFunction = ot.LinearCombinationFunction(
+            reducedBasis, np.hstack(coefs)
+        )
         chaosFunction = ot.ComposedFunction(standardChaosFunction, transformation)
         return chaosFunction
-
 
     def _computePOD(self, defectSizes, coefs):
         """
         Compute the POD for all defect sizes in a vectorized way.
         """
         # create the input sample that must be computed by the metamodels
-        samplePred = self._distribution.getSample(self._samplingSize)[:,1:]
-        fullSamplePred = ot.Sample(self._samplingSize * self._defectNumber,
-                                                                    self._dim)
+        samplePred = self._distribution.getSample(self._samplingSize)[:, 1:]
+        fullSamplePred = ot.Sample(self._samplingSize * self._defectNumber, self._dim)
         for i, defect in enumerate(defectSizes):
-            fullSamplePred[self._samplingSize*i:self._samplingSize*(i+1), :] = \
-                                    self._mergeDefectInX(defect, samplePred)
+            fullSamplePred[
+                self._samplingSize * i: self._samplingSize * (i + 1), :
+            ] = self._mergeDefectInX(defect, samplePred)
 
         # create the chaos function for user defined coefs
-        chaosFunction = self._buildChaosFunction(self._reducedBasis,
-                                        self._transformation, coefs)
+        chaosFunction = self._buildChaosFunction(
+            self._reducedBasis, self._transformation, coefs
+        )
 
         # add the randomness from the residuals
-        residualsSample = self._normalDist.getSample(self._samplingSize * \
-                                             self._defectNumber) * self._stderr
+        residualsSample = (
+            self._normalDist.getSample(self._samplingSize * self._defectNumber)
+            * self._stderr
+        )
         chaosRandomSample = chaosFunction(fullSamplePred) + residualsSample
-        chaosRandomSample = np.reshape(chaosRandomSample, (self._samplingSize,
-                                       self._defectNumber), 'F')
+        chaosRandomSample = np.reshape(
+            chaosRandomSample, (self._samplingSize, self._defectNumber), "F"
+        )
 
         # compute the POD for all defect sizes
         POD = np.mean(chaosRandomSample > self._detectionBoxCox, axis=0)

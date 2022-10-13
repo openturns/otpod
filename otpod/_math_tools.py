@@ -1,12 +1,12 @@
-# -*- coding: utf-8 -*-
 # -*- Python -*-
 
-__all__ = ['DataHandling']
+__all__ = ["DataHandling"]
 
 import openturns as ot
 import math as m
 import numpy as np
 from scipy.optimize import fmin
+import sys
 
 
 ######### ReducedLogLikelihood #########
@@ -23,24 +23,30 @@ from scipy.optimize import fmin
 # beta : sequence of float of dim = 2
 #     Least squares estimate of the linear regression model.
 class ReducedLogLikelihood(ot.OpenTURNSPythonFunction):
-
     def __init__(self, a_i, Y_i):
         super(ReducedLogLikelihood, self).__init__(1, 1)
-        self.setInputDescription(['lambda'])
-        self.setOutputDescription(['LogLikelihood'])
+        self.setInputDescription(["lambda"])
+        self.setOutputDescription(["LogLikelihood"])
         self.a_i_ = a_i
         self.Y_i_ = Y_i
         self.N_ = a_i.getSize()
-        self.sumLogY_i = ot.SymbolicFunction(["y"], ["log(y)"])(Y_i).computeMean()[0] * self.N_
-        
+        self.sumLogY_i = (
+            ot.SymbolicFunction(["y"], ["log(y)"])(Y_i).computeMean()[0] * self.N_
+        )
+
     def _exec(self, Lambda):
         Y_lambda = ot.BoxCoxTransform(Lambda)(self.Y_i_)
         algo = ot.LinearLeastSquares(self.a_i_, Y_lambda)
         algo.run()
         beta0 = algo.getConstant()[0]
         beta1 = algo.getLinear()[0, 0]
-        sigma2 = (self.N_ - 1.0) / (self.N_ - 2.0) * (Y_lambda - (self.a_i_ * [beta1] + [beta0])).computeVariance()[0]
+        sigma2 = (
+            (self.N_ - 1.0)
+            / (self.N_ - 2.0)
+            * (Y_lambda - (self.a_i_ * [beta1] + [beta0])).computeVariance()[0]
+        )
         return [-0.5 * self.N_ * m.log(sigma2) + (Lambda[0] - 1) * self.sumLogY_i]
+
 
 ######### LinearBoxCoxFactory #########
 # This class build the Box Cox optimal transformation corresponding with
@@ -48,20 +54,21 @@ class ReducedLogLikelihood(ot.OpenTURNSPythonFunction):
 # Given data (a_i, Y_i), find the quadruplet (\lambda, \sigma, \beta_0, \beta_1
 # that maximize the log-likelihood function defined by ReducedLogLikelihood.
 class LinearBoxCoxFactory:
-
-    def __init__(self, lambdaMin = -3, lambdaMax = 3):
+    def __init__(self, lambdaMin=-3, lambdaMax=3):
         self.lambdaMin_ = lambdaMin
         self.lambdaMax_ = lambdaMax
         ot.Log.Show(ot.Log.NONE)
-        
+
     def build(self, dataX, dataY):
         logLikelihood = ot.Function(ReducedLogLikelihood(dataX, dataY))
-        xlb = np.linspace(self.lambdaMin_,self.lambdaMax_,num=500)
+        xlb = np.linspace(self.lambdaMin_, self.lambdaMax_, num=500)
         lambdax = [logLikelihood([x])[0] for x in xlb]
         algo = ot.TNC(logLikelihood)
         algo.setStartingPoint([xlb[np.array(lambdax).argmax()]])
         algo.setBoundConstraints(ot.Interval(self.lambdaMin_, self.lambdaMax_))
-        algo.setOptimizationProblem(ot.BoundConstrainedAlgorithmImplementationResult.MAXIMIZATION)
+        algo.setOptimizationProblem(
+            ot.BoundConstrainedAlgorithmImplementationResult.MAXIMIZATION
+        )
         algo.run()
         optimalLambda = algo.getResult().getOptimizer()[0]
 
@@ -92,12 +99,14 @@ def computeBoxCox(factors, valuesInit, shift):
     return lambdaBoxCox, graph
 
 
-
 ######### computeR2 #########
 # This function the R2 of the linear regression model
 def computeR2(signals, residuals):
-    R2 = 1 - residuals.computeVariance()[0] / \
-         (signals - signals.computeMean()).computeVariance()[0]
+    R2 = (
+        1
+        - residuals.computeVariance()[0]
+        / (signals - signals.computeMean()).computeVariance()[0]
+    )
     return R2
 
 
@@ -110,13 +119,14 @@ def computeZeroMeanTest(residuals):
     stderr = np.sqrt(varRes / residuals.getSize())
     statistic = mRes / stderr
     # two sided test
-    return 2 * ot.DistFunc.pStudent(residuals.getSize()-1, -np.abs(statistic))
+    return 2 * ot.DistFunc.pStudent(residuals.getSize() - 1, -np.abs(statistic))
+
 
 ######### computeBreuschPaganTest #########
 # This function tests if the residuals are homoskedastics
 def computeBreuschPaganTest(x, residuals):
     nx = x.getSize()
-    df = 1 # linear regression with 2 parameters -> degree of freedom = 2 - 1
+    df = 1  # linear regression with 2 parameters -> degree of freedom = 2 - 1
     residuals = np.array(residuals)
     sigma2 = np.sum(residuals**2) / nx
     # Studentized Breusch Pagan
@@ -130,6 +140,7 @@ def computeBreuschPaganTest(x, residuals):
     # return complementary cdf of central ChiSquare
     return 1 - ot.DistFunc.pNonCentralChiSquare(df, 0, bp)
 
+
 ######### computeHarrisonMcCabeTest #########
 # This function tests if the residuals are homoskedastics
 def computeHarrisonMcCabeTest(residuals, breakRatio=0.5, simulationSize=1000):
@@ -139,7 +150,7 @@ def computeHarrisonMcCabeTest(residuals, breakRatio=0.5, simulationSize=1000):
     residuals = np.array(residuals)
     breakpoint = int(np.floor(breakRatio * nx))
     # statistic Harrison McCabe
-    hmc = np.sum(residuals[:breakpoint]**2) /np.sum(residuals**2)
+    hmc = np.sum(residuals[:breakpoint] ** 2) / np.sum(residuals**2)
 
     # pvalue computed by simulation
     stat = np.zeros(simulationSize)
@@ -149,11 +160,12 @@ def computeHarrisonMcCabeTest(residuals, breakRatio=0.5, simulationSize=1000):
         try:
             stddev = xSampleNor.computeStandardDeviation()[0]
         except:
-            stddev = xSampleNor.computeStandardDeviation()[0, 0] # ot <1.17
+            stddev = xSampleNor.computeStandardDeviation()[0, 0]  # ot <1.17
         xstand = np.array((xSampleNor - xSampleNor.computeMean()[0]) / stddev)
-        stat[i] = np.sum(xstand[:breakpoint]**2) / np.sum(xstand**2)
+        stat[i] = np.sum(xstand[:breakpoint] ** 2) / np.sum(xstand**2)
 
     return np.mean(stat <= hmc)
+
 
 ######### computeDurbinWatsonTest #########
 # This function tests if the residuals have non autocorrelation
@@ -167,22 +179,24 @@ def computeDurbinWatsonTest(x, residuals, hypothesis="Equal"):
     dim = x.getDimension()
     residuals = np.array(residuals)
     # statistic Durbin Watson
-    dw = np.sum(np.diff(np.hstack(residuals))**2)/np.sum(residuals**2)
+    dw = np.sum(np.diff(np.hstack(residuals)) ** 2) / np.sum(residuals**2)
 
     # Normal approxiimation of DW to compute the pvalue
-    X = ot.Matrix(nx, dim+1)
+    X = ot.Matrix(nx, dim + 1)
     X[:, 0] = np.ones((nx, 1))
     X[:, 1] = x
-    B = ot.Matrix(nx, dim+1)
+    B = ot.Matrix(nx, dim + 1)
     B[0, 1] = x[0][0] - x[1][0]
-    B[nx-1, 1] = x[nx-1][0] - x[nx-2][0]
+    B[nx - 1, 1] = x[nx - 1][0] - x[nx - 2][0]
     for i in range(nx - 2):
-        B[i+1, 1] = -x[i][0] + 2 * x[i+1][0] - x[i+2][0]
+        B[i + 1, 1] = -x[i][0] + 2 * x[i + 1][0] - x[i + 2][0]
 
     XtX = X.computeGram()
     XBQt = ot.SquareMatrix(XtX.solveLinearSystem(B.transpose() * X))
     P = 2 * (nx - 1) - XBQt.computeTrace()
-    XBTrace = ot.SquareMatrix(XtX.solveLinearSystem(B.computeGram(), False)).computeTrace()
+    XBTrace = ot.SquareMatrix(
+        XtX.solveLinearSystem(B.computeGram(), False)
+    ).computeTrace()
     Q = 2 * (3 * nx - 4) - 2 * XBTrace + ot.SquareMatrix(XBQt * XBQt).computeTrace()
     dmean = P / (nx - (dim + 1))
     dvar = 2.0 / ((nx - (dim + 1)) * (nx - (dim + 1) + 2)) * (Q - P * dmean)
@@ -198,6 +212,7 @@ def computeDurbinWatsonTest(x, residuals, hypothesis="Equal"):
 
     return pValue
 
+
 ######### filterCensoredData #########
 # This function filters the input sample and signals in case where low and/or high
 # threshold are given.
@@ -205,6 +220,7 @@ class DataHandling(object):
     """
     Static methods for data handling.
     """
+
     @staticmethod
     def filterCensoredData(inputSample, signals, noiseThres, saturationThres):
         """
@@ -239,23 +255,25 @@ class DataHandling(object):
         """
         # check if one sided censoring
         if noiseThres is None:
-            noiseThres = -ot.sys.float_info.max
+            noiseThres = -sys.float_info.max
         if saturationThres is None:
-            saturationThres = ot.sys.float_info.max
+            saturationThres = sys.float_info.max
 
         # transform in numpy.array
         inputSample = np.array(inputSample)
         signals = np.array(signals)
         # inputSample in the uncensored area
-        inputSampleUnc = inputSample[np.hstack(np.logical_and(signals > noiseThres, 
-                                            signals < saturationThres))]
+        inputSampleUnc = inputSample[
+            np.hstack(np.logical_and(signals > noiseThres, signals < saturationThres))
+        ]
         # inputSample in the noisy area
         inputSampleNoise = inputSample[np.hstack(signals <= noiseThres)]
         # inputSample in the saturation area
         inputSampleSat = inputSample[np.hstack(signals >= saturationThres)]
         # signals in the uncensored area
-        signalsUnc = signals[np.hstack(np.logical_and(signals > noiseThres,
-                                            signals < saturationThres))]
+        signalsUnc = signals[
+            np.hstack(np.logical_and(signals > noiseThres, signals < saturationThres))
+        ]
 
         # transform in Sample
         inputSampleUnc = ot.Sample(inputSampleUnc)
@@ -266,13 +284,11 @@ class DataHandling(object):
         return inputSampleUnc, inputSampleNoise, inputSampleSat, signalsUnc
 
 
-
 ######### computeLinearParametersCensored #########
 # This function compute the linear regression parameters with censored data
 # using the MLE function (from Berens 1988 article)
-def MLE(X, defects, defectsNoise, defectsSat, signals, noiseThres,
-        saturationThres):
-    '''
+def MLE(X, defects, defectsNoise, defectsSat, signals, noiseThres, saturationThres):
+    """
     Compute - log likelihood on censored data.
     Parameters:
     -----------
@@ -283,31 +299,41 @@ def MLE(X, defects, defectsNoise, defectsSat, signals, noiseThres,
     signals : vector of the signals in the uncensored area
     noiseThres : noise threshold
     saturationThres : saturation threshold
-    '''
+    """
     b0 = X[0]
     b1 = X[1]
     s = X[2]
 
     # uncensored area
-    MLE = len(defects) * np.log(s * np.sqrt(2. * np.pi))
-    MLE += 1.0 / (2 * s**2) * np.sum((signals - (b0 + b1 * defects))**2)
+    MLE = len(defects) * np.log(s * np.sqrt(2.0 * np.pi))
+    MLE += 1.0 / (2 * s**2) * np.sum((signals - (b0 + b1 * defects)) ** 2)
 
     # noisy area
     Znoise = (noiseThres - (b0 + b1 * defectsNoise)) / s
-    cdfZnoise = np.array([ot.DistFunc.pNormal(Znoise[i][0]) for i in range(len(Znoise))])
-    MLE += - np.sum(np.log(cdfZnoise))
+    cdfZnoise = np.array(
+        [ot.DistFunc.pNormal(Znoise[i][0]) for i in range(len(Znoise))]
+    )
+    MLE += -np.sum(np.log(cdfZnoise))
 
     # saturation area
     Zsat = (saturationThres - (b0 + b1 * defectsSat)) / s
     cdfZsat = np.array([ot.DistFunc.pNormal(Zsat[i][0]) for i in range(len(Zsat))])
-    MLE += - np.sum(np.log(1. - cdfZsat))
+    MLE += -np.sum(np.log(1.0 - cdfZsat))
 
     if np.isnan(MLE):
         MLE = np.inf
     return MLE
 
-def computeLinearParametersCensored(initialStartMLE, defects, defectsNoise,
-                            defectsSat, signals, noiseThres, saturationThres):
+
+def computeLinearParametersCensored(
+    initialStartMLE,
+    defects,
+    defectsNoise,
+    defectsSat,
+    signals,
+    noiseThres,
+    saturationThres,
+):
     """
     Compute the linear regression parameters using the MLE function taking
     into account the censored data.
@@ -318,8 +344,8 @@ def computeLinearParametersCensored(initialStartMLE, defects, defectsNoise,
     defectsSat = np.array(defectsSat)
     signals = np.array(signals)
 
-    func = lambda x: MLE(x, defects, defectsNoise, defectsSat,
-                              signals, noiseThres, saturationThres)
+    def func(x):
+        return MLE(x, defects, defectsNoise, defectsSat, signals, noiseThres, saturationThres)
 
     testMLE = func(initialStartMLE)
     if testMLE == np.inf:
@@ -329,11 +355,15 @@ def computeLinearParametersCensored(initialStartMLE, defects, defectsNoise,
             initialStartMLE = np.random.randn(3)
             testMLE = func(initialStartMLE)
         if iteration == 100:
-            raise Exception('Maximum Likelihood optimization for censored '+\
-                            'data : cannot find initial starting point.')
+            raise Exception(
+                "Maximum Likelihood optimization for censored "
+                + "data : cannot find initial starting point."
+            )
     res = fmin(func, initialStartMLE, disp=0, full_output=1, maxiter=500)
     if res[4] == 2:
         ot.Log.Show(ot.Log.WARN)
-        ot.Log.Warn('Maximum Likelihood optimization for censored data : '+\
-                    'maximum number of iterations reached.')
+        ot.Log.Warn(
+            "Maximum Likelihood optimization for censored data : "
+            + "maximum number of iterations reached."
+        )
     return res[0]

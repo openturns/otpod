@@ -947,7 +947,7 @@ def test_11_residual_dist():
     param = dist.getParametersCollection()[0]
     Nparam = dist.getParameterDimension()
     values = [param[i] for i in range(Nparam)]
-    np.testing.assert_almost_equal(values, [811.9707, 2.76702, -725.31732], decimal=5)
+    np.testing.assert_almost_equal(values, [811.9707, 2.76702, -725.31732], decimal=4)
 
 
 def test_11_intercept():

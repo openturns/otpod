@@ -7,6 +7,7 @@ import openturns as ot
 import math as m
 import numpy as np
 from scipy.optimize import fmin
+import sys
 
 
 ######### ReducedLogLikelihood #########
@@ -239,9 +240,9 @@ class DataHandling(object):
         """
         # check if one sided censoring
         if noiseThres is None:
-            noiseThres = -ot.sys.float_info.max
+            noiseThres = -sys.float_info.max
         if saturationThres is None:
-            saturationThres = ot.sys.float_info.max
+            saturationThres = sys.float_info.max
 
         # transform in numpy.array
         inputSample = np.array(inputSample)

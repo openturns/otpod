@@ -441,7 +441,7 @@ class SobolIndices:
         Accessor to the simulation size when using polynomial chaos.
 
         Returns
-        ----------
+        -------
         size : int
             The size of the simulation used to compute POD at a given point.
         """

@@ -222,7 +222,10 @@ class AdaptiveSignalPOD(POD, KrigingBase):
         # Get kriging results
         self._krigingResult = algoKriging.getResult()
         self._covarianceModel = self._krigingResult.getCovarianceModel()
-        self._basis = self._krigingResult.getBasisCollection()[0]
+        try:
+            self._basis = self._krigingResult.getBasis()
+        except AttributeError:
+            self._basis = self._krigingResult.getBasisCollection()[0]  # ot<1.21
         metamodel = ot.ComposedFunction(
             self._krigingResult.getMetaModel(), transformation
         )
@@ -377,7 +380,10 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             # Get kriging results
             self._krigingResult = algoKriging.getResult()
             self._covarianceModel = self._krigingResult.getCovarianceModel()
-            self._basis = self._krigingResult.getBasisCollection()[0]
+            try:
+                self._basis = self._krigingResult.getBasis()
+            except AttributeError:
+                self._basis = self._krigingResult.getBasisCollection()[0]  # ot<1.21
 
             self._Q2 = self._computeQ2(
                 self._input, self._signals, self._krigingResult, transformation

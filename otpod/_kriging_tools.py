@@ -541,8 +541,12 @@ class KrigingBase:
 
         K = cov.discretize(normalized_inputSample)
         # get coefficient and compute trend
-        basis = krigingResult.getBasisCollection()[0]
-        F1 = krigingResult.getTrendCoefficients()[0]
+        try:
+            basis = krigingResult.getBasis()
+            F1 = krigingResult.getTrendCoefficients()
+        except AttributeError:
+            basis = krigingResult.getBasisCollection()[0]  # ot<1.21
+            F1 = krigingResult.getTrendCoefficients()[0]
         size = inputSample.shape[0]
         p = F1.getDimension()
         F = np.ones((size, p))

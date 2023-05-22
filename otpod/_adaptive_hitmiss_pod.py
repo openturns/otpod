@@ -15,11 +15,6 @@ from sklearn.ensemble import ExtraTreesClassifier
 from sklearn import svm
 from sklearn.metrics import confusion_matrix
 
-try:
-    from pkg_resources import parse_version
-except ImportError:
-    from distutils.version import LooseVersion as parse_version
-
 
 class AdaptiveHitMissPOD(POD):
     """
@@ -172,14 +167,9 @@ class AdaptiveHitMissPOD(POD):
             # case where the physical model returns a true signal value
             # the physical model is turned into a binary model with respect
             # to the detection value.
-            if parse_version(ot.__version__) < parse_version("1.18"):
-                self._physicalModel = ot.IndicatorFunction(
-                    physicalModel, ot.Greater(), self._detection
-                )
-            else:
-                self._physicalModel = ot.IndicatorFunction(
-                    ot.LevelSet(physicalModel, ot.Greater(), self._detection)
-                )
+            self._physicalModel = ot.IndicatorFunction(
+                ot.LevelSet(physicalModel, ot.Greater(), self._detection)
+            )
             self._signals = np.array(
                 np.array(self._signals) > self._detection, dtype="int"
             )

@@ -21,9 +21,9 @@ available as well as the perturbation law indices.
 Requirements
 ============
 
-This module is developped in python using several external modules :
+This module is developped in python using several external modules:
 
-- openturns >= 1.12
+- openturns >= 1.18
 - statsmodels >= 0.6
 - numpy >= 1.10
 - sklearn >= 0.17
@@ -36,7 +36,7 @@ This module is developped in python using several external modules :
 Installation
 ============
 
-In a terminal, type in :
+In a terminal, type in:
 
 .. code-block:: shell
 

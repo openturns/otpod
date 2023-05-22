@@ -16,8 +16,6 @@ install_requires=['statsmodels>=0.6.1',
                   'matplotlib>=1.5.1',
                   'scipy>=0.17.0',
                   'decorator>=4.0.9']
-if sys.version_info < (3, 0):
-    install_requires.append('logging')
 
 setup(
     # library name

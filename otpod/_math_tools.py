@@ -86,10 +86,20 @@ class LinearBoxCoxFactory:
 # This function applies the Box Cox transformation on the data.
 def computeBoxCox(factors, valuesInit, shift):
     # if no affine trend is considered
-    graph = ot.Graph()
-    myBoxCoxFactory = ot.BoxCoxFactory()
-    myModelTransform = myBoxCoxFactory.build(valuesInit, [shift], graph)
-    lambdaBoxCox = myModelTransform.getLambda()[0]
+    factory = ot.BoxCoxFactory()
+    # see https://github.com/openturns/openturns/pull/2312
+    if hasattr(factory, "buildWithGraph"):
+        # OT>=1.21 (but not rc1)
+        transform, graph = factory.buildWithGraph(valuesInit, [shift])
+    else:
+        try:
+            # OT<1.21
+            transform, graph = factory.build(valuesInit, [shift])
+        except TypeError:
+            # unpack error: bug in 1.21rc1, return empty graph
+            transform = factory.build(valuesInit, [shift])
+            graph = ot.Graph()
+    lambdaBoxCox = transform.getLambda()[0]
 
     # if an affine trend is considered (more computing time required)
     # works only in 1D
@@ -194,9 +204,16 @@ def computeDurbinWatsonTest(x, residuals, hypothesis="Equal"):
     XtX = X.computeGram()
     XBQt = ot.SquareMatrix(XtX.solveLinearSystem(B.transpose() * X))
     P = 2 * (nx - 1) - XBQt.computeTrace()
-    XBTrace = ot.SquareMatrix(
-        XtX.solveLinearSystem(B.computeGram(), False)
-    ).computeTrace()
+    if hasattr(XtX, "solveLinearSystemInPlace"):
+        # OT>=1.21
+        XBTrace = ot.SquareMatrix(
+            XtX.solveLinearSystemInPlace(B.computeGram())
+        ).computeTrace()
+    else:
+        # OT<1.21
+        XBTrace = ot.SquareMatrix(
+            XtX.solveLinearSystem(B.computeGram(), False)
+        ).computeTrace()
     Q = 2 * (3 * nx - 4) - 2 * XBTrace + ot.SquareMatrix(XBQt * XBQt).computeTrace()
     dmean = P / (nx - (dim + 1))
     dvar = 2.0 / ((nx - (dim + 1)) * (nx - (dim + 1) + 2)) * (Q - P * dmean)

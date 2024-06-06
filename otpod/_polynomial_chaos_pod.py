@@ -497,11 +497,14 @@ class PolynomialChaosPOD(POD):
 
         Parameters
         ----------
-        distribution : :py:class:`openturns.ComposedDistribution`
+        distribution : :py:class:`openturns.JointDistribution`
             The input parameters distribution.
         """
         try:
-            ot.ComposedDistribution(distribution)
+            if hasattr(ot, "JointDistribution"):
+                ot.JointDistribution(distribution)
+            else:
+                ot.ComposedDistribution(distribution)
         except NotImplementedError:
             raise Exception("The given parameter is not a ComposedDistribution.")
         self._distribution = distribution
@@ -512,7 +515,7 @@ class PolynomialChaosPOD(POD):
 
         Returns
         -------
-        distribution : :py:class:`openturns.ComposedDistribution`
+        distribution : :py:class:`openturns.JointDistribution`
             The input parameters distribution, default is a Uniform distribution
             for all parameters.
         """
@@ -680,7 +683,10 @@ class PolynomialChaosPOD(POD):
             inputMax = inputSample.getMax()
             inputMax[0] = np.max(self._defectSizes)
             marginals = [ot.Uniform(inputMin[i], inputMax[i]) for i in range(self._dim)]
-            self._distribution = ot.ComposedDistribution(marginals)
+            if hasattr(ot, "JointDistribution"):
+                self._distribution = ot.JointDistribution(marginals)
+            else:
+                self._distribution = ot.ComposedDistribution(marginals)
 
         # put description of the inputSample into decription of the distribution
         self._distribution.setDescription(inputSample.getDescription())

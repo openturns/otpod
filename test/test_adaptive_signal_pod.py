@@ -108,7 +108,7 @@ detectionSize1 = POD1.computeDetectionSize(0.9, 0.95)
 def test_1_kriging_parameter():
     np.testing.assert_almost_equal(
         np.array(POD1.getKrigingResult().getCovarianceModel().getFullParameter()),
-        [3.03338162, 5.84920629, 22.28954134, 50.0, 6.08656776],
+        [3.03338162, 5.84920629, 22.28954134, 50.0, 1e-12, 6.08656776],
         decimal=3,
     )
 
@@ -152,7 +152,7 @@ detectionSize2 = POD2.computeDetectionSize(0.9, 0.95)
 def test_2_kriging_parameter():
     np.testing.assert_almost_equal(
         np.array(POD2.getKrigingResult().getCovarianceModel().getFullParameter()),
-        [50.0, 0.71426707, 6.6615503, 50.0, 1.7646711],
+        [50.0, 0.71426707, 6.6615503, 50.0, 1e-12, 1.7646711],
         decimal=3,
     )
 
@@ -188,7 +188,7 @@ detectionSize3 = POD3.computeDetectionSize(0.9, 0.95)
 def test_3_kriging_parameter():
     np.testing.assert_almost_equal(
         np.array(POD3.getKrigingResult().getCovarianceModel().getFullParameter()),
-        [5.83907, 1.68711, 12.4126, 50.0, 71569.031508],
+        [5.83907, 1.68711, 12.4126, 50.0, 1e-12, 71569.031508],
         decimal=4,
     )
 
@@ -228,7 +228,7 @@ detectionSize4 = POD4.computeDetectionSize(0.9, 0.95)
 def test_4_kriging_parameter():
     np.testing.assert_almost_equal(
         np.array(POD4.getKrigingResult().getCovarianceModel().getFullParameter()),
-        [2.077, 2.569, 8.214, 50.0, 0.317],
+        [2.077, 2.569, 8.214, 50.0, 1e-12, 0.317],
         decimal=3,
     )
 

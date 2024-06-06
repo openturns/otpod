@@ -52,9 +52,14 @@ class PLIBase:
 
         # the distribution of the parameters without the one of the defects.
         tmpDistribution = POD.getDistribution()
-        self._distribution = ot.ComposedDistribution(
-            [tmpDistribution.getMarginal(i) for i in range(1, self._dim + 1)]
-        )
+        if hasattr(ot, "JointDistribution"):
+            self._distribution = ot.JointDistribution(
+                [tmpDistribution.getMarginal(i) for i in range(1, self._dim + 1)]
+            )
+        else:
+            self._distribution = ot.ComposedDistribution(
+                [tmpDistribution.getMarginal(i) for i in range(1, self._dim + 1)]
+            )
 
         self._delta = np.vstack(np.array(delta))
 
@@ -210,11 +215,14 @@ class PLIBase:
 
         Parameters
         ----------
-        distribution : :py:class:`openturns.ComposedDistribution`
+        distribution : :py:class:`openturns.JointDistribution`
             The input parameters distribution used for the Monte Carlo simulation.
         """
         try:
-            ot.ComposedDistribution(distribution)
+            if hasattr(ot, "JointDistribution"):
+                ot.JointDistribution(distribution)
+            else:
+                ot.ComposedDistribution(distribution)
         except NotImplementedError:
             raise Exception("The given parameter is not a ComposedDistribution.")
 
@@ -230,7 +238,7 @@ class PLIBase:
 
         Returns
         -------
-        distribution : :py:class:`openturns.ComposedDistribution`
+        distribution : :py:class:`openturns.JointDistribution`
             The input parameters distribution used for the Monte Carlo simulation.
             Default is a Uniform distribution for all parameters.
         """

@@ -191,7 +191,10 @@ class AdaptiveSignalPOD(POD, KrigingBase):
             inputMax = self._input.getMax()
             inputMax[0] = np.max(self._defectSizes)
             marginals = [ot.Uniform(inputMin[i], inputMax[i]) for i in range(self._dim)]
-            self._distribution = ot.ComposedDistribution(marginals)
+            if hasattr(ot, "JointDistribution"):
+                self._distribution = ot.JointDistribution(marginals)
+            else:
+                self._distribution = ot.ComposedDistribution(marginals)
 
         # Create the design of experiments of the candidate points where the
         # criterion is computed

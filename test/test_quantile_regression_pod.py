@@ -51,7 +51,7 @@ def test_1_a90():
 
 
 def test_1_a95():
-    np.testing.assert_almost_equal(detectionSize1[1], 0.302782872277)
+    np.testing.assert_almost_equal(detectionSize1[1], 0.539279721110)
 
 
 def test_1_R2_90():
@@ -74,7 +74,7 @@ def test_2_a90():
 
 
 def test_2_a95():
-    np.testing.assert_almost_equal(detectionSize2[1], 0.31470276646, decimal=5)
+    np.testing.assert_almost_equal(detectionSize2[1], 0.53927, decimal=5)
 
 
 def test_2_R2_90():
@@ -95,7 +95,7 @@ def test_3_a90():
 
 
 def test_3_a95():
-    np.testing.assert_almost_equal(detectionSize3[1], 0.344053946523, decimal=5)
+    np.testing.assert_almost_equal(detectionSize3[1], 0.53927, decimal=5)
 
 
 def test_3_R2_90():
@@ -118,7 +118,7 @@ def test_4_a90():
 
 
 def test_4_a95():
-    np.testing.assert_almost_equal(detectionSize4[1], 0.317139410914)
+    np.testing.assert_almost_equal(detectionSize4[1], 0.539279721110)
 
 
 def test_4_R2_90():

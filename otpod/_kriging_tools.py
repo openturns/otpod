@@ -273,11 +273,14 @@ class KrigingBase:
 
         Parameters
         ----------
-        distribution : :py:class:`openturns.ComposedDistribution`
+        distribution : :py:class:`openturns.JointDistribution`
             The input parameters distribution used for the Monte Carlo simulation.
         """
         try:
-            ot.ComposedDistribution(distribution)
+            if hasattr(ot, "JointDistribution"):
+                ot.JointDistribution(distribution)
+            else:
+                ot.ComposedDistribution(distribution)
         except NotImplementedError:
             raise Exception("The given parameter is not a ComposedDistribution.")
         self._distribution = distribution
@@ -288,7 +291,7 @@ class KrigingBase:
 
         Returns
         -------
-        distribution : :py:class:`openturns.ComposedDistribution`
+        distribution : :py:class:`openturns.JointDistribution`
             The input parameters distribution used for the Monte Carlo simulation.
             Default is a Uniform distribution for all parameters.
         """
@@ -439,7 +442,10 @@ class KrigingBase:
         # create a distibution with a dirac distribution for the defect size
         diracDist = [ot.Dirac(defect)]
         diracDist += [distribution.getMarginal(i + 1) for i in range(dim - 1)]
-        distribution = ot.ComposedDistribution(diracDist)
+        if hasattr(ot, "JointDistribution"):
+            distribution = ot.JointDistribution(diracDist)
+        else:
+            distribution = ot.ComposedDistribution(diracDist)
 
         # create a sample for the Monte Carlo simulation and confidence interval
         MC_sample = distribution.getSample(samplingSize)
@@ -502,7 +508,10 @@ class KrigingBase:
             distBoundCol = []
             for i in range(dim):
                 distBoundCol += [ot.Uniform(lowerBound[i], upperBound[i])]
-            distBound = ot.ComposedDistribution(distBoundCol)
+            if hasattr(ot, "ot.JointDistribution"):
+                distBound = ot.JointDistribution(distBoundCol)
+            else:
+                distBound = ot.ComposedDistribution(distBoundCol)
 
             # set the bounds
             searchInterval = ot.Interval(lowerBound, upperBound)

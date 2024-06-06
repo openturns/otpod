@@ -14,7 +14,7 @@ def _initializing():
     try:
         from pkg_resources import parse_version
     except ImportError:
-        from distutils.version import LooseVersion as parse_version
+        from packaging.version import Version as parse_version
     if parse_version(ot.__version__) < parse_version("1.18"):
         raise ImportError("openturns version must be >=1.18.")
 

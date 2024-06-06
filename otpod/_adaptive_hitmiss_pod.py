@@ -193,7 +193,10 @@ class AdaptiveHitMissPOD(POD):
             inputMax = self._input.getMax()
             inputMax[0] = np.max(self._defectSizes)
             marginals = [ot.Uniform(inputMin[i], inputMax[i]) for i in range(self._dim)]
-            self._distribution = ot.ComposedDistribution(marginals)
+            if hasattr(ot, "JointDistribution"):
+                self._distribution = ot.JointDistribution(marginals)
+            else:
+                self._distribution = ot.ComposedDistribution(marginals)
 
         # Create the design of experiments of the candidate points where the
         # criterion is computed
@@ -754,11 +757,14 @@ class AdaptiveHitMissPOD(POD):
 
         Parameters
         ----------
-        distribution : :py:class:`openturns.ComposedDistribution`
+        distribution : :py:class:`openturns.JointDistribution`
             The input parameters distribution.
         """
         try:
-            ot.ComposedDistribution(distribution)
+            if hasattr(ot, "JointDistribution"):
+                ot.JointDistribution(distribution)
+            else:
+                ot.ComposedDistribution(distribution)
         except NotImplementedError:
             raise Exception("The given parameter is not a ComposedDistribution.")
         self._distribution = distribution
@@ -769,7 +775,7 @@ class AdaptiveHitMissPOD(POD):
 
         Returns
         -------
-        distribution : :py:class:`openturns.ComposedDistribution`
+        distribution : :py:class:`openturns.JointDistribution`
             The input parameters distribution, default is a Uniform distribution
             for all parameters.
         """

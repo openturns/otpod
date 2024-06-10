@@ -4,7 +4,7 @@ jobs:
   conda-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: conda-incubator/setup-miniconda@v2
         with:
           miniforge-version: latest
@@ -35,14 +35,12 @@ jobs:
   conda-windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: conda-incubator/setup-miniconda@v2
         with:
           miniforge-version: latest
       - name: Build
         run: |
           conda install -y openturns matplotlib scikit-learn statsmodels numpy scipy decorator pytest nbformat nbconvert
-          pip install numpy scipy --force-reinstall --no-deps
-          python -c "import scipy; import openturns" || exit 1
           python setup.py install
           pytest -s

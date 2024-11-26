@@ -8,6 +8,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-version: latest
+          conda-remove-defaults: "true"
       - name: Build
         shell: bash -l {0}
         run: |
@@ -39,6 +40,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-version: latest
+          conda-remove-defaults: "true"
       - name: Build
         run: |
           conda install -y openturns matplotlib scikit-learn statsmodels numpy scipy decorator pytest nbformat nbconvert

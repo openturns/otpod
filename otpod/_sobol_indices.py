@@ -424,7 +424,7 @@ class SobolIndices:
             else:
                 ot.ComposedDistribution(distribution)
         except NotImplementedError:
-            raise Exception("The given parameter is not a ComposedDistribution.")
+            raise Exception("The given parameter is not a JointDistribution.")
 
         if distribution.getDimension() != self._dim:
             raise AttributeError(

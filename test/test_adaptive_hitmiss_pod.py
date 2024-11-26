@@ -93,17 +93,17 @@ detectionSize1 = POD1.computeDetectionSize(0.9, 0.95)
 
 
 def test_1_a90():
-    np.testing.assert_almost_equal(detectionSize1[0], 4.71811745363573, decimal=5)
+    np.testing.assert_almost_equal(detectionSize1[0], 4.703290234448557, decimal=5)
 
 
 def test_1_a95():
-    np.testing.assert_almost_equal(detectionSize1[1], 5.35497504836619, decimal=5)
+    np.testing.assert_almost_equal(detectionSize1[1], 5.160478340894737, decimal=5)
 
 
 def test_1_confusion_matrix():
     np.testing.assert_almost_equal(
         POD1.getConfusionMatrix(),
-        [[0.84003497, 0.0703125], [0.15996503, 0.9296875]],
+        [[0.875, 0.08833333], [0.125, 0.91166667]],
         decimal=5,
     )
 

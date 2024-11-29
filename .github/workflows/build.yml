@@ -43,6 +43,6 @@ jobs:
           conda-remove-defaults: "true"
       - name: Build
         run: |
-          conda install -y openturns matplotlib scikit-learn statsmodels numpy scipy decorator pytest nbformat nbconvert
+          conda install -y openturns matplotlib scikit-learn statsmodels numpy scipy decorator pytest nbformat nbconvert "libblas=*=*netlib"
           python setup.py install
           pytest -s

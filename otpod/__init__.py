@@ -8,19 +8,7 @@
 
 
 def _initializing():
-    # check openturns version
-    import openturns as ot
-
-    try:
-        from pkg_resources import parse_version
-    except ImportError:
-        from packaging.version import Version as parse_version
-    if parse_version(ot.__version__) < parse_version("1.18"):
-        raise ImportError("openturns version must be >=1.18.")
-
-    # initialize the logger to display informations and warnings
     import logging
-
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 

@@ -15,6 +15,7 @@ install_requires=['statsmodels>=0.6.1',
                   'scikit-learn>=0.17',
                   'matplotlib>=1.5.1',
                   'scipy>=0.17.0',
+                  'openturns>=1.18',
                   'decorator>=4.0.9']
 
 setup(

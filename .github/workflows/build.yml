@@ -13,7 +13,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda install -y openturns jupyter matplotlib scikit-learn statsmodels decorator pytest numpydoc sphinx nbsphinx jupyter_client ipython pandoc
-          python setup.py install
+          pip install .
           pytest -s
           #- MPLBACKEND=agg travis_wait 30 pytest test/test_notebook.py --notebook
           sudo apt install -y texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra
@@ -44,5 +44,5 @@ jobs:
       - name: Build
         run: |
           conda install -y openturns matplotlib scikit-learn statsmodels numpy scipy decorator pytest nbformat nbconvert "libblas=*=*netlib"
-          python setup.py install
+          pip install .
           pytest -s

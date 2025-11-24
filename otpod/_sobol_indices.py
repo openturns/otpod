@@ -312,7 +312,7 @@ class SobolIndices:
                 elif order == "total":
                     yplot.add(self._sa.getTotalOrderIndices(i))
                 xplot.add([defect])
-            except:
+            except Exception:
                 pass
 
         # define different colors for each parameter

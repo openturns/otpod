@@ -13,8 +13,6 @@
 
 import sys
 import os
-import sphinx
-from distutils.version import LooseVersion
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -46,11 +44,7 @@ nbsphinx_execute = 'never'
 html_sourcelink_suffix = ''
 extensions.append('IPython.sphinxext.ipython_console_highlighting')
 
-
-if LooseVersion(sphinx.__version__) >= '1.8':
-    autodoc_default_options = {'members': None, 'inherited-members': None}
-else:
-    autodoc_default_flags =  ['members', 'inherited-members']
+autodoc_default_options = {'members': None, 'inherited-members': None}
 
 intersphinx_mapping = {'openturns': ('http://openturns.github.io/openturns/latest', None)}
 

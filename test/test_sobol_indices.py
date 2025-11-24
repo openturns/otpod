@@ -1,8 +1,8 @@
 import openturns as ot
-
-ot.TBB.Disable()
 import otpod
 import numpy as np
+
+ot.TBB.Disable()
 
 inputSample = ot.Sample(
     [

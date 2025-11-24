@@ -300,7 +300,7 @@ class QuantileRegressionPOD(POD):
             detectionSize = ot.PointWithDescription(
                 1, ot.Brent().solve(model, self._detectionBoxCox, defectMin, defectMax)
             )
-        except:
+        except Exception:
             raise Exception(
                 "The POD model does not contain, for the given "
                 + "defect interval, the wanted probability level."

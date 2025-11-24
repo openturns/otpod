@@ -1,8 +1,8 @@
 import openturns as ot
-
-ot.TBB.Disable()
 import otpod
 import numpy as np
+
+ot.TBB.Disable()
 
 beta0 = 2.52
 beta1 = 43.28

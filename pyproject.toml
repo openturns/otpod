@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools"]
+
+[project]
+name = "otpod"
+version = "0.6.13"
+description = "Build Probability of Detection curve"
+readme = "README.rst"
+dependencies = [
+  "openturns",
+  "statsmodels",
+  "scikit-learn",
+  "matplotlib",
+  "decorator",
+]
+authors = [
+  {name = "Antoine Dumas"},
+  {name = "Julien Schueller"},
+]
+license = {text= "LGPL-3.0-or-later"}
+classifiers = [
+  "Intended Audience :: Science/Research",
+  "Natural Language :: English",
+  "Topic :: Scientific/Engineering",
+]
+keywords = ["POD"]
+
+[tool.setuptools]
+packages = ["otpod"]
+
+[project.optional-dependencies]
+doc = ["numpydoc", "sphinx", "nbsphinx"]
+
+[project.urls]
+Homepage = "https://github.com/openturns/otpod"
+Documentation = "http://openturns.github.io/otpod/master/"
+Repository = "https://github.com/openturns/otpod.git"

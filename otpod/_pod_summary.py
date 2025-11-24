@@ -598,7 +598,7 @@ class PODSummary:
                     detectSize = self._PODgauss.computeDetectionSize(
                         probabilityLevel, confidenceLevel
                     )
-                except:
+                except Exception:
                     detectSize = [-1, -1]
                     logging.warning(
                         "Detection size for linear model with Gaussian "
@@ -617,7 +617,7 @@ class PODSummary:
                     detectSize = self._PODbin.computeDetectionSize(
                         probabilityLevel, confidenceLevel
                     )
-                except:
+                except Exception:
                     detectSize = [-1, -1]
                     logging.warning(
                         "Detection size for linear model with no "
@@ -636,7 +636,7 @@ class PODSummary:
                     detectSize = self._PODks.computeDetectionSize(
                         probabilityLevel, confidenceLevel
                     )
-                except:
+                except Exception:
                     detectSize = [-1, -1]
                     logging.warning(
                         "Detection size for linear model with kernel "
@@ -669,7 +669,7 @@ class PODSummary:
                 detectSize = self._PODqr.computeDetectionSize(
                     probabilityLevel, confidenceLevel
                 )
-            except:
+            except Exception:
                 detectSize = [-1, -1]
                 logging.warning(
                     "Detection size for quantile regression cannot be computed."
@@ -697,7 +697,7 @@ class PODSummary:
                 detectSize = self._PODchaos.computeDetectionSize(
                     probabilityLevel, confidenceLevel
                 )
-            except:
+            except Exception:
                 detectSize = [-1, -1]
                 logging.warning(
                     "Detection size for polynomial chaos cannot be computed."
@@ -725,7 +725,7 @@ class PODSummary:
                 detectSize = self._PODkriging.computeDetectionSize(
                     probabilityLevel, confidenceLevel
                 )
-            except:
+            except Exception:
                 detectSize = [-1, -1]
                 logging.warning("Detection size for kriging cannot be computed.")
             self._dataPOD.append(
@@ -822,7 +822,7 @@ class PODSummary:
                     name=os.path.join(directory, "POD_Gauss.") + extension,
                 )
                 fig.append(f)
-            except:
+            except Exception:
                 logging.warning(
                     "POD for linear model with Gaussian residuals "
                     + "cannot be drawn for the given parameters."
@@ -835,7 +835,7 @@ class PODSummary:
                     name=os.path.join(directory, "POD_Binomial.") + extension,
                 )
                 fig.append(f)
-            except:
+            except Exception:
                 logging.warning(
                     "POD for linear model with no hypothesis on the "
                     + "residuals cannot be drawn for the given parameters."
@@ -848,7 +848,7 @@ class PODSummary:
                     name=os.path.join(directory, "POD_Kernel_Smoothing.") + extension,
                 )
                 fig.append(f)
-            except:
+            except Exception:
                 logging.warning(
                     "POD for linear model with kernel smoothing on the "
                     + "residuals cannot be drawn for the given parameters."
@@ -862,7 +862,7 @@ class PODSummary:
                     + extension,
                 )
                 fig.append(f)
-            except:
+            except Exception:
                 logging.warning(
                     "POD for quantile regression cannot be drawn for the given parameters."
                 )
@@ -879,7 +879,7 @@ class PODSummary:
                     name=os.path.join(directory, "POD_Polynomial_chaos.") + extension,
                 )
                 fig.append(f)
-            except:
+            except Exception:
                 logging.warning(
                     "POD for polynomial chaos cannot be drawn for the given parameters."
                 )
@@ -896,7 +896,7 @@ class PODSummary:
                     name=os.path.join(directory, "POD_Kriging.") + extension,
                 )
                 fig.append(f)
-            except:
+            except Exception:
                 logging.warning(
                     "POD for kriging cannot be drawn for the given parameters."
                 )

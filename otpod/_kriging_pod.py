@@ -190,7 +190,7 @@ class KrigingPOD(POD, KrigingBase):
             inputMax = self._input.getMax()
             inputMax[0] = np.max(self._defectSizes)
             marginals = [ot.Uniform(inputMin[i], inputMax[i]) for i in range(self._dim)]
-            self._distribution = ot.ComposedDistribution(marginals)
+            self._distribution = ot.JointDistribution(marginals)
 
         # compute the sample containing the POD values for all defect
         self._PODPerDefect = ot.Sample(

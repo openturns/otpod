@@ -500,13 +500,8 @@ class PolynomialChaosPOD(POD):
         distribution : :py:class:`openturns.JointDistribution`
             The input parameters distribution.
         """
-        try:
-            if hasattr(ot, "JointDistribution"):
-                ot.JointDistribution(distribution)
-            else:
-                ot.ComposedDistribution(distribution)
-        except NotImplementedError:
-            raise Exception("The given parameter is not a ComposedDistribution.")
+        if not isinstance(distribution, ot.JointDistribution):
+            raise ValueError("The given parameter is not a JointDistribution")
         self._distribution = distribution
 
     def getDistribution(self):
@@ -683,10 +678,7 @@ class PolynomialChaosPOD(POD):
             inputMax = inputSample.getMax()
             inputMax[0] = np.max(self._defectSizes)
             marginals = [ot.Uniform(inputMin[i], inputMax[i]) for i in range(self._dim)]
-            if hasattr(ot, "JointDistribution"):
-                self._distribution = ot.JointDistribution(marginals)
-            else:
-                self._distribution = ot.ComposedDistribution(marginals)
+            self._distribution = ot.JointDistribution(marginals)
 
         # put description of the inputSample into decription of the distribution
         self._distribution.setDescription(inputSample.getDescription())

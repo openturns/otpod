@@ -52,14 +52,9 @@ class PLIBase:
 
         # the distribution of the parameters without the one of the defects.
         tmpDistribution = POD.getDistribution()
-        if hasattr(ot, "JointDistribution"):
-            self._distribution = ot.JointDistribution(
-                [tmpDistribution.getMarginal(i) for i in range(1, self._dim + 1)]
-            )
-        else:
-            self._distribution = ot.ComposedDistribution(
-                [tmpDistribution.getMarginal(i) for i in range(1, self._dim + 1)]
-            )
+        self._distribution = ot.JointDistribution(
+            [tmpDistribution.getMarginal(i) for i in range(1, self._dim + 1)]
+        )
 
         self._delta = np.vstack(np.array(delta))
 
@@ -218,13 +213,8 @@ class PLIBase:
         distribution : :py:class:`openturns.JointDistribution`
             The input parameters distribution used for the Monte Carlo simulation.
         """
-        try:
-            if hasattr(ot, "JointDistribution"):
-                ot.JointDistribution(distribution)
-            else:
-                ot.ComposedDistribution(distribution)
-        except NotImplementedError:
-            raise Exception("The given parameter is not a ComposedDistribution.")
+        if not isinstance(distribution, ot.JointDistribution):
+            raise ValueError("The given parameter is not a JointDistribution")
 
         if distribution.getDimension() != self._dim:
             raise AttributeError(

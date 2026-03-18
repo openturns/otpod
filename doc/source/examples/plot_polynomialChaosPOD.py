@@ -181,7 +181,7 @@ PODnew = otpod.PolynomialChaosPOD(defects, signals, detection,
 
 
 # define the input parameter distribution
-distribution = ot.ComposedDistribution([ot.Normal(0.3, 0.1)])
+distribution = ot.JointDistribution([ot.Normal(0.3, 0.1)])
 PODnew.setDistribution(distribution)
 
 

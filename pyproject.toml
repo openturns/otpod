@@ -29,7 +29,7 @@ keywords = ["POD"]
 packages = ["otpod"]
 
 [project.optional-dependencies]
-doc = ["numpydoc", "sphinx", "nbsphinx"]
+doc = ["numpydoc", "sphinx", "sphinx-gallery"]
 
 [project.urls]
 Homepage = "https://github.com/openturns/otpod"

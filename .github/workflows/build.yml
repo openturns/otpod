@@ -12,7 +12,7 @@ jobs:
       - name: Build
         shell: bash -l {0}
         run: |
-          conda install -y openturns jupyter matplotlib scikit-learn statsmodels decorator pytest numpydoc sphinx nbsphinx jupyter_client ipython pandoc
+          conda install -y openturns jupyter matplotlib scikit-learn statsmodels decorator pytest numpydoc sphinx sphinx-gallery pandoc
           pip install .
           pytest -s
           #- MPLBACKEND=agg travis_wait 30 pytest test/test_notebook.py --notebook

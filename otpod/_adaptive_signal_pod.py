@@ -206,17 +206,19 @@ class AdaptiveSignalPOD(POD, KrigingBase):
 
         # build initial kriging model
         # build the kriging model without optimization
-        algoKriging, transformation = self._buildKrigingAlgo(self._input, self._signals)
+        fitter, transformation = self._buildKrigingAlgo(self._input, self._signals)
         if self._verbose:
             print("Building the kriging model")
             print("Optimization of the covariance model parameters...")
 
-        llDim = algoKriging.getReducedLogLikelihoodFunction().getInputDimension()
+        llDim = fitter.getReducedLogLikelihoodFunction().getInputDimension()
         lowerBound = [0.001] * llDim
         upperBound = [50] * llDim
-        algoKriging = self._estimKrigingTheta(
-            algoKriging, lowerBound, upperBound, self._initialStartSize
+        fitter = self._estimKrigingTheta(
+            fitter, lowerBound, upperBound, self._initialStartSize
         )
+        fitter.run()
+        algoKriging = ot.GaussianProcessRegression(fitter.getResult())
         algoKriging.run()
 
         # Get kriging results
@@ -289,15 +291,17 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                 zero = [0.0] * self._dim
                 transformation = ot.LinearFunction(mean, zero, linear)
 
-                algoKrigingTemp = ot.KrigingAlgorithm(
+                fitter = ot.GaussianProcessFitter(
                     transformation(inputAugmented),
                     signalsAugmented,
                     self._covarianceModel,
                     self._basis,
                 )
-                optimizer = algoKrigingTemp.getOptimizationAlgorithm()
+                optimizer = fitter.getOptimizationAlgorithm()
                 optimizer.setMaximumIterationNumber(0)
-                algoKrigingTemp.setOptimizationAlgorithm(optimizer)
+                fitter.setOptimizationAlgorithm(optimizer)
+                fitter.run()
+                algoKrigingTemp = ot.GaussianProcessRegression(fitter.getResult())
                 algoKrigingTemp.run()
                 krigingResultTemp = algoKrigingTemp.getResult()
 
@@ -357,10 +361,12 @@ class AdaptiveSignalPOD(POD, KrigingBase):
                 print("Update the kriging model")
 
             # update the kriging model without optimization
-            algoKriging, transformation = self._buildKrigingAlgo(
+            fitter, transformation = self._buildKrigingAlgo(
                 self._input, self._signals
             )
-            algoKriging.setOptimizeParameters(False)
+            fitter.setOptimizeParameters(False)
+            fitter.run()
+            algoKriging = ot.GaussianProcessRegression(fitter.getResult())
             algoKriging.run()
             self._Q2 = self._computeQ2(
                 self._input, self._signals, algoKriging.getResult(), transformation

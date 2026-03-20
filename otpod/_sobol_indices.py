@@ -491,12 +491,13 @@ class PODaggrKriging(ot.OpenTURNSPythonFunction):
         xWitha = np.concatenate((np.vstack(self.defectSizes), x), axis=1)
 
         # compute the kriging mean and variance
-        mean = np.array(self.krigingResult.getConditionalMean(xWitha))
+        gp_ccov = ot.GaussianProcessConditionalCovariance(self.krigingResult)
+        mean = np.array(gp_ccov.getConditionalMean(xWitha))
 
         # Two solutions to compute the variance, the second seems a bit faster
         # var = np.diag(self.krigingResult.getConditionalCovariance(xWitha))
         var = np.array(
-            [self.krigingResult.getConditionalCovariance(p)[0, 0] for p in xWitha]
+            [gp_ccov.getConditionalCovariance(p)[0, 0] for p in xWitha]
         )
 
         # check if the variance is positive of not, accept negative values

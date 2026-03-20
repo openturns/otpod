@@ -411,13 +411,13 @@ class KrigingBase:
         zero = [0.0] * self._dim
         transformation = ot.LinearFunction(mean, zero, linear)
 
-        algoKriging = ot.KrigingAlgorithm(
+        fitter = ot.GaussianProcessFitter(
             transformation(inputSample),
             outputSample,
             self._covarianceModel,
             self._basis,
         )
-        return algoKriging, transformation
+        return fitter, transformation
 
     def _computePODSamplePerDefect(
         self,
@@ -475,20 +475,21 @@ class KrigingBase:
         """
 
         # only compute the variance
+        gp_ccov = ot.GaussianProcessConditionalCovariance(krigingResult)
         variance = np.hstack(
             [
-                krigingResult.getConditionalCovariance(sample[i])[0, 0]
+                gp_ccov.getConditionalCovariance(sample[i])[0, 0]
                 for i in range(samplingSize)
             ]
         )
-        pred = krigingResult.getConditionalMean(sample).asPoint()
+        pred = gp_ccov.getConditionalMean(sample).asPoint()
 
         normalSample = ot.Normal().getSample(simulationSize)
         # with numpy broadcasting
         randomVector = np.array(normalSample) * np.sqrt(variance) + np.array(pred)
         return randomVector
 
-    def _estimKrigingTheta(self, algoKriging, lowerBound, upperBound, size):
+    def _estimKrigingTheta(self, fitter, lowerBound, upperBound, size):
         """
         Estimate the kriging theta values with an initial random search using
         a Sobol sequence of size samples.
@@ -504,17 +505,17 @@ class KrigingBase:
 
             # set the bounds
             searchInterval = ot.Interval(lowerBound, upperBound)
-            algoKriging.setOptimizationBounds(searchInterval)
+            fitter.setOptimizationBounds(searchInterval)
             # Generate starting points with a low discrepancy sequence
             startingPoint = ot.LowDiscrepancyExperiment(
                 ot.SobolSequence(), distBound, size
             ).generate()
 
-            algoKriging.setOptimizationAlgorithm(ot.MultiStart(ot.TNC(), startingPoint))
+            fitter.setOptimizationAlgorithm(ot.MultiStart(ot.TNC(), startingPoint))
         else:
-            algoKriging.setOptimizeParameters(False)
+            fitter.setOptimizeParameters(False)
 
-        return algoKriging
+        return fitter
 
     def _computeLOO(self, inputSample, outputSample, krigingResult, transformation):
         """

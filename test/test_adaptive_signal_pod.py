@@ -158,11 +158,11 @@ def test_2_kriging_parameter():
 
 
 def test_2_a90():
-    np.testing.assert_almost_equal(detectionSize2[0], 4.6361075, decimal=4)
+    np.testing.assert_almost_equal(detectionSize2[0], 4.6025747, decimal=4)
 
 
 def test_2_a95():
-    np.testing.assert_almost_equal(detectionSize2[1], 4.7295384, decimal=4)
+    np.testing.assert_almost_equal(detectionSize2[1], 4.6449893, decimal=4)
 
 
 def test_2_Q2_90():
@@ -194,11 +194,11 @@ def test_3_kriging_parameter():
 
 
 def test_3_a90():
-    np.testing.assert_almost_equal(detectionSize3[0], 4.59484, decimal=2)
+    np.testing.assert_almost_equal(detectionSize3[0], 4.626618, decimal=2)
 
 
 def test_3_a95():
-    np.testing.assert_almost_equal(detectionSize3[1], 4.70014, decimal=2)
+    np.testing.assert_almost_equal(detectionSize3[1], 4.718817, decimal=2)
 
 
 def test_3_Q2_90():

@@ -159,17 +159,19 @@ class KrigingPOD(POD, KrigingBase):
             if self._verbose:
                 print("Start optimizing covariance model parameters...")
             # build the kriging algorithm without optimizer
-            algoKriging, transformation = self._buildKrigingAlgo(
+            fitter, transformation = self._buildKrigingAlgo(
                 self._input, self._signals
             )
             # optimize the covariance model parameters and return the kriging
             # algorithm with the run launched
-            llDim = algoKriging.getReducedLogLikelihoodFunction().getInputDimension()
+            llDim = fitter.getReducedLogLikelihoodFunction().getInputDimension()
             lowerBound = [0.001] * llDim
             upperBound = [50] * llDim
-            algoKriging = self._estimKrigingTheta(
-                algoKriging, lowerBound, upperBound, self._initialStartSize
+            fitter = self._estimKrigingTheta(
+                fitter, lowerBound, upperBound, self._initialStartSize
             )
+            fitter.run()
+            algoKriging = ot.GaussianProcessRegression(fitter.getResult())
             algoKriging.run()
             if self._verbose:
                 print("Kriging optimizer completed")

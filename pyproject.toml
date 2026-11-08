@@ -1,9 +1,10 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "otpod"
-version = "0.6.14"
+version = "0.6.15"
 description = "Build Probability of Detection curve"
 readme = "README.rst"
 dependencies = [
@@ -25,7 +26,7 @@ classifiers = [
 ]
 keywords = ["POD"]
 
-[tool.setuptools]
+[tool.hatch.build.targets.wheel]
 packages = ["otpod"]
 
 [project.optional-dependencies]

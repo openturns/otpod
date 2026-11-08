@@ -963,14 +963,12 @@ class UnivariateLinearModelAnalysis:
         """
         if self._censored:
             intercept = ot.PointWithDescription(
-                [
-                    ("Intercept for uncensored case", self._resultsUnc.intercept),
-                    ("Intercept for censored case", self._resultsCens.intercept),
-                ]
+                [self._resultsUnc.intercept, self._resultsCens.intercept],
+                ["Intercept for uncensored case", "Intercept for censored case"],
             )
         else:
             intercept = ot.PointWithDescription(
-                [("Intercept for uncensored case", self._resultsUnc.intercept)]
+                [self._resultsUnc.intercept], ["Intercept for uncensored case"]
             )
 
         return intercept
@@ -987,14 +985,12 @@ class UnivariateLinearModelAnalysis:
         """
         if self._censored:
             slope = ot.PointWithDescription(
-                [
-                    ("Slope for uncensored case", self._resultsUnc.slope),
-                    ("Slope for censored case", self._resultsCens.slope),
-                ]
+                [self._resultsUnc.slope, self._resultsCens.slope],
+                ["Slope for uncensored case", "Slope for censored case"],
             )
         else:
             slope = ot.PointWithDescription(
-                [("Slope for uncensored case", self._resultsUnc.slope)]
+                [self._resultsUnc.slope], ["Slope for uncensored case"]
             )
 
         return slope
@@ -1011,14 +1007,12 @@ class UnivariateLinearModelAnalysis:
         """
         if self._censored:
             stderr = ot.PointWithDescription(
-                [
-                    ("Stderr for uncensored case", self._resultsUnc.stderr),
-                    ("Stderr for censored case", self._resultsCens.stderr),
-                ]
+                [self._resultsUnc.stderr, self._resultsCens.stderr],
+                ["Stderr for uncensored case", "Stderr for censored case"],
             )
         else:
             stderr = ot.PointWithDescription(
-                [("Stderr for uncensored case", self._resultsUnc.stderr)]
+                [self._resultsUnc.stderr], ["Stderr for uncensored case"]
             )
 
         return stderr
@@ -1136,23 +1130,17 @@ class UnivariateLinearModelAnalysis:
         if self._censored:
             pValue = ot.PointWithDescription(
                 [
-                    (
-                        description + " for uncensored case",
-                        self._resultsUnc.testResults[test],
-                    ),
-                    (
-                        description + " for censored case",
-                        self._resultsCens.testResults[test],
-                    ),
-                ]
+                    self._resultsUnc.testResults[test],
+                    self._resultsCens.testResults[test],
+                ],
+                [
+                    description + " for uncensored case",
+                    description + " for censored case",
+                ],
             )
         else:
             pValue = ot.PointWithDescription(
-                [
-                    (
-                        description + " for uncensored case",
-                        self._resultsUnc.testResults[test],
-                    )
-                ]
+                [self._resultsUnc.testResults[test]],
+                [description + " for uncensored case"],
             )
         return pValue

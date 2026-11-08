@@ -143,7 +143,10 @@ def computeBreuschPaganTest(x, residuals):
     w = residuals**2 - sigma2
     linResidual = ot.LinearLeastSquares(x, w)
     linResidual.run()
-    linModel = linResidual.getMetaModel()
+    if hasattr(linResidual, "getResult"):
+        linModel = linResidual.getResult().getMetaModel()
+    else:
+        linModel = linResidual.getMetaModel()
     wpred = np.array(linModel(x))
     # statistic Breusch Pagan
     bp = nx * np.sum(wpred**2) / np.sum(w**2)
@@ -199,19 +202,25 @@ def computeDurbinWatsonTest(x, residuals, hypothesis="Equal"):
         B[i + 1, 1] = -x[i][0] + 2 * x[i + 1][0] - x[i + 2][0]
 
     XtX = X.computeGram()
-    XBQt = ot.SquareMatrix(XtX.solveLinearSystem(B.transpose() * X))
+    XBQt = ot.SquareMatrix(
+        XtX.solveLinearSystem(B.transpose() * X).getImplementation()
+    )
     P = 2 * (nx - 1) - XBQt.computeTrace()
     if hasattr(XtX, "solveLinearSystemInPlace"):
-        # OT>=1.21
+        # OT>=1.21 (InPlace overwrites XtX, but XtX is not reused afterwards)
         XBTrace = ot.SquareMatrix(
-            XtX.solveLinearSystemInPlace(B.computeGram())
+            XtX.solveLinearSystemInPlace(B.computeGram()).getImplementation()
         ).computeTrace()
     else:
         # OT<1.21
         XBTrace = ot.SquareMatrix(
-            XtX.solveLinearSystem(B.computeGram(), False)
+            XtX.solveLinearSystem(B.computeGram(), False).getImplementation()
         ).computeTrace()
-    Q = 2 * (3 * nx - 4) - 2 * XBTrace + ot.SquareMatrix(XBQt * XBQt).computeTrace()
+    Q = (
+        2 * (3 * nx - 4)
+        - 2 * XBTrace
+        + ot.SquareMatrix((XBQt * XBQt).getImplementation()).computeTrace()
+    )
     dmean = P / (nx - (dim + 1))
     dvar = 2.0 / ((nx - (dim + 1)) * (nx - (dim + 1) + 2)) * (Q - P * dmean)
 

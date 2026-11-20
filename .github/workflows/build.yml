@@ -4,8 +4,8 @@ jobs:
   conda-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: conda-incubator/setup-miniconda@v3
+      - uses: actions/checkout@v7
+      - uses: conda-incubator/setup-miniconda@v4
         with:
           miniforge-version: latest
           conda-remove-defaults: "true"
@@ -16,12 +16,12 @@ jobs:
           pip install .
           pytest -s
           #- MPLBACKEND=agg travis_wait 30 pytest test/test_notebook.py --notebook
-          sudo apt install -y texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra
+          sudo apt update -y && sudo apt install -y texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra
           make html -C doc
       - name: Upload
         if: ${{ github.ref == 'refs/heads/master' }}
         run: |
-          git clone --depth 1 https://${{ secrets.GH_TOKEN }}@github.com/openturns/openturns.github.io.git /tmp/io
+          git clone --depth 1 https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/openturns/openturns.github.io.git /tmp/io
           mkdir -p /tmp/io/otpod/master
           cp -r doc/_build/html/* /tmp/io/otpod/master
           cd /tmp/io
@@ -36,8 +36,8 @@ jobs:
   conda-windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: conda-incubator/setup-miniconda@v3
+      - uses: actions/checkout@v7
+      - uses: conda-incubator/setup-miniconda@v4
         with:
           miniforge-version: latest
           conda-remove-defaults: "true"
